@@ -1,0 +1,14 @@
+furo
+markdown-include
+pygments
+sphinx-autobuild
+sphinx-copybutton
+sphinx-intl
+sphinx-intl
+sphinx-notfound-page
+sphinx-prompt
+Sphinx-Substitution-Extensions
+sphinxcontrib-mermaid
+sphinxemoji
+towncrier
+typing-extensions
