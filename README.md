@@ -1,8 +1,8 @@
 [![Downloads](https://pepy.tech/badge/aioyookassa)](https://pepy.tech/project/aioyookassa)
 [![Downloads](https://pepy.tech/badge/aioyookassa/month)](https://pepy.tech/project/aioyookassa)
 [![Downloads](https://pepy.tech/badge/aioyookassa/week)](https://pepy.tech/project/aioyookassa)
-[![Code Quality Score](https://api.codiga.io/project/34554/score/svg)](https://api.codiga.io/project/34554/score/svg)
-[![Code Grade](https://api.codiga.io/project/34554/status/svg)](https://api.codiga.io/project/34554/status/svg)
+[![Code Quality Score](https://api.codiga.io/project/34833/score/svg)](https://api.codiga.io/project/34833/score/svg)
+[![Code Grade](https://api.codiga.io/project/34833/status/svg)](https://api.codiga.io/project/34833/status/svg)
 
 ## 🔗 Links
 * 🎓 **Documentation:** [*CLICK*](https://aioyookassa.readthedocs.io/en/latest/)
