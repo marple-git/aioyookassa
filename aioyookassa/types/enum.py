@@ -79,6 +79,11 @@ class CancellationReason(str, Enum):
 
 
 class PaymentMethodType(str, Enum):
+    """
+    Payment method types
+    More detailed documentation:
+    https://yookassa.ru/developers/payment-acceptance/getting-started/payment-methods#all
+    """
     CARD = 'bank_card'
     YOO_MONEY = 'yoo_money'
     QIWI = 'qiwi'
