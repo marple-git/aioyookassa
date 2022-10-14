@@ -1,0 +1,6 @@
+Types
+=======
+
+.. toctree::
+    enum
+    payment

@@ -14,7 +14,7 @@ class Confirmation(BaseModel):
     enforce: Optional[bool]
     locale: Optional[str]
     return_url: Optional[str]
-    confirmation_url: Optional[str]
+    url: Optional[str] = Field(None, alias='confirmation_url')
 
 
 class PaymentAmount(BaseModel):
