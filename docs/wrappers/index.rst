@@ -1,5 +1,5 @@
 Wrapper
-==================
+========
 
 .. autoclass:: aioyookassa.core.client.YooKassa
     :members:
