@@ -3,17 +3,18 @@ from typing import Union, Optional, List
 
 from pydantic import BaseModel, Field
 
-from .enum import PaymentStatus, ReceiptRegistration, CancellationParty, CancellationReason
+from .enum import PaymentStatus, ReceiptRegistration, CancellationParty, CancellationReason, ConfirmationType
 
 
 class Confirmation(BaseModel):
     """
     Confirmation
     """
-    type: str = 'redirect'
-    enforce: Optional[bool] = None
-    locale: Optional[str] = None
+    type: ConfirmationType
+    enforce: Optional[bool]
+    locale: Optional[str]
     return_url: Optional[str]
+    confirmation_url: Optional[str]
 
 
 class PaymentAmount(BaseModel):
@@ -147,3 +148,121 @@ class Payment(BaseModel):
     transfers: Optional[List[Transfer]]
     deal: Optional[Deal]
     merchant_customer_id: Optional[str]
+
+
+class PaymentsList(BaseModel):
+    """
+    Payments list
+    """
+    list: List[Payment] = Field(None, alias='items')
+    cursor: Optional[str]
+
+
+class Customer(BaseModel):
+    """
+    Customer
+    """
+    full_name: Optional[str]
+    inn: Optional[str]
+    email: Optional[str]
+    phone: Optional[str]
+
+
+class MarkQuantity(BaseModel):
+    """
+    Mark quantity
+    """
+    numerator: int
+    denominator: int
+
+
+class MarkCodeInfo(BaseModel):
+    """
+    Mark code information
+    """
+    code: Optional[str] = Field(None, alias='mark_code_raw')
+    unknown: Optional[str]
+    ean_8: Optional[str]
+    ean_13: Optional[str]
+    itf_14: Optional[str]
+    gs_10: Optional[str]
+    gs_1m: Optional[str]
+    short: Optional[str]
+    fur: Optional[str]
+    egais_20: Optional[str]
+    egais_30: Optional[str]
+
+
+class IndustryDetails(BaseModel):
+    """
+    Industry details
+    """
+    federal_id: str
+    document_date: datetime.datetime
+    document_number: str
+    value: str
+
+
+class PaymentItem(BaseModel):
+    """
+    Payment items
+    """
+    description: str
+    amount: PaymentAmount
+    vat_code: int
+    quantity: str
+    measure: Optional[str]
+    mark_quantity: Optional[MarkQuantity]
+    payment_subject: Optional[str]
+    payment_mode: Optional[str]
+    country_of_origin_code: Optional[str]
+    customs_declaration_number: Optional[str]
+    excise: Optional[str]
+    product_code: Optional[str]
+    mark_code_info: Optional[MarkCodeInfo]
+    mark_mode: Optional[str]
+    payment_subject_industry_details: Optional[IndustryDetails]
+
+
+class OperationDetails(BaseModel):
+    """
+    Operation details
+    """
+    id: int = Field(..., alias='operation_id')
+    value: str
+    created_at: datetime.datetime
+
+
+class Receipt(BaseModel):
+    """
+    Receipt
+    """
+    customer: Optional[Customer]
+    items: List[PaymentItem]
+    phone: Optional[str]
+    email: Optional[str]
+    tax_system_code: Optional[int]
+    receipt_industry_details: Optional[IndustryDetails]
+    receipt_operation_details: Optional[OperationDetails]
+
+
+class Passenger(BaseModel):
+    first_name: str
+    last_name: str
+
+
+class Flight(BaseModel):
+    departure_airport: str
+    arrival_airport: str
+    departure_date: datetime.datetime
+    carrier_code: Optional[str]
+
+
+class Airline(BaseModel):
+    """
+    Airline
+    """
+    ticket_number: Optional[str]
+    booking_reference: Optional[str]
+    passengers: Optional[List[Passenger]]
+    flights: Optional[List[Flight]] = Field(None, alias='legs')

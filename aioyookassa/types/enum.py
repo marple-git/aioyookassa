@@ -14,6 +14,20 @@ class PaymentStatus(str, Enum):
     PENDING = 'pending'
 
 
+class ConfirmationType(str, Enum):
+    """
+    Confirmation type
+
+    More detailed documentation:
+    https://yookassa.ru/developers/payment-acceptance/getting-started/payment-process#confirmation
+    """
+    REDIRECT = 'redirect'
+    EXTERNAL = 'external'
+    EMBEDDED = 'embedded'
+    MOBILE_APPLICATION = 'mobile_application'
+    QR_CODE = 'qr'
+
+
 class ReceiptRegistration(str, Enum):
     """
     Receipt registration
@@ -62,3 +76,17 @@ class CancellationReason(str, Enum):
     PAYMENT_METHOD_RESTRICTED = 'payment_method_restricted'
     PERMISSION_REVOKED = 'permission_revoked'
     UNSUPPORTED_MOBILE_OPERATOR = 'unsupported_mobile_operator'
+
+
+class PaymentMethodType(str, Enum):
+    CARD = 'bank_card'
+    YOO_MONEY = 'yoo_money'
+    QIWI = 'qiwi'
+    SBERBANK = 'sberbank'
+    ALFABANK = 'alfabank'
+    TINKOFF_BANK = 'tinkoff_bank'
+    B2B_SBERBANK = 'b2b_sberbank'
+    SBP = 'sbp'
+    MOBILE_BALANCE = 'mobile_balance'
+    CASH = 'cash'
+    INSTALLMENTS = 'installments'
