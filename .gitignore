@@ -11,7 +11,6 @@ __pycache__/
 build/
 develop-eggs/
 dist/
-test/
 downloads/
 eggs/
 .eggs/
@@ -21,6 +20,7 @@ parts/
 sdist/
 var/
 wheels/
+test/
 pip-wheel-metadata/
 share/python-wheels/
 *.egg-info/

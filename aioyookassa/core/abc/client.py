@@ -1,5 +1,5 @@
 import abc
-from typing import Optional, Type, Union
+from typing import Optional, Type, Union, Callable
 
 from aiohttp import ClientSession, BasicAuth
 
@@ -17,7 +17,9 @@ class BaseAPIClient(abc.ABC):
         self.api_key = api_key
         self.shop_id = str(shop_id)
 
-    async def _send_request(self, method: Type[APIMethod], params: Optional[dict] = None,
+    async def _send_request(self, method: Type[APIMethod],
+                            json: Optional[dict] = None,
+                            params: Optional[dict] = None,
                             headers: Optional[dict] = None) -> dict:
         """
         Send request to the API
@@ -27,23 +29,28 @@ class BaseAPIClient(abc.ABC):
         """
         async with ClientSession() as session:
             params = self._delete_none(params or {})
+            json = self._delete_none(json or {})
             request_url = self._get_request_url(method)
             request_headers = {'Content-Type': 'application/json'}
+
             if headers:
                 request_headers |= headers
 
             response = await session.request(
                 method.http_method,
                 request_url,
-                json=params,
+                json=json,
+                params=params,
                 headers=request_headers,
                 auth=BasicAuth(self.shop_id, self.api_key)
             )
 
-            json = await response.json()
+            response_json = await response.json()
+
             if response.status != 200:
-                APIError.detect(json['code'], json['description'])
-            return json
+                APIError.detect(response_json['code'], response_json['description'])
+
+            return response_json
 
     def _get_request_url(self, method: Type[APIMethod]) -> str:
         """

@@ -1,17 +1,32 @@
-import abc
+from typing import TypeVar, Generic
+
+T = TypeVar('T')
 
 
-class APIMethod(abc.ABC):
+class APIMethod(Generic[T]):
     """
     Base API Method
     """
     http_method: str = "GET"
     path: str
 
-    @staticmethod
-    def build_params(**kwargs) -> dict:
+
+class PaymentMethod(APIMethod):
+    """
+    Payment Method
+    """
+    http_method = "GET"
+    path = "/payments"
+
+    def __init__(self, path: str):
+        self.path = path
+
+    @classmethod
+    def build(cls, payment_id):
         """
-        Build request Params
-        :param kwargs:
-        :return:
+        Build method
+        :param payment_id: Payment ID
+        :return: Method
         """
+        path = cls.path.format(payment_id=payment_id)
+        return cls(path=path)
