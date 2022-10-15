@@ -61,11 +61,14 @@ class CardInfo(BaseModel):
     """
     Card information
     """
-    first_six: Optional[str]
-    last_four: str
+    first_six: Optional[str] = Field(None, alias='first6')
+    last_four: str = Field(..., alias='last4')
     expiry_year: str
     expiry_month: str
     card_type: str
+    card_country: Optional[str] = Field(None, alias='issuer_country')
+    bank_name: Optional[str] = Field(None, alias='issuer_name')
+    source: Optional[str]
 
 
 class PaymentMethod(BaseModel):
