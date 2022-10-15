@@ -1,7 +1,7 @@
 Wrapper
 ========
 
-.. autoclass:: aioyookassa.core.client.YooKassa
+.. autoclass:: aioyookassa.YooKassa
     :members:
     :show-inheritance:
     :special-members: __init__
