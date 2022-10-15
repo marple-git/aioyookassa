@@ -1,7 +1,7 @@
 project = 'aioyookassa'
 copyright = '2022, Marple'
 author = 'Marple'
-release = '0.1.2'
+release = '0.1.3'
 
 
 extensions = [
