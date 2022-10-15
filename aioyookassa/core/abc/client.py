@@ -33,8 +33,7 @@ class BaseAPIClient(abc.ABC):
             request_url = self._get_request_url(method)
             request_headers = {'Content-Type': 'application/json'}
 
-            if headers:
-                request_headers |= headers
+            request_headers.update(headers or {})
 
             response = await session.request(
                 method.http_method,
