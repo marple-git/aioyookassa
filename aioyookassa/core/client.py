@@ -6,7 +6,7 @@ from aioyookassa.core.abc.client import BaseAPIClient
 from aioyookassa.core.methods import CreatePayment, GetPayments, GetPayment, CapturePayment, CancelPayment
 from aioyookassa.types import Confirmation, Payment, PaymentsList
 from aioyookassa.types.enum import PaymentMethodType, PaymentStatus
-from aioyookassa.types.payment import PaymentAmount, Receipt, Airline, Transfer, Deal
+from aioyookassa.types.payment import PaymentAmount, Receipt, Airline, Transfer, Deal, Recipient, PaymentMethod
 
 
 class YooKassa(BaseAPIClient):
@@ -17,19 +17,19 @@ class YooKassa(BaseAPIClient):
 
     async def create_payment(self, amount: PaymentAmount,
                              description: Optional[str] = None,
-                             receipt: Optional[dict] = None,
-                             recipient: Optional[dict] = None,
+                             receipt: Optional[Receipt] = None,
+                             recipient: Optional[Recipient] = None,
                              payment_token: Optional[str] = None,
                              payment_method_id: Optional[str] = None,
-                             payment_method_data: Optional[dict] = None,
+                             payment_method_data: Optional[PaymentMethod] = None,
                              confirmation: Optional[Confirmation] = None,
                              save_payment_method: Optional[bool] = False,
                              capture: Optional[bool] = False,
                              client_ip: Optional[str] = None,
                              metadata: Optional[Any] = None,
-                             airline: Optional[dict] = None,
-                             transfers: Optional[List[dict]] = None,
-                             deal: Optional[dict] = None,
+                             airline: Optional[Airline] = None,
+                             transfers: Optional[List[Transfer]] = None,
+                             deal: Optional[Deal] = None,
                              merchant_customer_id: Optional[str] = None
                              ) -> Payment:
         """
