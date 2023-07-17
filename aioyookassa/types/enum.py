@@ -58,7 +58,7 @@ class CancellationReason(str, Enum):
     """
     THREE_DS_CHECK_FAILED = '3d_secure_failed'
     CALL_ISSUER = 'call_issuer'
-    CANCELLED_BY_MERCHANT = 'cancelled_by_merchant'
+    CANCELED_BY_MERCHANT = 'canceled_by_merchant'
     CARD_EXPIRED = 'card_expired'
     COUNTRY_FORBIDDEN = 'country_forbidden'
     DEAL_EXPIRED = 'deal_expired'
