@@ -1,7 +1,22 @@
+import sys
 from enum import Enum
 
+# StrEnum появился в Python 3.11, для более старых версий используем (str, Enum)
+if sys.version_info >= (3, 11):
+    from enum import StrEnum
+else:
+    class StrEnum(str, Enum):
+        """
+        Backport of StrEnum for Python < 3.11
+        """
+        def __str__(self) -> str:
+            return str(self.value)
+        
+        def _generate_next_value_(name, start, count, last_values):
+            return name.lower()
 
-class PaymentStatus(str, Enum):
+
+class PaymentStatus(StrEnum):
     """
     Payment status
 
@@ -14,7 +29,7 @@ class PaymentStatus(str, Enum):
     PENDING = 'pending'
 
 
-class ConfirmationType(str, Enum):
+class ConfirmationType(StrEnum):
     """
     Confirmation type
 
@@ -28,7 +43,7 @@ class ConfirmationType(str, Enum):
     QR_CODE = 'qr'
 
 
-class ReceiptRegistration(str, Enum):
+class ReceiptRegistration(StrEnum):
     """
     Receipt registration
     """
@@ -37,7 +52,7 @@ class ReceiptRegistration(str, Enum):
     CANCELED = 'canceled'
 
 
-class CancellationParty(str, Enum):
+class CancellationParty(StrEnum):
     """
     Cancellation party
 
@@ -49,7 +64,7 @@ class CancellationParty(str, Enum):
     YOO_MONEY = 'yoo_money'
 
 
-class CancellationReason(str, Enum):
+class CancellationReason(StrEnum):
     """
     Cancellation reason
 
@@ -78,7 +93,7 @@ class CancellationReason(str, Enum):
     UNSUPPORTED_MOBILE_OPERATOR = 'unsupported_mobile_operator'
 
 
-class PaymentMethodType(str, Enum):
+class PaymentMethodType(StrEnum):
     """
     Payment method types
     More detailed documentation:

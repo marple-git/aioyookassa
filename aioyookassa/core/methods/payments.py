@@ -70,8 +70,8 @@ class GetPayments(PaymentsAPIMethod):
         params = {
             "created_at_gte": created_at,
             "captured_at_gte": captured_at,
-            "payment_method": payment_method.value if payment_method else None,
-            "status": status.value if status else None,
+            "payment_method": payment_method if payment_method else None,
+            "status": status if status else None,
             "limit": limit,
             "cursor": cursor,
             **kwargs
