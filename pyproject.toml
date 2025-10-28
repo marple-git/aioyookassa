@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "aioyookassa"
-version = "0.1.6"
+version = "0.2"
 description = "Asynchronous wrapper to interact with yookassa.ru API"
 authors = ["Marple"]
 repository = "https://github.com/marple-git/aioyookassa"
