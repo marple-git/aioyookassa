@@ -6,7 +6,7 @@
 
 ## 🔗 Links
 * 🎓 **Documentation:** [*CLICK*](https://aioyookassa.readthedocs.io/en/latest/)
-* 🖱️ **Developer contacts:** [![Dev-Telegram](https://img.shields.io/badge/Telegram-blue.svg?style=flat-square&logo=telegram)](https://t.me/masasibata)
+* 🖱️ **Developer contacts:** [![Dev-Telegram](https://img.shields.io/badge/Telegram-blue.svg?style=flat-square&logo=telegram)](https://t.me/masaasibaata)
 
 ## 🐦 Dependencies  
 | Library  |                       Description                       |

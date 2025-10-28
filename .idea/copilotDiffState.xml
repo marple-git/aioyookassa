@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CopilotDiffPersistence">
+    <option name="pendingDiffs">
+      <map>
+        <entry key="$PROJECT_DIR$/README.md">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/README.md" />
+              <option name="originalContent" value="[![Downloads](https://pepy.tech/badge/aioyookassa)](https://pepy.tech/project/aioyookassa)&#10;[![Downloads](https://pepy.tech/badge/aioyookassa/month)](https://pepy.tech/project/aioyookassa)&#10;[![Downloads](https://pepy.tech/badge/aioyookassa/week)](https://pepy.tech/project/aioyookassa)&#10;[![Code Quality Score](https://api.codiga.io/project/34833/score/svg)](https://api.codiga.io/project/34833/score/svg)&#10;[![Code Grade](https://api.codiga.io/project/34833/status/svg)](https://api.codiga.io/project/34833/status/svg)&#10;&#10;##  Links&#10;*  **Documentation:** [*CLICK*](https://aioyookassa.readthedocs.io/en/latest/)&#10;* ️ **Developer contacts:** [![Dev-Telegram](https://img.shields.io/badge/Telegram-blue.svg?style=flat-square&amp;logo=telegram)](https://t.me/marple_tech)&#10;##  Dependencies  &#10;&#10;| Library  |                       Description                       |&#10;|:--------:|:-------------------------------------------------------:|&#10;| aiohttp  | Asynchronous HTTP Client/Server for asyncio and Python. |&#10;| pydantic |                   JSON Data Validator                   |&#10;&#10;---&#10;" />
+              <option name="updatedContent" value="[![Downloads](https://pepy.tech/badge/aioyookassa)](https://pepy.tech/project/aioyookassa)&#10;[![Downloads](https://pepy.tech/badge/aioyookassa/month)](https://pepy.tech/project/aioyookassa)&#10;[![Downloads](https://pepy.tech/badge/aioyookassa/week)](https://pepy.tech/project/aioyookassa)&#10;[![Code Quality Score](https://api.codiga.io/project/34833/score/svg)](https://api.codiga.io/project/34833/score/svg)&#10;[![Code Grade](https://api.codiga.io/project/34833/status/svg)](https://api.codiga.io/project/34833/status/svg)&#10;&#10;##  Links&#10;*  **Documentation:** [*CLICK*](https://aioyookassa.readthedocs.io/en/latest/)&#10;* ️ **Developer contacts:** [![Dev-Telegram](https://img.shields.io/badge/Telegram-blue.svg?style=flat-square&amp;logo=telegram)](https://t.me/masaasibaata)&#10;&#10;##  Dependencies  &#10;| Library  |                       Description                       |&#10;|:--------:|:-------------------------------------------------------:|&#10;| aiohttp  | Asynchronous HTTP Client/Server for asyncio and Python. |&#10;| pydantic |                   JSON Data Validator                   |&#10;&#10;---" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

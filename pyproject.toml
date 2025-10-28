@@ -2,8 +2,8 @@
 name = "aioyookassa"
 version = "0.2"
 description = "Asynchronous wrapper to interact with yookassa.ru API"
-authors = ["Marple"]
-repository = "https://github.com/marple-git/aioyookassa"
+authors = ["Masa"]
+repository = "https://github.com/masasibata/aioyookassa"
 documentation = "https://aioyookassa.readthedocs.io/en/latest/"
 license = "MIT"
 readme = 'README.md'

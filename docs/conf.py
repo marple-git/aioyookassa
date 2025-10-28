@@ -1,6 +1,6 @@
 project = 'aioyookassa'
-copyright = '2022, Marple'
-author = 'Marple'
+copyright = '2022, Masa'
+author = 'Masa'
 release = '0.1.6'
 
 
