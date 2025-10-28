@@ -6,9 +6,9 @@
 
 ## 🔗 Links
 * 🎓 **Documentation:** [*CLICK*](https://aioyookassa.readthedocs.io/en/latest/)
-* 🖱️ **Developer contacts:** [![Dev-Telegram](https://img.shields.io/badge/Telegram-blue.svg?style=flat-square&logo=telegram)](https://t.me/marple_tech)
-## 🐦 Dependencies  
+* 🖱️ **Developer contacts:** [![Dev-Telegram](https://img.shields.io/badge/Telegram-blue.svg?style=flat-square&logo=telegram)](https://t.me/masasibata)
 
+## 🐦 Dependencies  
 | Library  |                       Description                       |
 |:--------:|:-------------------------------------------------------:|
 | aiohttp  | Asynchronous HTTP Client/Server for asyncio and Python. |
