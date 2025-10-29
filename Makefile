@@ -64,4 +64,4 @@ pre-commit-run: ## Run pre-commit on all files
 
 all-checks: lint type-check test-cov ## Run all checks
 
-ci: install-dev all-checks build ## Run CI pipeline locally
+dev: install-dev all-checks build ## Run development pipeline locally
