@@ -11,9 +11,9 @@ class Confirmation(BaseModel):
     Confirmation
     """
     type: ConfirmationType
-    enforce: Optional[bool]
-    locale: Optional[str]
-    return_url: Optional[str]
+    enforce: Optional[bool] = None
+    locale: Optional[str] = None
+    return_url: Optional[str] = None
     url: Optional[str] = Field(None, alias='confirmation_url')
 
 
@@ -45,7 +45,7 @@ class PayerBankDetails(BaseModel):
     bank_branch: str
     bank_bik: str
     bank_account: str
-    kpp: Optional[str]
+    kpp: Optional[str] = None
 
 
 class VatData(BaseModel):
@@ -53,8 +53,8 @@ class VatData(BaseModel):
     VAT data
     """
     type: str
-    amount: Optional[PaymentAmount]
-    rate: Optional[str]
+    amount: Optional[PaymentAmount] = None
+    rate: Optional[str] = None
 
 
 class CardInfo(BaseModel):
@@ -68,7 +68,7 @@ class CardInfo(BaseModel):
     card_type: str
     card_country: Optional[str] = Field(None, alias='issuer_country')
     bank_name: Optional[str] = Field(None, alias='issuer_name')
-    source: Optional[str]
+    source: Optional[str] = None
 
 
 class PaymentMethod(BaseModel):
@@ -78,14 +78,14 @@ class PaymentMethod(BaseModel):
     type: str
     id: str
     saved: bool
-    title: Optional[str]
-    login: Optional[str]
-    card: Optional[CardInfo]
-    phone: Optional[str]
-    payer_bank_details: Optional[PayerBankDetails]
-    payment_purpose: Optional[str]
-    vat_data: Optional[VatData]
-    account_number: Optional[str]
+    title: Optional[str] = None
+    login: Optional[str] = None
+    card: Optional[CardInfo] = None
+    phone: Optional[str] = None
+    payer_bank_details: Optional[PayerBankDetails] = None
+    payment_purpose: Optional[str] = None
+    vat_data: Optional[VatData] = None
+    account_number: Optional[str] = None
 
 
 class CancellationDetails(BaseModel):
@@ -111,8 +111,8 @@ class Transfer(BaseModel):
     amount: PaymentAmount
     status: PaymentStatus
     fee_amount: PaymentAmount = Field(None, alias='platform_fee_amount')
-    description: Optional[str]
-    metadata: Optional[dict]
+    description: Optional[str] = None
+    metadata: Optional[dict] = None
 
 
 class Settlement(BaseModel):
@@ -132,25 +132,25 @@ class Payment(BaseModel):
     id: str
     status: PaymentStatus
     amount: PaymentAmount
-    income_amount: Optional[PaymentAmount]
-    description: Optional[str]
+    income_amount: Optional[PaymentAmount] = None
+    description: Optional[str] = None
     recipient: Recipient
-    payment_method: Optional[PaymentMethod]
-    captured_at: Optional[datetime.datetime]
+    payment_method: Optional[PaymentMethod] = None
+    captured_at: Optional[datetime.datetime] = None
     created_at: datetime.datetime
-    expires_at: Optional[datetime.datetime]
-    confirmation: Optional[Confirmation]
+    expires_at: Optional[datetime.datetime] = None
+    confirmation: Optional[Confirmation] = None
     test: bool
-    refunded_amount: Optional[PaymentAmount]
+    refunded_amount: Optional[PaymentAmount] = None
     paid: bool
     refundable: bool
-    receipt_registration: Optional[ReceiptRegistration]
-    metadata: Optional[dict]
-    cancellation_details: Optional[CancellationDetails]
-    authorization_details: Optional[AuthorizationDetails]
-    transfers: Optional[List[Transfer]]
-    deal: Optional[Deal]
-    merchant_customer_id: Optional[str]
+    receipt_registration: Optional[ReceiptRegistration] = None
+    metadata: Optional[dict] = None
+    cancellation_details: Optional[CancellationDetails] = None
+    authorization_details: Optional[AuthorizationDetails] = None
+    transfers: Optional[List[Transfer]] = None
+    deal: Optional[Deal] = None
+    merchant_customer_id: Optional[str] = None
 
 
 class PaymentsList(BaseModel):
@@ -158,17 +158,17 @@ class PaymentsList(BaseModel):
     Payments list
     """
     list: List[Payment] = Field(None, alias='items')
-    cursor: Optional[str]
+    cursor: Optional[str] = None
 
 
 class Customer(BaseModel):
     """
     Customer
     """
-    full_name: Optional[str]
-    inn: Optional[str]
-    email: Optional[str]
-    phone: Optional[str]
+    full_name: Optional[str] = None
+    inn: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
 
 
 class MarkQuantity(BaseModel):
@@ -184,16 +184,16 @@ class MarkCodeInfo(BaseModel):
     Mark code information
     """
     code: Optional[str] = Field(None, alias='mark_code_raw')
-    unknown: Optional[str]
-    ean_8: Optional[str]
-    ean_13: Optional[str]
-    itf_14: Optional[str]
-    gs_10: Optional[str]
-    gs_1m: Optional[str]
-    short: Optional[str]
-    fur: Optional[str]
-    egais_20: Optional[str]
-    egais_30: Optional[str]
+    unknown: Optional[str] = None
+    ean_8: Optional[str] = None
+    ean_13: Optional[str] = None
+    itf_14: Optional[str] = None
+    gs_10: Optional[str] = None
+    gs_1m: Optional[str] = None
+    short: Optional[str] = None
+    fur: Optional[str] = None
+    egais_20: Optional[str] = None
+    egais_30: Optional[str] = None
 
 
 class IndustryDetails(BaseModel):
@@ -214,17 +214,17 @@ class PaymentItem(BaseModel):
     amount: PaymentAmount
     vat_code: int
     quantity: str
-    measure: Optional[str]
-    mark_quantity: Optional[MarkQuantity]
-    payment_subject: Optional[str]
-    payment_mode: Optional[str]
-    country_of_origin_code: Optional[str]
-    customs_declaration_number: Optional[str]
-    excise: Optional[str]
-    product_code: Optional[str]
-    mark_code_info: Optional[MarkCodeInfo]
-    mark_mode: Optional[str]
-    payment_subject_industry_details: Optional[IndustryDetails]
+    measure: Optional[str] = None
+    mark_quantity: Optional[MarkQuantity] = None
+    payment_subject: Optional[str] = None
+    payment_mode: Optional[str] = None
+    country_of_origin_code: Optional[str] = None
+    customs_declaration_number: Optional[str] = None
+    excise: Optional[str] = None
+    product_code: Optional[str] = None
+    mark_code_info: Optional[MarkCodeInfo] = None
+    mark_mode: Optional[str] = None
+    payment_subject_industry_details: Optional[IndustryDetails] = None
 
 
 class OperationDetails(BaseModel):
@@ -240,13 +240,13 @@ class Receipt(BaseModel):
     """
     Receipt
     """
-    customer: Optional[Customer]
+    customer: Optional[Customer] = None
     items: List[PaymentItem]
-    phone: Optional[str]
-    email: Optional[str]
-    tax_system_code: Optional[int]
-    receipt_industry_details: Optional[IndustryDetails]
-    receipt_operation_details: Optional[OperationDetails]
+    phone: Optional[str] = None
+    email: Optional[str] = None
+    tax_system_code: Optional[int] = None
+    receipt_industry_details: Optional[IndustryDetails] = None
+    receipt_operation_details: Optional[OperationDetails] = None
 
 
 class Passenger(BaseModel):
@@ -258,14 +258,14 @@ class Flight(BaseModel):
     departure_airport: str
     arrival_airport: str
     departure_date: datetime.datetime
-    carrier_code: Optional[str]
+    carrier_code: Optional[str] = None
 
 
 class Airline(BaseModel):
     """
     Airline
     """
-    ticket_number: Optional[str]
-    booking_reference: Optional[str]
-    passengers: Optional[List[Passenger]]
+    ticket_number: Optional[str] = None
+    booking_reference: Optional[str] = None
+    passengers: Optional[List[Passenger]] = None
     flights: Optional[List[Flight]] = Field(None, alias='legs')
