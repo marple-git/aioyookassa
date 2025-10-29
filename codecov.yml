@@ -1,0 +1,25 @@
+coverage:
+  precision: 2
+  round: down
+  range: "70...100"
+
+  status:
+    project:
+      default:
+        target: 90%
+        threshold: 5%
+    patch:
+      default:
+        target: 80%
+
+ignore:
+  - "tests/"
+  - "docs/"
+  - "*.pyc"
+  - "__pycache__/"
+
+comment:
+  layout: "header,diff,files,footer"
+  behavior: default
+  require_changes: false
+

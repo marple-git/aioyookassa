@@ -1,14 +1,29 @@
 # This file has been refactored. See core/payments/api.py for PaymentsAPI implementation.
 
-from typing import Optional, Any, List
 from datetime import datetime
+from typing import Any, List, Optional
 
 from aioyookassa.core.abc.client import BaseAPIClient
-from aioyookassa.core.methods.payments import CreatePayment, GetPayments, GetPayment, CapturePayment, CancelPayment
+from aioyookassa.core.methods.payments import (
+    CancelPayment,
+    CapturePayment,
+    CreatePayment,
+    GetPayment,
+    GetPayments,
+)
+from aioyookassa.core.utils import generate_idempotence_key
 from aioyookassa.types import Confirmation, Payment, PaymentsList
 from aioyookassa.types.enum import PaymentMethodType, PaymentStatus
-from aioyookassa.types.payment import PaymentAmount, Receipt, Airline, Transfer, Deal, Recipient, PaymentMethod
-from aioyookassa.core.utils import generate_idempotence_key
+from aioyookassa.types.payment import (
+    Airline,
+    Deal,
+    PaymentAmount,
+    PaymentMethod,
+    Receipt,
+    Recipient,
+    Transfer,
+)
+
 
 class PaymentsAPI:
     """
@@ -16,6 +31,7 @@ class PaymentsAPI:
 
     Provides methods for creating, retrieving, capturing, and canceling payments.
     """
+
     def __init__(self, client: BaseAPIClient):
         self._client = client
 
@@ -36,7 +52,7 @@ class PaymentsAPI:
         airline: Optional[Airline] = None,
         transfers: Optional[List[Transfer]] = None,
         deal: Optional[Deal] = None,
-        merchant_customer_id: Optional[str] = None
+        merchant_customer_id: Optional[str] = None,
     ) -> Payment:
         """
         Create a new payment in YooKassa.
@@ -78,8 +94,10 @@ class PaymentsAPI:
         :seealso: https://yookassa.ru/developers/api#create_payment
         """
         params = CreatePayment.build_params(**locals())
-        headers = {'Idempotence-Key': generate_idempotence_key()}
-        result = await self._client._send_request(CreatePayment, json=params, headers=headers)
+        headers = {"Idempotence-Key": generate_idempotence_key()}
+        result = await self._client._send_request(
+            CreatePayment, json=params, headers=headers
+        )
         return Payment(**result)
 
     async def get_payments(
@@ -90,7 +108,7 @@ class PaymentsAPI:
         status: Optional[PaymentStatus] = None,
         limit: Optional[int] = None,
         cursor: Optional[str] = None,
-        **kwargs
+        **kwargs: Any,
     ) -> PaymentsList:
         """
         Retrieve a list of payments with optional filtering.
@@ -119,7 +137,7 @@ class PaymentsAPI:
             status=status,
             limit=limit,
             cursor=cursor,
-            **kwargs
+            **kwargs,
         )
         result = await self._client._send_request(GetPayments, params=params)
         return PaymentsList(**result)
@@ -145,7 +163,7 @@ class PaymentsAPI:
         receipt: Optional[Receipt] = None,
         airline: Optional[Airline] = None,
         transfers: Optional[List[Transfer]] = None,
-        deal: Optional[Deal] = None
+        deal: Optional[Deal] = None,
     ) -> Payment:
         """
         Capture (confirm) a payment.
@@ -172,9 +190,9 @@ class PaymentsAPI:
             receipt=receipt,
             airline=airline,
             transfers=transfers,
-            deal=deal
+            deal=deal,
         )
-        headers = {'Idempotence-Key': generate_idempotence_key()}
+        headers = {"Idempotence-Key": generate_idempotence_key()}
         result = await self._client._send_request(method, json=params, headers=headers)
         return Payment(**result)
 
@@ -189,6 +207,6 @@ class PaymentsAPI:
         :seealso: https://yookassa.ru/developers/api#cancel_payment
         """
         method = CancelPayment.build(payment_id=payment_id)
-        headers = {'Idempotence-Key': generate_idempotence_key()}
+        headers = {"Idempotence-Key": generate_idempotence_key()}
         result = await self._client._send_request(method, headers=headers)
         return Payment(**result)

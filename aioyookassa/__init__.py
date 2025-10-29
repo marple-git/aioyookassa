@@ -1,5 +1,5 @@
-from .core.client import YooKassa
+from .core import YooKassa
 
-__version__ = '0.2'
+__version__ = "1.0"
 
-__all__ = ['__version__', 'YooKassa']
+__all__ = ["__version__", "YooKassa"]

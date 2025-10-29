@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "aioyookassa"
-version = "0.2"
-description = "Asynchronous wrapper to interact with yookassa.ru API"
+version = "1.0"
+description = "Asynchronous YooKassa API client library for Python using aiohttp and pydantic."
 authors = ["Masa"]
 repository = "https://github.com/masasibata/aioyookassa"
 documentation = "https://aioyookassa.readthedocs.io/en/latest/"
@@ -13,7 +13,9 @@ keywords = [
     "asyncio",
     "aiohttp",
     "pydantic",
-    "aioyookassa"
+    "aioyookassa",
+    "async",
+    "asynchronous"
 ]
 
 classifiers = [
@@ -35,13 +37,101 @@ classifiers = [
 
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = ">=3.8.1,<4.0"
 pydantic = ">=2.0.0"
 aiohttp = ">=3.9.0"
 
 [tool.poetry.group.dev.dependencies]
-# Add your dev dependencies here, e.g. pytest = "^7.0"
+pytest = "^7.0"
+pytest-asyncio = "^0.21.0"
+aioresponses = "^0.7.4"
+coverage = "^7.0"
+pytest-cov = "^4.0"
+black = "^23.0.0"
+mypy = "^1.5.0"
+pre-commit = "^3.0.0"
+isort = "^5.12.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 88
+target-version = ['py38']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 88
+known_first_party = ["aioyookassa"]
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+show_error_codes = true
+
+[[tool.mypy.overrides]]
+module = [
+    "aioresponses.*",
+    "pytest.*",
+]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "aioyookassa.types.enum"
+disable_error_code = ["override"]
+
+[[tool.mypy.overrides]]
+module = "aioyookassa.core.api.*"
+disable_error_code = ["arg-type", "attr-defined", "no-untyped-def"]
+
+
+[tool.coverage.run]
+source = ["aioyookassa"]
+omit = [
+    "*/tests/*",
+    "*/test_*",
+    "*/__pycache__/*",
+    "*/venv/*",
+    "*/.venv/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]

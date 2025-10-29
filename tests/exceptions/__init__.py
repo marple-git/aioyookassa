@@ -1,0 +1,2 @@
+# Exceptions tests package
+

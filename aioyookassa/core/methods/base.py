@@ -1,11 +1,12 @@
-from typing import TypeVar, Generic
+from typing import Generic, TypeVar
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 
 class APIMethod(Generic[T]):
     """
-    Base API Method
+    Base API method.
     """
+
     http_method: str = "GET"
     path: str

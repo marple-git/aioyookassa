@@ -1,8 +1,8 @@
-from typing import Optional, Any
 from aioyookassa.core.abc.client import BaseAPIClient
 from aioyookassa.core.methods import CreatePaymentMethod, GetPaymentMethod
-from aioyookassa.types.payment import PaymentMethod
 from aioyookassa.core.utils import generate_idempotence_key
+from aioyookassa.types.payment import PaymentMethod
+
 
 class PaymentMethodsAPI:
     """
@@ -10,6 +10,7 @@ class PaymentMethodsAPI:
 
     Provides methods for creating and retrieving payment methods.
     """
+
     def __init__(self, client: BaseAPIClient):
         self._client = client
 
@@ -23,8 +24,10 @@ class PaymentMethodsAPI:
         :seealso: https://yookassa.ru/developers/api#create_payment_method
         """
         params = CreatePaymentMethod.build_params(**kwargs)
-        headers = {'Idempotence-Key': generate_idempotence_key()}
-        result = await self._client._send_request(CreatePaymentMethod, json=params, headers=headers)
+        headers = {"Idempotence-Key": generate_idempotence_key()}
+        result = await self._client._send_request(
+            CreatePaymentMethod, json=params, headers=headers
+        )
         return PaymentMethod(**result)
 
     async def get_payment_method(self, payment_method_id: str) -> PaymentMethod:

@@ -1,29 +1,32 @@
-from typing import Optional, List
+from typing import Any, List, Optional, Type
 
 
 class _MatchErrorMixin:
     """Base class for all exceptions raised by this module."""
-    match = ''
+
+    match: str = ""
     text: Optional[str] = None
 
-    __subclasses: List = []
+    __subclasses: List[Type["_MatchErrorMixin"]] = []
 
-    def __init_subclass__(cls, **kwargs):
+    def __init_subclass__(cls, **kwargs: Any) -> None:
         super(_MatchErrorMixin, cls).__init_subclass__(**kwargs)
         if not hasattr(cls, f"_{cls.__name__}__group"):
             cls.__subclasses.append(cls)
 
     @classmethod
-    def check(cls, message) -> bool:
+    def check(cls, message: str) -> bool:
         """
         Compare pattern with message
         :param message: always must be in lowercase
         :return: bool
         """
+        if not cls.match:
+            return False
         return cls.match.lower() in message
 
     @classmethod
-    def get_text(cls, message) -> str:
+    def get_text(cls, message: str) -> str:
         """
         Get text from message
         :param message: always must be in lowercase
@@ -32,7 +35,7 @@ class _MatchErrorMixin:
         return cls.text or message
 
     @classmethod
-    def detect(cls, description, message):
+    def detect(cls, description: str, message: str) -> None:
         """
         Find existing exception
         :param description: error description
@@ -43,8 +46,10 @@ class _MatchErrorMixin:
             if err is cls:
                 continue
             if err.check(description):
-                raise err(err.text or message or description)
-        raise cls(description)
+                if issubclass(err, Exception):
+                    raise err(err.text or message or description)
+        if issubclass(cls, Exception):
+            raise cls(description)
 
 
 class APIError(Exception, _MatchErrorMixin):

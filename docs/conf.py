@@ -1,28 +1,28 @@
-project = 'aioyookassa'
-copyright = '2022, Masa'
-author = 'Masa'
-release = '0.1.6'
+project = "aioyookassa"
+copyright = "2022, Masa"
+author = "Masa"
+release = "1.0.0"
 
 
 extensions = [
-    'sphinx.ext.viewcode',
-    'sphinx.ext.autodoc',
-    'sphinx.ext.autodoc.typehints',
-    'sphinx.ext.mathjax',
-    'sphinx.ext.doctest',
-    'sphinx.ext.intersphinx',
+    "sphinx.ext.viewcode",
+    "sphinx.ext.autodoc",
+    "sphinx.ext.autodoc.typehints",
+    "sphinx.ext.mathjax",
+    "sphinx.ext.doctest",
+    "sphinx.ext.intersphinx",
 ]
 
-templates_path = ['_templates']
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+templates_path = ["_templates"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 
-html_theme = 'furo'
-html_logo = '_static/logo.png'
-html_static_path = ['_static']
+html_theme = "furo"
+html_logo = "_static/logo.png"
+html_static_path = ["_static"]
 
-source_suffix = '.rst'
-master_doc = 'index'
+source_suffix = ".rst"
+master_doc = "index"
 
 add_function_parentheses = True
 
@@ -32,21 +32,21 @@ rst_prolog = """
 """
 
 latex_documents = [
-    (master_doc, f'{project}.tex', f'{project} Documentation', author, 'manual'),
+    (master_doc, f"{project}.tex", f"{project} Documentation", author, "manual"),
 ]
 
-man_pages = [(master_doc, project, f'{project} Documentation', [author], 1)]
+man_pages = [(master_doc, project, f"{project} Documentation", [author], 1)]
 
 
 texinfo_documents = [
     (
         master_doc,
         project,
-        f'{project} Documentation',
+        f"{project} Documentation",
         author,
         project,
-        'Modern and fully asynchronous framework for yookassa.ru API',
-        'Miscellaneous',
+        "Modern and fully asynchronous framework for yookassa.ru API",
+        "Miscellaneous",
     ),
 ]
 
