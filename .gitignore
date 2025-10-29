@@ -3,6 +3,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Local test files with personal data
+test/
+
 # C extensions
 *.so
 
