@@ -23,12 +23,6 @@ jobs:
         python-version: ${{ matrix.python-version }}
 
     - name: Install Poetry
-    - name: Fallback Poetry installation
-      if: failure()
-      run: |
-        curl -sSL https://install.python-poetry.org | python3 -
-        echo "$HOME/.local/bin" >> $GITHUB_PATH
-
       uses: snok/install-poetry@v1.9.0
       with:
         version: latest
@@ -84,17 +78,17 @@ jobs:
         python-version: '3.11'
 
     - name: Install Poetry
-    - name: Fallback Poetry installation
-      if: failure()
-      run: |
-        curl -sSL https://install.python-poetry.org | python3 -
-        echo "$HOME/.local/bin" >> $GITHUB_PATH
-
       uses: snok/install-poetry@v1.9.0
       with:
         version: latest
         virtualenvs-create: true
         virtualenvs-in-project: true
+
+    - name: Fallback Poetry installation
+      if: failure()
+      run: |
+        curl -sSL https://install.python-poetry.org | python3 -
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
 
     - name: Install dependencies
       run: poetry install --no-interaction
@@ -122,17 +116,17 @@ jobs:
         python-version: '3.11'
 
     - name: Install Poetry
-    - name: Fallback Poetry installation
-      if: failure()
-      run: |
-        curl -sSL https://install.python-poetry.org | python3 -
-        echo "$HOME/.local/bin" >> $GITHUB_PATH
-
       uses: snok/install-poetry@v1.9.0
       with:
         version: latest
         virtualenvs-create: true
         virtualenvs-in-project: true
+
+    - name: Fallback Poetry installation
+      if: failure()
+      run: |
+        curl -sSL https://install.python-poetry.org | python3 -
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
 
     - name: Install dependencies
       run: poetry install --no-interaction
@@ -160,17 +154,17 @@ jobs:
         python-version: '3.11'
 
     - name: Install Poetry
-    - name: Fallback Poetry installation
-      if: failure()
-      run: |
-        curl -sSL https://install.python-poetry.org | python3 -
-        echo "$HOME/.local/bin" >> $GITHUB_PATH
-
       uses: snok/install-poetry@v1.9.0
       with:
         version: latest
         virtualenvs-create: true
         virtualenvs-in-project: true
+
+    - name: Fallback Poetry installation
+      if: failure()
+      run: |
+        curl -sSL https://install.python-poetry.org | python3 -
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
 
     - name: Install dependencies
       run: poetry install --no-interaction
