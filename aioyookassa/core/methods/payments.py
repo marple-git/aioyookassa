@@ -55,9 +55,9 @@ class CreatePayment(PaymentsAPIMethod):
             "recipient": recipient.model_dump() if recipient else None,
             "payment_token": kwargs.get("payment_token"),
             "payment_method_id": kwargs.get("payment_method_id"),
-            "payment_method_data": payment_method_data.model_dump()
-            if payment_method_data
-            else None,
+            "payment_method_data": (
+                payment_method_data.model_dump() if payment_method_data else None
+            ),
             "confirmation": kwargs.get("confirmation"),
             "save_payment_method": kwargs.get("save_payment_method"),
             "capture": kwargs.get("capture"),

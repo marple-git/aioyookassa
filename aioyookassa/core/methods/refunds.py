@@ -48,25 +48,29 @@ class CreateRefund(RefundsAPIMethod):
 
         params = {
             "payment_id": kwargs.get("payment_id"),
-            "amount": amount.model_dump(exclude_none=True, mode="python")
-            if amount
-            else None,
+            "amount": (
+                amount.model_dump(exclude_none=True, mode="python") if amount else None
+            ),
             "description": kwargs.get("description"),
-            "receipt": receipt.model_dump(exclude_none=True, mode="python")
-            if receipt
-            else None,
-            "sources": [
-                source.model_dump(exclude_none=True, mode="python")
-                for source in sources
-            ]
-            if sources
-            else None,
+            "receipt": (
+                receipt.model_dump(exclude_none=True, mode="python")
+                if receipt
+                else None
+            ),
+            "sources": (
+                [
+                    source.model_dump(exclude_none=True, mode="python")
+                    for source in sources
+                ]
+                if sources
+                else None
+            ),
             "deal": deal.model_dump(exclude_none=True, mode="python") if deal else None,
-            "refund_method_data": refund_method_data.model_dump(
-                exclude_none=True, mode="python"
-            )
-            if refund_method_data
-            else None,
+            "refund_method_data": (
+                refund_method_data.model_dump(exclude_none=True, mode="python")
+                if refund_method_data
+                else None
+            ),
         }
         return {k: v for k, v in params.items() if v is not None}
 

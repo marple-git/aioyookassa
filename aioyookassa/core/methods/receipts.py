@@ -54,34 +54,38 @@ class CreateReceipt(ReceiptsAPIMethod):
             "type": kwargs.get("type"),
             "payment_id": kwargs.get("payment_id"),
             "refund_id": kwargs.get("refund_id"),
-            "customer": customer.model_dump(exclude_none=True, mode="python")
-            if customer
-            else None,
-            "items": [
-                item.model_dump(exclude_none=True, mode="python") for item in items
-            ]
-            if items
-            else None,
+            "customer": (
+                customer.model_dump(exclude_none=True, mode="python")
+                if customer
+                else None
+            ),
+            "items": (
+                [item.model_dump(exclude_none=True, mode="python") for item in items]
+                if items
+                else None
+            ),
             "send": kwargs.get("send", True),  # Always true according to documentation
             "internet": kwargs.get("internet"),
             "tax_system_code": kwargs.get("tax_system_code"),
             "timezone": kwargs.get("timezone"),
-            "additional_user_props": additional_user_props.model_dump(
-                exclude_none=True, mode="python"
-            )
-            if additional_user_props
-            else None,
-            "receipt_industry_details": [
-                detail.model_dump(exclude_none=True, mode="python")
-                for detail in receipt_industry_details
-            ]
-            if receipt_industry_details
-            else None,
-            "receipt_operational_details": receipt_operational_details.model_dump(
-                exclude_none=True, mode="python"
-            )
-            if receipt_operational_details
-            else None,
+            "additional_user_props": (
+                additional_user_props.model_dump(exclude_none=True, mode="python")
+                if additional_user_props
+                else None
+            ),
+            "receipt_industry_details": (
+                [
+                    detail.model_dump(exclude_none=True, mode="python")
+                    for detail in receipt_industry_details
+                ]
+                if receipt_industry_details
+                else None
+            ),
+            "receipt_operational_details": (
+                receipt_operational_details.model_dump(exclude_none=True, mode="python")
+                if receipt_operational_details
+                else None
+            ),
             "settlements": (
                 [
                     settlement.model_dump(exclude_none=True, mode="python")

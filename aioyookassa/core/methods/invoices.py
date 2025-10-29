@@ -62,14 +62,16 @@ class CreateInvoice(InvoicesAPIMethod):
 
         params = {
             "payment_data": payment_data_dict,
-            "cart": [item.model_dump(exclude_none=True, mode="python") for item in cart]
-            if cart
-            else None,
-            "delivery_method_data": delivery_method_data.model_dump(
-                exclude_none=True, mode="python"
-            )
-            if delivery_method_data
-            else None,
+            "cart": (
+                [item.model_dump(exclude_none=True, mode="python") for item in cart]
+                if cart
+                else None
+            ),
+            "delivery_method_data": (
+                delivery_method_data.model_dump(exclude_none=True, mode="python")
+                if delivery_method_data
+                else None
+            ),
             "expires_at": expires_at,
             "locale": kwargs.get("locale"),
             "description": kwargs.get("description"),
