@@ -264,4 +264,3 @@ class TestReceiptStatus:
         """Test ReceiptStatus string representation."""
         assert str(ReceiptStatus.PENDING) == "pending"
         assert str(ReceiptStatus.SUCCEEDED) == "succeeded"
-

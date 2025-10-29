@@ -48,4 +48,3 @@ class TestGenerateIdempotenceKey:
 
         # All keys should be different
         assert len(set(keys)) == 10
-

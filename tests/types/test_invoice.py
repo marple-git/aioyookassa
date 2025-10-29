@@ -339,4 +339,3 @@ class TestInvoice:
         assert invoice.description == "Test invoice"
         assert invoice.metadata == {"key": "value"}
         assert invoice.url == "https://example.com/invoice/123456789"
-

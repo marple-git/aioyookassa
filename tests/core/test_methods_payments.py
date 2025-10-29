@@ -2,19 +2,37 @@
 Tests for payment methods.
 """
 
-import pytest
 from datetime import datetime
 
+import pytest
+
 from aioyookassa.core.methods.payments import (
-    PaymentsAPIMethod, CreatePayment, GetPayments, GetPayment,
-    CapturePayment, CancelPayment
-)
-from aioyookassa.types.payment import (
-    PaymentAmount, PaymentMethod, CardInfo, Confirmation,
-    Recipient, Receipt, PaymentItem, Customer, Airline, Transfer, Deal
+    CancelPayment,
+    CapturePayment,
+    CreatePayment,
+    GetPayment,
+    GetPayments,
+    PaymentsAPIMethod,
 )
 from aioyookassa.types.enum import (
-    PaymentMethodType, ConfirmationType, Currency, PaymentSubject, PaymentMode
+    ConfirmationType,
+    Currency,
+    PaymentMethodType,
+    PaymentMode,
+    PaymentSubject,
+)
+from aioyookassa.types.payment import (
+    Airline,
+    CardInfo,
+    Confirmation,
+    Customer,
+    Deal,
+    PaymentAmount,
+    PaymentItem,
+    PaymentMethod,
+    Receipt,
+    Recipient,
+    Transfer,
 )
 
 
@@ -39,9 +57,10 @@ class TestPaymentsAPIMethod:
 
     def test_payments_api_method_build_with_format(self):
         """Test PaymentsAPIMethod build with path formatting."""
+
         class TestMethod(PaymentsAPIMethod):
             path = "/payments/{payment_id}"
-        
+
         method = TestMethod.build("payment_123")
         assert method.path == "/payments/payment_123"
 
@@ -59,7 +78,7 @@ class TestCreatePayment:
         """Test CreatePayment build_params with minimal data."""
         amount = PaymentAmount(value=100.50, currency=Currency.RUB)
         params = CreatePayment.build_params(amount=amount)
-        
+
         expected = {
             "amount": {"value": 100.50, "currency": "RUB"},
             "description": None,
@@ -85,20 +104,13 @@ class TestCreatePayment:
         """Test CreatePayment build_params with all fields."""
         amount = PaymentAmount(value=100.50, currency=Currency.RUB)
         card = CardInfo(
-            last4="1234",
-            expiry_year="2025",
-            expiry_month="12",
-            card_type="Visa"
+            last4="1234", expiry_year="2025", expiry_month="12", card_type="Visa"
         )
         payment_method = PaymentMethod(
-            type=PaymentMethodType.CARD,
-            id="pm_123456789",
-            saved=True,
-            card=card
+            type=PaymentMethodType.CARD, id="pm_123456789", saved=True, card=card
         )
         confirmation = Confirmation(
-            type=ConfirmationType.REDIRECT,
-            return_url="https://example.com/return"
+            type=ConfirmationType.REDIRECT, return_url="https://example.com/return"
         )
         recipient = Recipient(account_id="123456", gateway_id="gateway_123")
         customer = Customer(full_name="John Doe", email="john@example.com")
@@ -108,20 +120,20 @@ class TestCreatePayment:
             vat_code=1,
             quantity=1,
             payment_subject=PaymentSubject.COMMODITY,
-            payment_mode=PaymentMode.FULL_PAYMENT
+            payment_mode=PaymentMode.FULL_PAYMENT,
         )
         receipt = Receipt(customer=customer, items=[item])
         airline = Airline(ticket_number="TK123456", booking_reference="ABC123")
         transfer = Transfer(
             account_id="123456",
             amount=PaymentAmount(value=100.50, currency=Currency.RUB),
-            status="succeeded"
+            status="succeeded",
         )
         deal = Deal(
             id="deal_123456789",
-            settlements=[PaymentAmount(value=100.50, currency=Currency.RUB)]
+            settlements=[PaymentAmount(value=100.50, currency=Currency.RUB)],
         )
-        
+
         params = CreatePayment.build_params(
             amount=amount,
             description="Test payment",
@@ -138,12 +150,15 @@ class TestCreatePayment:
             airline=airline,
             transfers=[transfer],
             deal=deal,
-            merchant_customer_id="customer_123"
+            merchant_customer_id="customer_123",
         )
-        
+
         assert params["amount"] == {"value": 100.50, "currency": "RUB"}
         assert params["description"] == "Test payment"
-        assert params["recipient"] == {"account_id": "123456", "gateway_id": "gateway_123"}
+        assert params["recipient"] == {
+            "account_id": "123456",
+            "gateway_id": "gateway_123",
+        }
         assert params["payment_token"] == "payment_token_123"
         assert params["payment_method_id"] == "pm_123456789"
         assert params["save_payment_method"] is True
@@ -151,7 +166,7 @@ class TestCreatePayment:
         assert params["client_ip"] == "192.168.1.1"
         assert params["metadata"] == {"key": "value"}
         assert params["merchant_customer_id"] == "customer_123"
-        
+
         # Check complex objects are serialized
         assert "confirmation" in params
         assert "receipt" in params
@@ -167,17 +182,17 @@ class TestCreatePayment:
             type=ConfirmationType.REDIRECT,
             return_url="https://example.com/return",
             enforce=True,
-            locale="en"
+            locale="en",
         )
-        
+
         params = CreatePayment.build_params(amount=amount, confirmation=confirmation)
-        
+
         assert params["amount"] == {"value": 100.50, "currency": "RUB"}
         assert params["confirmation"] == {
             "type": "redirect",
             "return_url": "https://example.com/return",
             "enforce": True,
-            "locale": "en"
+            "locale": "en",
         }
 
     def test_create_payment_build_params_with_transfers(self):
@@ -186,16 +201,18 @@ class TestCreatePayment:
         transfer1 = Transfer(
             account_id="123456",
             amount=PaymentAmount(value=50.00, currency=Currency.RUB),
-            status="succeeded"
+            status="succeeded",
         )
         transfer2 = Transfer(
             account_id="789012",
             amount=PaymentAmount(value=50.50, currency=Currency.RUB),
-            status="succeeded"
+            status="succeeded",
         )
-        
-        params = CreatePayment.build_params(amount=amount, transfers=[transfer1, transfer2])
-        
+
+        params = CreatePayment.build_params(
+            amount=amount, transfers=[transfer1, transfer2]
+        )
+
         assert params["amount"] == {"value": 100.50, "currency": "RUB"}
         assert len(params["transfers"]) == 2
         assert params["transfers"][0]["account_id"] == "123456"
@@ -204,7 +221,7 @@ class TestCreatePayment:
     def test_create_payment_build_params_filters_none_values(self):
         """Test CreatePayment build_params filters out None values."""
         amount = PaymentAmount(value=100.50, currency=Currency.RUB)
-        
+
         params = CreatePayment.build_params(
             amount=amount,
             description=None,
@@ -221,9 +238,9 @@ class TestCreatePayment:
             airline=None,
             transfers=None,
             deal=None,
-            merchant_customer_id=None
+            merchant_customer_id=None,
         )
-        
+
         # Should only contain amount, all other None values should be filtered out
         assert params == {"amount": {"value": 100.50, "currency": "RUB"}}
 
@@ -245,9 +262,9 @@ class TestGetPayments:
             payment_method=None,
             status=None,
             limit=None,
-            cursor=None
+            cursor=None,
         )
-        
+
         expected = {}
         assert params == expected
 
@@ -255,7 +272,7 @@ class TestGetPayments:
         """Test GetPayments build_params with all fields."""
         created_at = datetime(2023, 1, 1, 12, 0, 0)
         captured_at = datetime(2023, 1, 2, 12, 0, 0)
-        
+
         params = GetPayments.build_params(
             created_at=created_at,
             captured_at=captured_at,
@@ -263,9 +280,9 @@ class TestGetPayments:
             status="succeeded",
             limit=10,
             cursor="next_cursor_123",
-            additional_param="test_value"
+            additional_param="test_value",
         )
-        
+
         assert params["created_at_gte"] == created_at
         assert params["captured_at_gte"] == captured_at
         assert params["payment_method"] == PaymentMethodType.CARD
@@ -282,9 +299,9 @@ class TestGetPayments:
             payment_method=PaymentMethodType.YOO_MONEY,
             status="pending",
             limit=None,
-            cursor=None
+            cursor=None,
         )
-        
+
         assert params["payment_method"] == PaymentMethodType.YOO_MONEY
         assert params["status"] == "pending"
 
@@ -321,13 +338,9 @@ class TestCapturePayment:
     def test_capture_payment_build_params_minimal(self):
         """Test CapturePayment build_params with minimal data."""
         params = CapturePayment.build_params(
-            amount=None,
-            receipt=None,
-            airline=None,
-            transfers=None,
-            deal=None
+            amount=None, receipt=None, airline=None, transfers=None, deal=None
         )
-        
+
         expected = {}
         assert params == expected
 
@@ -341,28 +354,28 @@ class TestCapturePayment:
             vat_code=1,
             quantity=1,
             payment_subject=PaymentSubject.COMMODITY,
-            payment_mode=PaymentMode.FULL_PAYMENT
+            payment_mode=PaymentMode.FULL_PAYMENT,
         )
         receipt = Receipt(customer=customer, items=[item])
         airline = Airline(ticket_number="TK123456", booking_reference="ABC123")
         transfer = Transfer(
             account_id="123456",
             amount=PaymentAmount(value=100.50, currency=Currency.RUB),
-            status="succeeded"
+            status="succeeded",
         )
         deal = Deal(
             id="deal_123456789",
-            settlements=[PaymentAmount(value=100.50, currency=Currency.RUB)]
+            settlements=[PaymentAmount(value=100.50, currency=Currency.RUB)],
         )
-        
+
         params = CapturePayment.build_params(
             amount=amount,
             receipt=receipt,
             airline=airline,
             transfers=[transfer],
-            deal=deal
+            deal=deal,
         )
-        
+
         assert params["amount"] == {"value": 100.50, "currency": "RUB"}
         assert "receipt" in params
         assert "airline" in params
@@ -372,13 +385,9 @@ class TestCapturePayment:
     def test_capture_payment_build_params_filters_none_values(self):
         """Test CapturePayment build_params filters out None values."""
         params = CapturePayment.build_params(
-            amount=None,
-            receipt=None,
-            airline=None,
-            transfers=None,
-            deal=None
+            amount=None, receipt=None, airline=None, transfers=None, deal=None
         )
-        
+
         # All values are None, so should be filtered out
         expected = {}
         assert params == expected
