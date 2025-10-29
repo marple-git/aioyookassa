@@ -57,7 +57,7 @@ class TestPaymentAmount:
     def test_payment_amount_with_float(self):
         """Test PaymentAmount with float value."""
         amount = PaymentAmount(value=100.50, currency=Currency.USD)
-        assert amount.value == 100.50
+        assert amount.value == pytest.approx(100.50)
         assert amount.currency == Currency.USD
 
     def test_payment_amount_with_string(self):
@@ -279,7 +279,7 @@ class TestTransfer:
             status=PaymentStatus.SUCCEEDED,
         )
         assert transfer.account_id == "123456"
-        assert transfer.amount.value == 100.50
+        assert transfer.amount.value == pytest.approx(100.50)
         assert transfer.status == PaymentStatus.SUCCEEDED
 
     def test_transfer_with_optional_fields(self):
@@ -317,7 +317,7 @@ class TestSettlement:
             type="payout", amount=PaymentAmount(value=100.50, currency=Currency.RUB)
         )
         assert settlement.type == "payout"
-        assert settlement.amount.value == 100.50
+        assert settlement.amount.value == pytest.approx(100.50)
 
 
 class TestDeal:
@@ -331,7 +331,7 @@ class TestDeal:
         )
         assert deal.id == "deal_123456789"
         assert len(deal.settlements) == 1
-        assert deal.settlements[0].value == 100.50
+        assert deal.settlements[0].value == pytest.approx(100.50)
 
 
 class TestMarkQuantity:
@@ -490,7 +490,7 @@ class TestPaymentItem:
             payment_mode=PaymentMode.FULL_PAYMENT,
         )
         assert item.description == "Test item"
-        assert item.amount.value == 100.50
+        assert item.amount.value == pytest.approx(100.50)
         assert item.vat_code == 1
         assert item.quantity == 1
         assert item.payment_subject == PaymentSubject.COMMODITY
@@ -611,7 +611,7 @@ class TestPayment:
         )
         assert payment.id == "payment_123456789"
         assert payment.status == PaymentStatus.SUCCEEDED
-        assert payment.amount.value == 100.50
+        assert payment.amount.value == pytest.approx(100.50)
         assert payment.test is True
         assert payment.paid is True
         assert payment.refundable is True

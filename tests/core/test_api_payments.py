@@ -130,12 +130,12 @@ class TestPaymentsAPI:
         assert isinstance(result, Payment)
         assert result.id == "payment_123456789"
         assert result.status == PaymentStatus.SUCCEEDED
-        assert result.amount.value == 100.50
+        assert result.amount.value == pytest.approx(100.50)
 
         # Verify the request was made correctly
         mock_client._send_request.assert_called_once()
         call_args = mock_client._send_request.call_args
-        assert call_args[1]["json"]["amount"]["value"] == 100.50
+        assert call_args[1]["json"]["amount"]["value"] == pytest.approx(100.50)
         assert call_args[1]["json"]["amount"]["currency"] == "RUB"
         assert "Idempotence-Key" in call_args[1]["headers"]
 
@@ -204,7 +204,7 @@ class TestPaymentsAPI:
         call_args = mock_client._send_request.call_args
         json_data = call_args[1]["json"]
 
-        assert json_data["amount"]["value"] == 100.50
+        assert json_data["amount"]["value"] == pytest.approx(100.50)
         assert json_data["description"] == "Test payment"
         assert json_data["payment_token"] == "payment_token_123"
         assert json_data["save_payment_method"] is True
@@ -350,7 +350,7 @@ class TestPaymentsAPI:
         call_args = mock_client._send_request.call_args
         json_data = call_args[1]["json"]
 
-        assert json_data["amount"]["value"] == 100.50
+        assert json_data["amount"]["value"] == pytest.approx(100.50)
         assert "receipt" in json_data
         assert "airline" in json_data
         assert "transfers" in json_data

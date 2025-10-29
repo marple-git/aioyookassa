@@ -28,7 +28,7 @@ class TestReceiptSettlement:
             type="prepayment", amount=PaymentAmount(value=100.50, currency="RUB")
         )
         assert settlement.type == "prepayment"
-        assert settlement.amount.value == 100.50
+        assert settlement.amount.value == pytest.approx(100.50)
 
 
 class TestAdditionalUserProps:
@@ -70,7 +70,7 @@ class TestReceiptRegistrationItem:
             payment_mode="full_payment",
         )
         assert item.description == "Test receipt item"
-        assert item.amount.value == 100.50
+        assert item.amount.value == pytest.approx(100.50)
         assert item.vat_code == 1
         assert item.quantity == 1
         assert item.payment_subject == "commodity"

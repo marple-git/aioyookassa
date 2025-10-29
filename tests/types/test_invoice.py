@@ -38,7 +38,7 @@ class TestInvoiceCartItem:
             quantity=1,
         )
         assert item.description == "Test invoice item"
-        assert item.price.value == 100.50
+        assert item.price.value == pytest.approx(100.50)
         assert item.quantity == 1
 
     def test_invoice_cart_item_with_discount_price(self):
@@ -107,7 +107,7 @@ class TestInvoiceReceiptItem:
             quantity=1,
         )
         assert item.description == "Test invoice receipt item"
-        assert item.amount.value == 100.50
+        assert item.amount.value == pytest.approx(100.50)
         assert item.vat_code == 1
         assert item.quantity == 1
 
@@ -251,7 +251,7 @@ class TestInvoicePaymentData:
         payment_data = InvoicePaymentData(
             amount=PaymentAmount(value=100.50, currency=Currency.RUB)
         )
-        assert payment_data.amount.value == 100.50
+        assert payment_data.amount.value == pytest.approx(100.50)
 
     def test_invoice_payment_data_with_optional_fields(self):
         """Test InvoicePaymentData with optional fields."""

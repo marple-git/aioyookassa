@@ -49,7 +49,7 @@ class TestRefundSource:
             account_id="123456", amount=PaymentAmount(value=100.50, currency="RUB")
         )
         assert source.account_id == "123456"
-        assert source.amount.value == 100.50
+        assert source.amount.value == pytest.approx(100.50)
 
     def test_refund_source_with_platform_fee(self):
         """Test RefundSource with platform fee."""
@@ -70,7 +70,7 @@ class TestRefundSettlement:
             type="payout", amount=PaymentAmount(value=100.50, currency="RUB")
         )
         assert settlement.type == "payout"
-        assert settlement.amount.value == 100.50
+        assert settlement.amount.value == pytest.approx(100.50)
 
 
 class TestRefundDeal:
@@ -84,7 +84,7 @@ class TestRefundDeal:
         deal = RefundDeal(id="deal_123456789", refund_settlements=[settlement])
         assert deal.id == "deal_123456789"
         assert len(deal.refund_settlements) == 1
-        assert deal.refund_settlements[0].amount.value == 100.50
+        assert deal.refund_settlements[0].amount.value == pytest.approx(100.50)
 
 
 class TestRefundArticle:
@@ -151,7 +151,7 @@ class TestElectronicCertificateData:
             amount=PaymentAmount(value=100.50, currency="RUB"),
             basket_id="basket_123456789",
         )
-        assert cert_data.amount.value == 100.50
+        assert cert_data.amount.value == pytest.approx(100.50)
         assert cert_data.basket_id == "basket_123456789"
 
 
@@ -224,7 +224,7 @@ class TestRefund:
         assert refund.id == "refund_123456789"
         assert refund.payment_id == "payment_123456789"
         assert refund.status == "succeeded"
-        assert refund.amount.value == 100.50
+        assert refund.amount.value == pytest.approx(100.50)
 
     def test_refund_with_optional_fields(self):
         """Test Refund with optional fields."""
