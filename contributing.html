@@ -1,0 +1,836 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="./">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="prev" title="Changelog" href="changelog.html">
+        <link rel="prefetch" href="_static/logo.png" as="image">
+
+    <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
+        <title>Contributing - aioyookassa 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=580074bf" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="index.html"><div class="brand">aioyookassa 1.0.0 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="_static/logo.png" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">aioyookassa 1.0.0 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="getting-started/index.html">Getting Started</a><input aria-label="Toggle navigation of Getting Started" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting-started/examples.html">Примеры использования</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting-started/api-modules.html">API модули</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting-started/error-handling.html">Обработка ошибок</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting-started/best-practices.html">Лучшие практики</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api-reference/index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="api-reference/yookassa-client.html">YooKassa Client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-reference/payments-api.html">Payments API</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="types/index.html">Types</a><input aria-label="Toggle navigation of Types" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="types/enum.html">Enum</a></li>
+<li class="toctree-l2"><a class="reference internal" href="types/payment.html">Payment</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="examples/index.html">Примеры использования</a><input aria-label="Toggle navigation of Примеры использования" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples/basic-payment.html">Базовый пример платежа</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Contributing</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="_sources/contributing.rst.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="contributing">
+<h1>Contributing<a class="headerlink" href="#contributing" title="Link to this heading">¶</a></h1>
+<p>Спасибо за интерес к проекту aioyookassa! Ваш вклад поможет сделать библиотеку лучше.</p>
+<section id="id1">
+<h2>Как внести вклад<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
+<section id="id2">
+<h3>Сообщение об ошибках<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h3>
+<p><strong>Перед созданием issue:</strong>
+1. Проверьте, что ошибка не была уже сообщена
+2. Убедитесь, что используете последнюю версию
+3. Проверьте документацию</p>
+<p><strong>Создание issue:</strong>
+1. Перейдите в <a class="reference external" href="https://github.com/your-repo/aioyookassa/issues">GitHub Issues</a>
+2. Выберите шаблон “Bug Report”
+3. Заполните все необходимые поля</p>
+<p><strong>Шаблон для бага:</strong></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>**Описание бага**
+Краткое описание проблемы.
+
+**Шаги для воспроизведения**
+1. Перейдите к &#39;...&#39;
+2. Нажмите на &#39;...&#39;
+3. Прокрутите до &#39;...&#39;
+4. Увидите ошибку
+
+**Ожидаемое поведение**
+Что должно было произойти.
+
+**Фактическое поведение**
+Что произошло на самом деле.
+
+**Скриншоты**
+Если применимо, добавьте скриншоты.
+
+**Окружение:**
+- OS: [e.g. Ubuntu 20.04]
+- Python: [e.g. 3.9.7]
+- aioyookassa: [e.g. 0.1.6]
+
+**Дополнительный контекст**
+Любая другая информация о проблеме.
+</pre></div>
+</div>
+</section>
+<section id="id3">
+<h3>Предложения функций<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h3>
+<p><strong>Создание feature request:</strong>
+1. Перейдите в <a class="reference external" href="https://github.com/your-repo/aioyookassa/issues">GitHub Issues</a>
+2. Выберите шаблон “Feature Request”
+3. Опишите предлагаемую функцию</p>
+<p><strong>Шаблон для предложения:</strong></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>**Описание функции**
+Краткое описание предлагаемой функции.
+
+**Проблема, которую решает**
+Какая проблема решается этой функцией?
+
+**Предлагаемое решение**
+Опишите, как должна работать функция.
+
+**Альтернативы**
+Рассматривали ли вы альтернативные решения?
+
+**Дополнительный контекст**
+Любая другая информация о предложении.
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id5">
+<h2>Разработка<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h2>
+<section id="id6">
+<h3>Настройка окружения<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h3>
+<ol class="arabic">
+<li><p><strong>Форкните репозиторий:</strong>
+- Перейдите на <a class="reference external" href="https://github.com/your-repo/aioyookassa">GitHub</a>
+- Нажмите “Fork”</p></li>
+<li><p><strong>Клонируйте форк:</strong>
+.. code-block:: bash</p>
+<blockquote>
+<div><p>git clone <a class="reference external" href="https://github.com/your-username/aioyookassa.git">https://github.com/your-username/aioyookassa.git</a>
+cd aioyookassa</p>
+</div></blockquote>
+</li>
+<li><p><strong>Установите зависимости:</strong>
+.. code-block:: bash</p>
+<blockquote>
+<div><p># Используя Poetry (рекомендуется)
+poetry install</p>
+<p># Или используя pip
+pip install -e “.[dev]”</p>
+</div></blockquote>
+</li>
+<li><p><strong>Установите pre-commit хуки:</strong>
+.. code-block:: bash</p>
+<blockquote>
+<div><p>pre-commit install</p>
+</div></blockquote>
+</li>
+</ol>
+</section>
+<section id="id7">
+<h3>Структура проекта<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>aioyookassa/
+├── aioyookassa/           # Основной код библиотеки
+│   ├── core/             # Ядро библиотеки
+│   ├── types/            # Pydantic модели
+│   ├── exceptions/       # Исключения
+│   └── __init__.py
+├── tests/                # Тесты
+├── docs/                 # Документация
+├── examples/             # Примеры использования
+├── pyproject.toml        # Конфигурация Poetry
+├── pytest.ini           # Конфигурация pytest
+└── README.md
+</pre></div>
+</div>
+</section>
+<section id="pull-request">
+<h3>Создание Pull Request<a class="headerlink" href="#pull-request" title="Link to this heading">¶</a></h3>
+<ol class="arabic">
+<li><p><strong>Создайте ветку:</strong>
+.. code-block:: bash</p>
+<blockquote>
+<div><p>git checkout -b feature/your-feature-name
+# или
+git checkout -b fix/your-bug-fix</p>
+</div></blockquote>
+</li>
+<li><p><strong>Внесите изменения:</strong>
+- Реализуйте функцию или исправьте баг
+- Добавьте тесты
+- Обновите документацию</p></li>
+<li><p><strong>Запустите тесты:</strong>
+.. code-block:: bash</p>
+<blockquote>
+<div><p># Все тесты
+poetry run pytest</p>
+<p># С покрытием
+poetry run pytest –cov=aioyookassa –cov-report=html</p>
+<p># Конкретный тест
+poetry run pytest tests/core/test_client.py::TestYooKassa::test_yookassa_initialization</p>
+</div></blockquote>
+</li>
+<li><p><strong>Проверьте код:</strong>
+.. code-block:: bash</p>
+<blockquote>
+<div><p># Форматирование
+poetry run black aioyookassa tests</p>
+<p># Линтинг
+poetry run flake8 aioyookassa tests</p>
+<p># Типы
+poetry run mypy aioyookassa</p>
+</div></blockquote>
+</li>
+<li><p><strong>Закоммитьте изменения:</strong>
+.. code-block:: bash</p>
+<blockquote>
+<div><p>git add .
+git commit -m “feat: add new feature”
+# или
+git commit -m “fix: resolve bug in payment processing”</p>
+</div></blockquote>
+</li>
+<li><p><strong>Отправьте PR:</strong>
+.. code-block:: bash</p>
+<blockquote>
+<div><p>git push origin feature/your-feature-name</p>
+</div></blockquote>
+</li>
+</ol>
+</section>
+</section>
+<section id="id8">
+<h2>Стандарты кода<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h2>
+<section id="id9">
+<h3>Форматирование<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h3>
+<p>Используем <strong>Black</strong> для форматирования:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>run<span class="w"> </span>black<span class="w"> </span>aioyookassa<span class="w"> </span>tests
+</pre></div>
+</div>
+<p><strong>Настройки Black:</strong>
+- Длина строки: 88 символов
+- Кавычки: двойные
+- Отступы: 4 пробела</p>
+</section>
+<section id="id10">
+<h3>Линтинг<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h3>
+<p>Используем <strong>Flake8</strong> для проверки стиля:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>run<span class="w"> </span>flake8<span class="w"> </span>aioyookassa<span class="w"> </span>tests
+</pre></div>
+</div>
+<p><strong>Настройки Flake8:</strong>
+- Максимальная длина строки: 88
+- Максимальная сложность: 10
+- Игнорируем: E203, W503</p>
+</section>
+<section id="id11">
+<h3>Типизация<a class="headerlink" href="#id11" title="Link to this heading">¶</a></h3>
+<p>Используем <strong>mypy</strong> для проверки типов:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>run<span class="w"> </span>mypy<span class="w"> </span>aioyookassa
+</pre></div>
+</div>
+<p><strong>Требования:</strong>
+- Все публичные функции должны иметь аннотации типов
+- Используйте <cite>typing</cite> модуль для сложных типов
+- Избегайте <cite>Any</cite> где это возможно</p>
+</section>
+<section id="id12">
+<h3>Документация<a class="headerlink" href="#id12" title="Link to this heading">¶</a></h3>
+<p><strong>Docstrings:</strong>
+Используйте Google стиль:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">create_payment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">amount</span><span class="p">:</span> <span class="n">PaymentAmount</span><span class="p">,</span> <span class="n">description</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Payment</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Создание нового платежа.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        amount: Сумма платежа</span>
+<span class="sd">        description: Описание платежа</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Созданный платеж</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        APIError: При ошибке API</span>
+<span class="sd">        InvalidRequestError: При неверном запросе</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; payment = await client.payments.create_payment(</span>
+<span class="sd">        ...     amount=PaymentAmount(value=100, currency=&quot;RUB&quot;),</span>
+<span class="sd">        ...     description=&quot;Test payment&quot;</span>
+<span class="sd">        ... )</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<p><strong>Комментарии:</strong>
+- Объясняйте сложную логику
+- Избегайте очевидных комментариев
+- Используйте русский язык для комментариев</p>
+</section>
+</section>
+<section id="id13">
+<h2>Тестирование<a class="headerlink" href="#id13" title="Link to this heading">¶</a></h2>
+<section id="id14">
+<h3>Структура тестов<a class="headerlink" href="#id14" title="Link to this heading">¶</a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>tests/
+├── conftest.py              # Общие фикстуры
+├── core/                    # Тесты core модулей
+├── types/                   # Тесты типов данных
+├── exceptions/              # Тесты исключений
+└── fixtures/                # Тестовые данные
+</pre></div>
+</div>
+</section>
+<section id="id15">
+<h3>Покрытие кода<a class="headerlink" href="#id15" title="Link to this heading">¶</a></h3>
+<p><strong>Требования:</strong>
+- Минимальное покрытие: 90%
+- Новые функции: 100% покрытие
+- Критический код: 100% покрытие</p>
+<p><strong>Проверка покрытия:</strong>
+.. code-block:: bash</p>
+<blockquote>
+<div><p>poetry run pytest –cov=aioyookassa –cov-report=html –cov-report=term-missing</p>
+</div></blockquote>
+<p><strong>Исключения из покрытия:</strong>
+- <cite>if __name__ == “__main__”:</cite> блоки
+- Исключения в тестах
+- Документационные примеры</p>
+</section>
+<section id="id16">
+<h3>Типы тестов<a class="headerlink" href="#id16" title="Link to this heading">¶</a></h3>
+<p><strong>Unit тесты:</strong>
+- Тестируют отдельные функции/методы
+- Изолированы от внешних зависимостей
+- Быстрые (&lt; 1ms)</p>
+<p><strong>Integration тесты:</strong>
+- Тестируют взаимодействие компонентов
+- Могут использовать моки
+- Средняя скорость (&lt; 100ms)</p>
+<p><strong>Пример unit теста:</strong>
+.. code-block:: python</p>
+<blockquote>
+<div><p>import pytest
+from aioyookassa.types.payment import PaymentAmount</p>
+<dl>
+<dt>def test_payment_amount_creation():</dt><dd><p>“””Test PaymentAmount creation with valid data.”””
+amount = PaymentAmount(value=100.50, currency=”RUB”)</p>
+<p>assert amount.value == 100.50
+assert amount.currency == “RUB”</p>
+</dd>
+</dl>
+</div></blockquote>
+<p><strong>Пример integration теста:</strong>
+.. code-block:: python</p>
+<blockquote>
+<div><p>import pytest
+from unittest.mock import AsyncMock, patch
+from aioyookassa import YooKassa</p>
+<p>&#64;pytest.mark.asyncio
+async def test_create_payment_integration():</p>
+<blockquote>
+<div><p>“””Test payment creation with mocked API.”””
+with patch(‘aioyookassa.core.api.payments.PaymentsAPI.create_payment’) as mock_create:</p>
+<blockquote>
+<div><p>mock_create.return_value = AsyncMock()
+mock_create.return_value.id = “test_payment_id”</p>
+<p>client = YooKassa(api_key=”test”, shop_id=12345)
+payment = await client.payments.create_payment(</p>
+<blockquote>
+<div><p>amount=PaymentAmount(value=100, currency=”RUB”),
+description=”Test”</p>
+</div></blockquote>
+<p>)</p>
+<p>assert payment.id == “test_payment_id”
+mock_create.assert_called_once()</p>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+</section>
+<section id="id17">
+<h3>Фикстуры<a class="headerlink" href="#id17" title="Link to this heading">¶</a></h3>
+<p><strong>Общие фикстуры в conftest.py:</strong>
+.. code-block:: python</p>
+<blockquote>
+<div><p>import pytest
+from aioyookassa import YooKassa
+from aioyookassa.types.payment import PaymentAmount</p>
+<p>&#64;pytest.fixture
+def client():</p>
+<blockquote>
+<div><p>“””Test client fixture.”””
+return YooKassa(api_key=”test_key”, shop_id=12345)</p>
+</div></blockquote>
+<p>&#64;pytest.fixture
+def sample_payment_data():</p>
+<blockquote>
+<div><p>“””Sample payment data for tests.”””
+return {</p>
+<blockquote>
+<div><p>“id”: “test_payment_id”,
+“status”: “succeeded”,
+“amount”: {“value”: “100.00”, “currency”: “RUB”},
+“description”: “Test payment”</p>
+</div></blockquote>
+<p>}</p>
+</div></blockquote>
+</div></blockquote>
+</section>
+</section>
+<section id="id18">
+<h2>Релизный процесс<a class="headerlink" href="#id18" title="Link to this heading">¶</a></h2>
+<section id="id19">
+<h3>Версионирование<a class="headerlink" href="#id19" title="Link to this heading">¶</a></h3>
+<p>Используем <a class="reference external" href="https://semver.org/">Semantic Versioning</a>:</p>
+<ul class="simple">
+<li><p><strong>MAJOR</strong>: Несовместимые изменения API</p></li>
+<li><p><strong>MINOR</strong>: Новая функциональность (обратно совместимая)</p></li>
+<li><p><strong>PATCH</strong>: Исправления багов (обратно совместимые)</p></li>
+</ul>
+<p><strong>Примеры:</strong>
+- <cite>1.0.0</cite> → <cite>1.0.1</cite> (исправление бага)
+- <cite>1.0.1</cite> → <cite>1.1.0</cite> (новая функция)
+- <cite>1.1.0</cite> → <cite>2.0.0</cite> (breaking change)</p>
+</section>
+<section id="id20">
+<h3>Подготовка релиза<a class="headerlink" href="#id20" title="Link to this heading">¶</a></h3>
+<ol class="arabic">
+<li><p><strong>Обновите версию:</strong>
+- В <cite>pyproject.toml</cite>
+- В <cite>docs/conf.py</cite>
+- В <cite>aioyookassa/__init__.py</cite></p></li>
+<li><p><strong>Обновите changelog:</strong>
+- Добавьте записи в <cite>docs/changelog.rst</cite>
+- Опишите все изменения</p></li>
+<li><p><strong>Запустите тесты:</strong>
+.. code-block:: bash</p>
+<blockquote>
+<div><p>poetry run pytest
+poetry run black aioyookassa tests
+poetry run flake8 aioyookassa tests
+poetry run mypy aioyookassa</p>
+</div></blockquote>
+</li>
+<li><p><strong>Создайте тег:</strong>
+.. code-block:: bash</p>
+<blockquote>
+<div><p>git tag v0.1.7
+git push origin v0.1.7</p>
+</div></blockquote>
+</li>
+<li><p><strong>Создайте релиз на GitHub:</strong>
+- Перейдите в Releases
+- Нажмите “Create a new release”
+- Выберите тег
+- Заполните описание</p></li>
+</ol>
+</section>
+<section id="id21">
+<h3>Публикация<a class="headerlink" href="#id21" title="Link to this heading">¶</a></h3>
+<p><strong>PyPI:</strong>
+.. code-block:: bash</p>
+<blockquote>
+<div><p>poetry build
+poetry publish</p>
+</div></blockquote>
+<p><strong>GitHub:</strong>
+- Автоматически через GitHub Actions
+- При создании тега</p>
+</section>
+</section>
+<section id="id22">
+<h2>Кодекс поведения<a class="headerlink" href="#id22" title="Link to this heading">¶</a></h2>
+<section id="id23">
+<h3>Наши обязательства<a class="headerlink" href="#id23" title="Link to this heading">¶</a></h3>
+<p>Мы обязуемся сделать участие в нашем проекте комфортным для всех, независимо от:</p>
+<ul class="simple">
+<li><p>Возраста</p></li>
+<li><p>Размера тела</p></li>
+<li><p>Инвалидности</p></li>
+<li><p>Этнической принадлежности</p></li>
+<li><p>Половых характеристик</p></li>
+<li><p>Гендерной идентичности и выражения</p></li>
+<li><p>Уровня опыта</p></li>
+<li><p>Образования</p></li>
+<li><p>Социально-экономического статуса</p></li>
+<li><p>Национальности</p></li>
+<li><p>Внешности</p></li>
+<li><p>Расы</p></li>
+<li><p>Религии</p></li>
+<li><p>Сексуальной идентичности и ориентации</p></li>
+</ul>
+</section>
+<section id="id24">
+<h3>Наши стандарты<a class="headerlink" href="#id24" title="Link to this heading">¶</a></h3>
+<p><strong>Примеры поведения, которое способствует созданию позитивной среды:</strong></p>
+<ul class="simple">
+<li><p>Использование доброжелательного и инклюзивного языка</p></li>
+<li><p>Уважение к различным точкам зрения и опыту</p></li>
+<li><p>Принятие конструктивной критики</p></li>
+<li><p>Фокус на том, что лучше для сообщества</p></li>
+<li><p>Проявление эмпатии к другим участникам сообщества</p></li>
+</ul>
+<p><strong>Примеры неприемлемого поведения:</strong></p>
+<ul class="simple">
+<li><p>Использование сексуализированного языка или образов</p></li>
+<li><p>Троллинг, оскорбительные/уничижительные комментарии</p></li>
+<li><p>Публичные или частные домогательства</p></li>
+<li><p>Публикация личной информации без разрешения</p></li>
+<li><p>Другое поведение, которое может считаться неуместным в профессиональной среде</p></li>
+</ul>
+</section>
+<section id="id25">
+<h3>Применение<a class="headerlink" href="#id25" title="Link to this heading">¶</a></h3>
+<p>Случаи оскорбительного, домогательского или иного неприемлемого поведения могут быть сообщены, обратившись к ответственному за проект по адресу <a class="reference external" href="mailto:masaasibaata&#37;&#52;&#48;telegram">masaasibaata<span>&#64;</span>telegram</a>.</p>
+<p>Все жалобы будут рассмотрены и расследованы, и приведут к ответу, который считается необходимым и соответствующим обстоятельствам.</p>
+</section>
+</section>
+<section id="id26">
+<h2>Контакты<a class="headerlink" href="#id26" title="Link to this heading">¶</a></h2>
+<p><strong>Основной разработчик:</strong>
+- Telegram: <a class="reference external" href="https://t.me/masaasibaata">&#64;masaasibaata</a></p>
+<p><strong>Поддержка проекта:</strong>
+- <a class="reference external" href="https://t.me/tribute/app?startapp=dzqR">Tribute</a></p>
+<p><strong>Репозиторий:</strong>
+- <a class="reference external" href="https://github.com/your-repo/aioyookassa">GitHub</a></p>
+<p><strong>Документация:</strong>
+- <a class="reference external" href="https://aioyookassa.readthedocs.io">Read the Docs</a></p>
+<p><strong>Пакет:</strong>
+- <a class="reference external" href="https://pypi.org/project/aioyookassa/">PyPI</a></p>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          <a class="prev-page" href="changelog.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Changelog</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2022, Masa
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Contributing</a><ul>
+<li><a class="reference internal" href="#id1">Как внести вклад</a><ul>
+<li><a class="reference internal" href="#id2">Сообщение об ошибках</a></li>
+<li><a class="reference internal" href="#id3">Предложения функций</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id5">Разработка</a><ul>
+<li><a class="reference internal" href="#id6">Настройка окружения</a></li>
+<li><a class="reference internal" href="#id7">Структура проекта</a></li>
+<li><a class="reference internal" href="#pull-request">Создание Pull Request</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id8">Стандарты кода</a><ul>
+<li><a class="reference internal" href="#id9">Форматирование</a></li>
+<li><a class="reference internal" href="#id10">Линтинг</a></li>
+<li><a class="reference internal" href="#id11">Типизация</a></li>
+<li><a class="reference internal" href="#id12">Документация</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id13">Тестирование</a><ul>
+<li><a class="reference internal" href="#id14">Структура тестов</a></li>
+<li><a class="reference internal" href="#id15">Покрытие кода</a></li>
+<li><a class="reference internal" href="#id16">Типы тестов</a></li>
+<li><a class="reference internal" href="#id17">Фикстуры</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id18">Релизный процесс</a><ul>
+<li><a class="reference internal" href="#id19">Версионирование</a></li>
+<li><a class="reference internal" href="#id20">Подготовка релиза</a></li>
+<li><a class="reference internal" href="#id21">Публикация</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id22">Кодекс поведения</a><ul>
+<li><a class="reference internal" href="#id23">Наши обязательства</a></li>
+<li><a class="reference internal" href="#id24">Наши стандарты</a></li>
+<li><a class="reference internal" href="#id25">Применение</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id26">Контакты</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="_static/documentation_options.js?v=8d563738"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/scripts/furo.js?v=46bd48cc"></script>
+    </body>
+</html>
