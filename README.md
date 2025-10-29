@@ -66,7 +66,7 @@ import asyncio
 from datetime import datetime
 from aioyookassa import YooKassa
 from aioyookassa.types.payment import PaymentAmount, Confirmation
-from aioyookassa.types.enum import PaymentStatus
+from aioyookassa.types.enum import PaymentStatus, ConfirmationType, Currency
 
 async def main():
     # Инициализация клиента
@@ -74,8 +74,8 @@ async def main():
 
     # Создание платежа
     payment = await client.payments.create_payment(
-        amount=PaymentAmount(value=100.00, currency="RUB"),
-        confirmation=Confirmation(type="redirect", return_url="https://example.com/return"),
+        amount=PaymentAmount(value=100.00, currency=Currency.RUB),
+        confirmation=Confirmation(type=ConfirmationType.REDIRECT, return_url="https://example.com/return"),
         description="Тестовый платеж"
     )
 
@@ -107,12 +107,12 @@ asyncio.run(main())
 
 ```python
 from datetime import datetime
-from aioyookassa.types.enum import PaymentStatus
+from aioyookassa.types.enum import PaymentStatus, ConfirmationType, Currency
 
 # Создание платежа
 payment = await client.payments.create_payment(
-    amount=PaymentAmount(value=1000.00, currency="RUB"),
-    confirmation=Confirmation(type="redirect", return_url="https://example.com/return"),
+    amount=PaymentAmount(value=1000.00, currency=Currency.RUB),
+    confirmation=Confirmation(type=ConfirmationType.REDIRECT, return_url="https://example.com/return"),
     description="Оплата заказа #12345"
 )
 
@@ -139,7 +139,7 @@ await client.payments.cancel_payment("payment_id")
 # Создание возврата
 refund = await client.refunds.create_refund(
     payment_id="payment_id",
-    amount=PaymentAmount(value=500.00, currency="RUB"),
+    amount=PaymentAmount(value=500.00, currency=Currency.RUB),
     description="Частичный возврат"
 )
 
@@ -150,16 +150,21 @@ refund_info = await client.refunds.get_refund("refund_id")
 ### 🧾 Чеки (Receipts)
 
 ```python
+from aioyookassa.types.payment import PaymentItem
+from aioyookassa.types.enum import PaymentSubject, PaymentMode
+
 # Регистрация чека
 receipt = await client.receipts.create_receipt(
     payment_id="payment_id",
     items=[
-        {
-            "description": "Товар",
-            "quantity": 1,
-            "amount": PaymentAmount(value=1000.00, currency="RUB"),
-            "vat_code": 1
-        }
+        PaymentItem(
+            description="Товар",
+            quantity=1,
+            amount=PaymentAmount(value=1000.00, currency=Currency.RUB),
+            vat_code=1,
+            payment_subject=PaymentSubject.COMMODITY,
+            payment_mode=PaymentMode.FULL_PAYMENT
+        )
     ],
     tax_system_code=1
 )
@@ -173,7 +178,7 @@ receipt_info = await client.receipts.get_receipt("receipt_id")
 ```python
 # Создание счета
 invoice = await client.invoices.create_invoice(
-    amount=PaymentAmount(value=2000.00, currency="RUB"),
+    amount=PaymentAmount(value=2000.00, currency=Currency.RUB),
     description="Счет на оплату"
 )
 
@@ -185,12 +190,12 @@ invoice_info = await client.invoices.get_invoice("invoice_id")
 
 ```python
 from datetime import datetime
-from aioyookassa.types.enum import PaymentStatus
+from aioyookassa.types.enum import PaymentStatus, ConfirmationType, Currency
 
 async with YooKassa(api_key="your_key", shop_id=12345) as client:
     payment = await client.payments.create_payment(
-        amount=PaymentAmount(value=100.00, currency="RUB"),
-        confirmation=Confirmation(type="redirect", return_url="https://example.com/return")
+        amount=PaymentAmount(value=100.00, currency=Currency.RUB),
+        confirmation=Confirmation(type=ConfirmationType.REDIRECT, return_url="https://example.com/return")
     )
 
     # Получение платежей за последний час

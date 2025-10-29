@@ -63,12 +63,14 @@ aioyookassa предоставляет иерархию исключений д�
 
     logger = logging.getLogger(__name__)
 
+    from aioyookassa.types.enum import Currency
+    
     async def create_payment_safely(amount: float, description: str):
         """Безопасное создание платежа с обработкой ошибок."""
         
         try:
             payment = await client.payments.create_payment(
-                amount=PaymentAmount(value=amount, currency="RUB"),
+                amount=PaymentAmount(value=amount, currency=Currency.RUB),
                 description=description
             )
             logger.info(f"Payment created successfully: {payment.id}")
@@ -188,7 +190,7 @@ aioyookassa предоставляет иерархию исключений д�
     @handle_api_errors
     async def create_payment_decorated(amount: float, description: str):
         return await client.payments.create_payment(
-            amount=PaymentAmount(value=amount, currency="RUB"),
+            amount=PaymentAmount(value=amount, currency=Currency.RUB),
             description=description
         )
 
@@ -207,7 +209,7 @@ aioyookassa предоставляет иерархию исключений д�
             """Создание платежа с обработкой ошибок."""
             try:
                 return await client.payments.create_payment(
-                    amount=PaymentAmount(value=amount, currency="RUB"),
+                    amount=PaymentAmount(value=amount, currency=Currency.RUB),
                     description=description
                 )
             except InvalidCredentials:
@@ -287,7 +289,7 @@ aioyookassa предоставляет иерархию исключений д�
             "create_payment",
             e,
             amount=100.0,
-            currency="RUB",
+            currency=Currency.RUB,
             user_id="12345"
         )
         raise

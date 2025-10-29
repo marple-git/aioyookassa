@@ -42,7 +42,7 @@ aioyookassa Documentation
     from datetime import datetime
     from aioyookassa import YooKassa
     from aioyookassa.types.payment import PaymentAmount, Confirmation
-    from aioyookassa.types.enum import PaymentStatus
+    from aioyookassa.types.enum import PaymentStatus, ConfirmationType, Currency
 
     async def main():
         # Инициализация клиента
@@ -50,8 +50,8 @@ aioyookassa Documentation
         
         # Создание платежа
         payment = await client.payments.create_payment(
-            amount=PaymentAmount(value=100.00, currency="RUB"),
-            confirmation=Confirmation(type="redirect", return_url="https://example.com/return"),
+            amount=PaymentAmount(value=100.00, currency=Currency.RUB),
+            confirmation=Confirmation(type=ConfirmationType.REDIRECT, return_url="https://example.com/return"),
             description="Тестовый платеж"
         )
         

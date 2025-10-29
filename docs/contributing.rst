@@ -245,8 +245,9 @@ Contributing
             InvalidRequestError: При неверном запросе
 
         Example:
+            >>> from aioyookassa.types.enum import Currency
             >>> payment = await client.payments.create_payment(
-            ...     amount=PaymentAmount(value=100, currency="RUB"),
+            ...     amount=PaymentAmount(value=100, currency=Currency.RUB),
             ...     description="Test payment"
             ... )
         """
@@ -308,13 +309,14 @@ Contributing
 
     import pytest
     from aioyookassa.types.payment import PaymentAmount
+    from aioyookassa.types.enum import Currency
 
     def test_payment_amount_creation():
         """Test PaymentAmount creation with valid data."""
-        amount = PaymentAmount(value=100.50, currency="RUB")
+        amount = PaymentAmount(value=100.50, currency=Currency.RUB)
         
         assert amount.value == 100.50
-        assert amount.currency == "RUB"
+        assert amount.currency == Currency.RUB
 
 **Пример integration теста:**
 .. code-block:: python
@@ -330,9 +332,11 @@ Contributing
             mock_create.return_value = AsyncMock()
             mock_create.return_value.id = "test_payment_id"
             
+            from aioyookassa.types.enum import Currency
+            
             client = YooKassa(api_key="test", shop_id=12345)
             payment = await client.payments.create_payment(
-                amount=PaymentAmount(value=100, currency="RUB"),
+                amount=PaymentAmount(value=100, currency=Currency.RUB),
                 description="Test"
             )
             

@@ -39,9 +39,11 @@
             await self.client.close()
         
         async def process_payment(self, amount: float, currency: str):
+            from aioyookassa.types.enum import ConfirmationType
+            
             return await self.client.payments.create_payment(
                 amount=PaymentAmount(value=amount, currency=currency),
-                confirmation=Confirmation(type="redirect", return_url="https://example.com")
+                confirmation=Confirmation(type=ConfirmationType.REDIRECT, return_url="https://example.com")
             )
 
 Обработка ошибок
@@ -80,12 +82,14 @@
 
     logger = logging.getLogger(__name__)
 
+    from aioyookassa.types.enum import Currency
+    
     async def create_payment_with_logging(amount: float, description: str):
         logger.info(f"Creating payment: amount={amount}, description={description}")
         
         try:
             payment = await client.payments.create_payment(
-                amount=PaymentAmount(value=amount, currency="RUB"),
+                amount=PaymentAmount(value=amount, currency=Currency.RUB),
                 description=description
             )
             logger.info(f"Payment created successfully: {payment.id}")
@@ -278,9 +282,11 @@
             mock_create.return_value = AsyncMock()
             mock_create.return_value.id = "test_payment_id"
             
+            from aioyookassa.types.enum import Currency
+            
             client = YooKassa(api_key="test", shop_id=12345)
             payment = await client.payments.create_payment(
-                amount=PaymentAmount(value=100, currency="RUB"),
+                amount=PaymentAmount(value=100, currency=Currency.RUB),
                 description="Test"
             )
             

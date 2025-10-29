@@ -12,7 +12,7 @@
     from datetime import datetime
     from aioyookassa import YooKassa
     from aioyookassa.types.payment import PaymentAmount, Confirmation
-    from aioyookassa.types.enum import PaymentStatus
+    from aioyookassa.types.enum import PaymentStatus, ConfirmationType, Currency
     from aioyookassa.exceptions import APIError, NotFound
 
     async def process_payment():
@@ -25,9 +25,9 @@
                 # 1. Создание платежа
                 print("Создание платежа...")
                 payment = await client.payments.create_payment(
-                    amount=PaymentAmount(value=1000.00, currency="RUB"),
+                    amount=PaymentAmount(value=1000.00, currency=Currency.RUB),
                     confirmation=Confirmation(
-                        type="redirect", 
+                        type=ConfirmationType.REDIRECT, 
                         return_url="https://example.com/success"
                     ),
                     description="Оплата заказа #12345",

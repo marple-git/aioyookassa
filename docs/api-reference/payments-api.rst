@@ -17,9 +17,11 @@ create_payment
 
 .. code-block:: python
 
+    from aioyookassa.types.enum import ConfirmationType, Currency
+    
     payment = await client.payments.create_payment(
-        amount=PaymentAmount(value=100.00, currency="RUB"),
-        confirmation=Confirmation(type="redirect", return_url="https://example.com/return"),
+        amount=PaymentAmount(value=100.00, currency=Currency.RUB),
+        confirmation=Confirmation(type=ConfirmationType.REDIRECT, return_url="https://example.com/return"),
         description="Тестовый платеж"
     )
 

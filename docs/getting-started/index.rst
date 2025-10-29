@@ -21,6 +21,7 @@ aioyookassa предоставляет асинхронный интерфейс
     import asyncio
     from aioyookassa import YooKassa
     from aioyookassa.types.payment import PaymentAmount, Confirmation
+    from aioyookassa.types.enum import ConfirmationType, Currency
 
     async def main():
         # Создание клиента
@@ -28,8 +29,8 @@ aioyookassa предоставляет асинхронный интерфейс
         
         # Создание платежа
         payment = await client.payments.create_payment(
-            amount=PaymentAmount(value=100.00, currency="RUB"),
-            confirmation=Confirmation(type="redirect", return_url="https://example.com/return"),
+            amount=PaymentAmount(value=100.00, currency=Currency.RUB),
+            confirmation=Confirmation(type=ConfirmationType.REDIRECT, return_url="https://example.com/return"),
             description="Тестовый платеж"
         )
         
@@ -48,10 +49,12 @@ aioyookassa предоставляет асинхронный интерфейс
 
 .. code-block:: python
 
+    from aioyookassa.types.enum import ConfirmationType, Currency
+    
     async with YooKassa(api_key="your_key", shop_id=12345) as client:
         payment = await client.payments.create_payment(
-            amount=PaymentAmount(value=100.00, currency="RUB"),
-            confirmation=Confirmation(type="redirect", return_url="https://example.com/return")
+            amount=PaymentAmount(value=100.00, currency=Currency.RUB),
+            confirmation=Confirmation(type=ConfirmationType.REDIRECT, return_url="https://example.com/return")
         )
         # Клиент автоматически закроется
 

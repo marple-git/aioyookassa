@@ -31,10 +31,12 @@ API модули
 
 .. code-block:: python
 
+    from aioyookassa.types.enum import ConfirmationType, Currency
+    
     # Создание платежа
     payment = await client.payments.create_payment(
-        amount=PaymentAmount(value=100.00, currency="RUB"),
-        confirmation=Confirmation(type="redirect", return_url="https://example.com"),
+        amount=PaymentAmount(value=100.00, currency=Currency.RUB),
+        confirmation=Confirmation(type=ConfirmationType.REDIRECT, return_url="https://example.com"),
         description="Тестовый платеж"
     )
 
@@ -63,26 +65,34 @@ API модули
 .. code-block:: python
 
     from aioyookassa.types.payment import (
-        PaymentAmount, Confirmation, PaymentMethod, 
-        Recipient, Customer, Receipt
+        PaymentAmount, Confirmation, PaymentMethod, CardInfo,
+        Recipient, Customer, Receipt, PaymentItem
+    )
+    from aioyookassa.types.enum import (
+        ConfirmationType, Currency, PaymentMethodType,
+        PaymentSubject, PaymentMode
     )
 
     async def create_full_payment():
         # Настройка способа оплаты
+        card_info = CardInfo(
+            first_six="123456",
+            last_four="7890",
+            expiry_month="12",
+            expiry_year="2025",
+            card_type="Visa"
+        )
+        
         payment_method = PaymentMethod(
-            type="bank_card",
-            card={
-                "first6": "123456",
-                "last4": "7890",
-                "expiry_month": "12",
-                "expiry_year": "2025",
-                "card_type": "Visa"
-            }
+            type=PaymentMethodType.CARD,
+            id="pm_123456",
+            saved=False,
+            card=card_info
         )
         
         # Настройка подтверждения
         confirmation = Confirmation(
-            type="redirect",
+            type=ConfirmationType.REDIRECT,
             return_url="https://example.com/success"
         )
         
@@ -103,19 +113,21 @@ API модули
         receipt = Receipt(
             customer=customer,
             items=[
-                {
-                    "description": "Товар",
-                    "quantity": 1,
-                    "amount": PaymentAmount(value=100.00, currency="RUB"),
-                    "vat_code": 1
-                }
+                PaymentItem(
+                    description="Товар",
+                    quantity=1,
+                    amount=PaymentAmount(value=100.00, currency=Currency.RUB),
+                    vat_code=1,
+                    payment_subject=PaymentSubject.COMMODITY,
+                    payment_mode=PaymentMode.FULL_PAYMENT
+                )
             ],
             tax_system_code=1
         )
         
         # Создание платежа
         payment = await client.payments.create_payment(
-            amount=PaymentAmount(value=100.00, currency="RUB"),
+            amount=PaymentAmount(value=100.00, currency=Currency.RUB),
             description="Оплата заказа #12345",
             payment_method=payment_method,
             confirmation=confirmation,
@@ -136,10 +148,12 @@ API модули
 
 .. code-block:: python
 
+    from aioyookassa.types.enum import Currency
+    
     # Создание возврата
     refund = await client.refunds.create_refund(
         payment_id="payment_id",
-        amount=PaymentAmount(value=50.00, currency="RUB"),
+        amount=PaymentAmount(value=50.00, currency=Currency.RUB),
         description="Частичный возврат"
     )
 
@@ -161,6 +175,7 @@ API модули
 .. code-block:: python
 
     from aioyookassa.types.refund import RefundMethod, RefundArticle
+    from aioyookassa.types.enum import Currency
 
     async def create_detailed_refund():
         # Настройка способа возврата
@@ -174,7 +189,7 @@ API модули
             RefundArticle(
                 description="Возврат товара",
                 quantity=1,
-                amount=PaymentAmount(value=50.00, currency="RUB"),
+                amount=PaymentAmount(value=50.00, currency=Currency.RUB),
                 vat_code=1
             )
         ]
@@ -182,7 +197,7 @@ API модули
         # Создание возврата
         refund = await client.refunds.create_refund(
             payment_id="payment_id",
-            amount=PaymentAmount(value=50.00, currency="RUB"),
+            amount=PaymentAmount(value=50.00, currency=Currency.RUB),
             description="Возврат за некачественный товар",
             refund_method=refund_method,
             articles=articles
@@ -200,16 +215,21 @@ API модули
 
 .. code-block:: python
 
+    from aioyookassa.types.payment import PaymentItem
+    from aioyookassa.types.enum import Currency, PaymentSubject, PaymentMode
+    
     # Создание чека
     receipt = await client.receipts.create_receipt(
         payment_id="payment_id",
         items=[
-            {
-                "description": "Товар",
-                "quantity": 1,
-                "amount": PaymentAmount(value=100.00, currency="RUB"),
-                "vat_code": 1
-            }
+            PaymentItem(
+                description="Товар",
+                quantity=1,
+                amount=PaymentAmount(value=100.00, currency=Currency.RUB),
+                vat_code=1,
+                payment_subject=PaymentSubject.COMMODITY,
+                payment_mode=PaymentMode.FULL_PAYMENT
+            )
         ],
         tax_system_code=1
     )
@@ -234,6 +254,7 @@ API модули
     from aioyookassa.types.receipt_registration import (
         ReceiptRegistrationItem, ReceiptSettlement, Supplier
     )
+    from aioyookassa.types.enum import Currency
 
     async def create_detailed_receipt():
         # Настройка поставщика
@@ -248,7 +269,7 @@ API модули
             ReceiptRegistrationItem(
                 description="Товар 1",
                 quantity=2,
-                amount=PaymentAmount(value=100.00, currency="RUB"),
+                amount=PaymentAmount(value=100.00, currency=Currency.RUB),
                 vat_code=1,
                 payment_subject="commodity",
                 payment_mode="full_payment",
@@ -257,7 +278,7 @@ API модули
             ReceiptRegistrationItem(
                 description="Товар 2",
                 quantity=1,
-                amount=PaymentAmount(value=200.00, currency="RUB"),
+                amount=PaymentAmount(value=200.00, currency=Currency.RUB),
                 vat_code=1,
                 payment_subject="commodity",
                 payment_mode="full_payment",
@@ -269,7 +290,7 @@ API модули
         settlements = [
             ReceiptSettlement(
                 type="prepayment",
-                amount=PaymentAmount(value=400.00, currency="RUB")
+                amount=PaymentAmount(value=400.00, currency=Currency.RUB)
             )
         ]
         
@@ -293,9 +314,11 @@ API модули
 
 .. code-block:: python
 
+    from aioyookassa.types.enum import Currency
+    
     # Создание счета
     invoice = await client.invoices.create_invoice(
-        amount=PaymentAmount(value=1000.00, currency="RUB"),
+        amount=PaymentAmount(value=1000.00, currency=Currency.RUB),
         description="Счет на оплату"
     )
 
@@ -316,6 +339,8 @@ API модули
     from aioyookassa.types.invoice import (
         InvoicePaymentData, InvoiceReceipt, InvoiceCartItem
     )
+    from aioyookassa.types.payment import PaymentItem
+    from aioyookassa.types.enum import Currency, PaymentSubject, PaymentMode
 
     async def create_detailed_invoice():
         # Настройка корзины
@@ -323,13 +348,13 @@ API модули
             InvoiceCartItem(
                 description="Услуга 1",
                 quantity=1,
-                amount=PaymentAmount(value=500.00, currency="RUB"),
+                amount=PaymentAmount(value=500.00, currency=Currency.RUB),
                 vat_code=1
             ),
             InvoiceCartItem(
                 description="Услуга 2",
                 quantity=2,
-                amount=PaymentAmount(value=250.00, currency="RUB"),
+                amount=PaymentAmount(value=250.00, currency=Currency.RUB),
                 vat_code=1
             )
         ]
@@ -337,18 +362,22 @@ API модули
         # Настройка чека
         receipt = InvoiceReceipt(
             items=[
-                {
-                    "description": "Услуга 1",
-                    "quantity": 1,
-                    "amount": PaymentAmount(value=500.00, currency="RUB"),
-                    "vat_code": 1
-                },
-                {
-                    "description": "Услуга 2",
-                    "quantity": 2,
-                    "amount": PaymentAmount(value=250.00, currency="RUB"),
-                    "vat_code": 1
-                }
+                PaymentItem(
+                    description="Услуга 1",
+                    quantity=1,
+                    amount=PaymentAmount(value=500.00, currency=Currency.RUB),
+                    vat_code=1,
+                    payment_subject=PaymentSubject.SERVICE,
+                    payment_mode=PaymentMode.FULL_PAYMENT
+                ),
+                PaymentItem(
+                    description="Услуга 2",
+                    quantity=2,
+                    amount=PaymentAmount(value=250.00, currency=Currency.RUB),
+                    vat_code=1,
+                    payment_subject=PaymentSubject.SERVICE,
+                    payment_mode=PaymentMode.FULL_PAYMENT
+                )
             ],
             tax_system_code=1
         )
@@ -361,7 +390,7 @@ API модули
         
         # Создание счета
         invoice = await client.invoices.create_invoice(
-            amount=PaymentAmount(value=1000.00, currency="RUB"),
+            amount=PaymentAmount(value=1000.00, currency=Currency.RUB),
             description="Счет на оплату услуг",
             cart=cart_items,
             receipt=receipt,
@@ -416,15 +445,20 @@ API модули
 
 .. code-block:: python
 
+    from aioyookassa.types.payment import PaymentItem
+    from aioyookassa.types.enum import (
+        ConfirmationType, Currency, PaymentSubject, PaymentMode
+    )
+    
     async def process_complete_payment():
         """Полный цикл обработки платежа с чеком и возвратом."""
         
         try:
             # 1. Создание платежа
             payment = await client.payments.create_payment(
-                amount=PaymentAmount(value=1000.00, currency="RUB"),
+                amount=PaymentAmount(value=1000.00, currency=Currency.RUB),
                 description="Комплексный платеж",
-                confirmation=Confirmation(type="redirect", return_url="https://example.com")
+                confirmation=Confirmation(type=ConfirmationType.REDIRECT, return_url="https://example.com")
             )
             
             print(f"✅ Платеж создан: {payment.id}")
@@ -440,12 +474,14 @@ API модули
                 receipt = await client.receipts.create_receipt(
                     payment_id=payment.id,
                     items=[
-                        {
-                            "description": "Товар",
-                            "quantity": 1,
-                            "amount": PaymentAmount(value=1000.00, currency="RUB"),
-                            "vat_code": 1
-                        }
+                        PaymentItem(
+                            description="Товар",
+                            quantity=1,
+                            amount=PaymentAmount(value=1000.00, currency=Currency.RUB),
+                            vat_code=1,
+                            payment_subject=PaymentSubject.COMMODITY,
+                            payment_mode=PaymentMode.FULL_PAYMENT
+                        )
                     ],
                     tax_system_code=1
                 )
@@ -456,7 +492,7 @@ API модули
                 if should_refund:
                     refund = await client.refunds.create_refund(
                         payment_id=payment.id,
-                        amount=PaymentAmount(value=500.00, currency="RUB"),
+                        amount=PaymentAmount(value=500.00, currency=Currency.RUB),
                         description="Частичный возврат"
                     )
                     

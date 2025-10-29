@@ -286,12 +286,13 @@ Changelog
     from aioyookassa.core.client import YooKassa
     from aioyookassa.types import Confirmation
     from aioyookassa.types.payment import PaymentAmount
+    from aioyookassa.types.enum import ConfirmationType, Currency
 
     async def process_payment():
         async with YooKassa('token', 12345) as client:
-            confirmation = Confirmation(type='redirect', return_url='https://example.com')
+            confirmation = Confirmation(type=ConfirmationType.REDIRECT, return_url='https://example.com')
             payment = await client.create_payment(
-                amount=PaymentAmount(value=100, currency='RUB'),
+                amount=PaymentAmount(value=100, currency=Currency.RUB),
                 description='Test payment',
                 confirmation=confirmation
             )
@@ -314,11 +315,11 @@ Changelog
     async def process_payment():
         async with YooKassa(api_key='token', shop_id=12345) as client:
             confirmation = Confirmation(
-                type='redirect',
+                type=ConfirmationType.REDIRECT,
                 return_url='https://example.com'
             )
             payment = await client.payments.create_payment(
-                amount=PaymentAmount(value=100, currency='RUB'),
+                amount=PaymentAmount(value=100, currency=Currency.RUB),
                 description='Test payment',
                 confirmation=confirmation
             )
