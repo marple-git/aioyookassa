@@ -25,6 +25,8 @@ class Confirmation(BaseModel):
     enforce: Optional[bool] = None
     locale: Optional[str] = None
     return_url: Optional[str] = None
+    confirmation_token: Optional[str] = None
+    confirmation_data: Optional[str] = None
     url: Optional[str] = Field(None, alias="confirmation_url")
 
 

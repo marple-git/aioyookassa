@@ -1,3 +1,5 @@
+from typing import Union
+
 from aioyookassa.core.abc.client import BaseAPIClient
 from aioyookassa.core.api import (
     InvoicesAPI,
@@ -21,7 +23,7 @@ class YooKassa(BaseAPIClient):
     - receipts: Fiscal receipt operations
     """
 
-    def __init__(self, api_key: str, shop_id: int):
+    def __init__(self, api_key: str, shop_id: Union[int, str]):
         """
         Initialize YooKassa client.
 
