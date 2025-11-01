@@ -154,7 +154,9 @@ class TestPaymentsAPI:
             type=PaymentMethodType.CARD, id="pm_123456789", saved=True, card=card
         )
         confirmation = Confirmation(
-            type=ConfirmationType.REDIRECT, return_url="https://example.com/return"
+            type=ConfirmationType.REDIRECT,
+            url="https://example.com/confirm",
+            return_url="https://example.com/return",
         )
         recipient = Recipient(account_id="123456", gateway_id="gateway_123")
         customer = Customer(full_name="John Doe", email="john@example.com")

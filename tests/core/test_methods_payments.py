@@ -110,7 +110,9 @@ class TestCreatePayment:
             type=PaymentMethodType.CARD, id="pm_123456789", saved=True, card=card
         )
         confirmation = Confirmation(
-            type=ConfirmationType.REDIRECT, return_url="https://example.com/return"
+            type=ConfirmationType.REDIRECT,
+            url="https://example.com/confirm",
+            return_url="https://example.com/return",
         )
         recipient = Recipient(account_id="123456", gateway_id="gateway_123")
         customer = Customer(full_name="John Doe", email="john@example.com")
@@ -180,6 +182,7 @@ class TestCreatePayment:
         amount = PaymentAmount(value=100.50, currency=Currency.RUB)
         confirmation = Confirmation(
             type=ConfirmationType.REDIRECT,
+            url="https://example.com/confirm",
             return_url="https://example.com/return",
             enforce=True,
             locale="en",
@@ -188,12 +191,13 @@ class TestCreatePayment:
         params = CreatePayment.build_params(amount=amount, confirmation=confirmation)
 
         assert params["amount"] == {"value": 100.50, "currency": "RUB"}
-        assert params["confirmation"] == {
-            "type": "redirect",
-            "return_url": "https://example.com/return",
-            "enforce": True,
-            "locale": "en",
-        }
+        assert params["confirmation"]["type"] == "redirect"
+        # Note: build_params uses model_dump(exclude_none=True) without by_alias=True,
+        # so it returns 'url' instead of 'confirmation_url'
+        assert params["confirmation"]["url"] == "https://example.com/confirm"
+        assert params["confirmation"]["return_url"] == "https://example.com/return"
+        assert params["confirmation"]["enforce"] is True
+        assert params["confirmation"]["locale"] == "en"
 
     def test_create_payment_build_params_with_transfers(self):
         """Test CreatePayment build_params with transfers."""

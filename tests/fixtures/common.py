@@ -72,7 +72,9 @@ def sample_payment_method():
 def sample_confirmation():
     """Sample confirmation fixture."""
     return Confirmation(
-        type=ConfirmationType.REDIRECT, return_url="https://example.com/return"
+        type=ConfirmationType.REDIRECT,
+        url="https://example.com/confirm",
+        return_url="https://example.com/return",
     )
 
 

@@ -138,18 +138,23 @@ class TestConfirmation:
 
     def test_confirmation_required_fields(self):
         """Test Confirmation with required fields."""
-        confirmation = Confirmation(type=ConfirmationType.REDIRECT)
+        confirmation = Confirmation(
+            type=ConfirmationType.REDIRECT, url="https://example.com/confirm"
+        )
         assert confirmation.type == ConfirmationType.REDIRECT
+        assert confirmation.url == "https://example.com/confirm"
 
     def test_confirmation_with_optional_fields(self):
         """Test Confirmation with optional fields."""
         confirmation = Confirmation(
             type=ConfirmationType.REDIRECT,
+            url="https://example.com/confirm",
             enforce=True,
             locale="en",
             return_url="https://example.com/return",
         )
         assert confirmation.type == ConfirmationType.REDIRECT
+        assert confirmation.url == "https://example.com/confirm"
         assert confirmation.enforce is True
         assert confirmation.locale == "en"
         assert confirmation.return_url == "https://example.com/return"
@@ -162,6 +167,47 @@ class TestConfirmation:
         }
         confirmation = Confirmation(**confirmation_data)
         assert confirmation.url == "https://example.com/confirm"
+
+    def test_confirmation_embedded_requires_token(self):
+        """Test that embedded type requires confirmation_token."""
+        with pytest.raises(ValueError, match="confirmation_token is required"):
+            Confirmation(type=ConfirmationType.EMBEDDED)
+
+        confirmation = Confirmation(
+            type=ConfirmationType.EMBEDDED, confirmation_token="token_123"
+        )
+        assert confirmation.confirmation_token == "token_123"
+
+    def test_confirmation_mobile_application_requires_url(self):
+        """Test that mobile_application type requires confirmation_url."""
+        with pytest.raises(ValueError, match="confirmation_url is required"):
+            Confirmation(type=ConfirmationType.MOBILE_APPLICATION)
+
+        confirmation = Confirmation(
+            type=ConfirmationType.MOBILE_APPLICATION,
+            url="myapp://payment/confirm",
+        )
+        assert confirmation.url == "myapp://payment/confirm"
+
+    def test_confirmation_qr_requires_data(self):
+        """Test that qr type requires confirmation_data."""
+        with pytest.raises(ValueError, match="confirmation_data is required"):
+            Confirmation(type=ConfirmationType.QR_CODE)
+
+        confirmation = Confirmation(
+            type=ConfirmationType.QR_CODE, confirmation_data="QR_DATA_123"
+        )
+        assert confirmation.confirmation_data == "QR_DATA_123"
+
+    def test_confirmation_redirect_requires_url(self):
+        """Test that redirect type requires confirmation_url."""
+        with pytest.raises(ValueError, match="confirmation_url is required"):
+            Confirmation(type=ConfirmationType.REDIRECT)
+
+    def test_confirmation_external_no_requirements(self):
+        """Test that external type has no additional requirements."""
+        confirmation = Confirmation(type=ConfirmationType.EXTERNAL)
+        assert confirmation.type == ConfirmationType.EXTERNAL
 
 
 class TestRecipient:
@@ -619,7 +665,9 @@ class TestPayment:
     def test_payment_with_optional_fields(self):
         """Test Payment with optional fields."""
         payment_method = PaymentMethod(type="bank_card", id="pm_123456789", saved=True)
-        confirmation = Confirmation(type=ConfirmationType.REDIRECT)
+        confirmation = Confirmation(
+            type=ConfirmationType.REDIRECT, url="https://example.com/confirm"
+        )
         cancellation_details = CancellationDetails(
             party=CancellationParty.MERCHANT,
             reason=CancellationReason.CANCELED_BY_MERCHANT,
