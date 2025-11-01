@@ -45,6 +45,7 @@ from .receipt_registration import (
     Supplier,
 )
 from .refund import Refund, RefundDeal, RefundMethod, RefundsList, RefundSource
+from .settings import Settings
 
 __all__ = [
     # Payment types
@@ -95,4 +96,6 @@ __all__ = [
     "ReceiptSettlement",
     "AdditionalUserProps",
     "Supplier",
+    # Settings types
+    "Settings",
 ]

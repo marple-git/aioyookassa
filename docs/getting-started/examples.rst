@@ -210,6 +210,71 @@
 
     asyncio.run(create_invoice())
 
+⚙️ Настройки магазина
+---------------------
+
+Получение информации о настройках магазина или шлюза
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+    import asyncio
+    from aioyookassa import YooKassa
+
+    async def get_settings():
+        async with YooKassa('your_api_key', 12345) as client:
+            # Получение настроек текущего магазина
+            settings = await client.get_me()
+            
+            print(f"Account ID: {settings.account_id}")
+            print(f"Status: {settings.status}")
+            print(f"Test mode: {settings.test}")
+            
+            # Проверка настроек фискализации
+            if settings.fiscalization:
+                print(f"Fiscalization enabled: {settings.fiscalization.enabled}")
+                print(f"Provider: {settings.fiscalization.provider}")
+            
+            # Список доступных способов оплаты
+            if settings.payment_methods:
+                print(f"Available payment methods: {', '.join(settings.payment_methods)}")
+            
+            # ИНН магазина
+            if settings.itn:
+                print(f"ITN: {settings.itn}")
+            
+            # Для Сплитования платежей - получение настроек магазина продавца
+            if settings.payout_methods:
+                print(f"Payout methods: {', '.join(settings.payout_methods)}")
+            
+            # Баланс шлюза (для выплат)
+            if settings.payout_balance:
+                print(f"Payout balance: {settings.payout_balance.value} {settings.payout_balance.currency}")
+
+    asyncio.run(get_settings())
+
+Получение настроек для Сплитования платежей
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+    import asyncio
+    from aioyookassa import YooKassa
+
+    async def get_seller_settings():
+        async with YooKassa('your_api_key', 12345) as client:
+            # Получение настроек магазина продавца
+            seller_settings = await client.get_me(on_behalf_of="seller_shop_id")
+            
+            print(f"Seller Account ID: {seller_settings.account_id}")
+            print(f"Seller Status: {seller_settings.status}")
+            
+            # Проверка доступных способов оплаты для продавца
+            if seller_settings.payment_methods:
+                print(f"Seller payment methods: {', '.join(seller_settings.payment_methods)}")
+
+    asyncio.run(get_seller_settings())
+
 🔄 Обработка ошибок
 -------------------
 

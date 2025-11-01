@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Optional, Union
 
 from aioyookassa.core.abc.client import BaseAPIClient
 from aioyookassa.core.api import (
@@ -8,6 +8,8 @@ from aioyookassa.core.api import (
     ReceiptsAPI,
     RefundsAPI,
 )
+from aioyookassa.core.methods.me import GetMe
+from aioyookassa.types.settings import Settings
 
 
 class YooKassa(BaseAPIClient):
@@ -36,3 +38,17 @@ class YooKassa(BaseAPIClient):
         self.invoices = InvoicesAPI(self)
         self.refunds = RefundsAPI(self)
         self.receipts = ReceiptsAPI(self)
+
+    async def get_me(self, on_behalf_of: Optional[str] = None) -> Settings:
+        """
+        Get shop or gateway settings information.
+
+        :param on_behalf_of: Shop ID for Split payments. Only for those who use Split payments.
+        :type on_behalf_of: Optional[str]
+        :returns: Settings object with shop or gateway information.
+        :rtype: Settings
+        :seealso: https://yookassa.ru/developers/api#me
+        """
+        params = GetMe.build_params(on_behalf_of=on_behalf_of)
+        result = await self._send_request(GetMe, params=params)
+        return Settings(**result)

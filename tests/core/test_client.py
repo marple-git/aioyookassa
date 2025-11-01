@@ -171,3 +171,68 @@ class TestYooKassa:
         assert client.invoices._client is client
         assert client.refunds._client is client
         assert client.receipts._client is client
+
+    @pytest.mark.asyncio
+    async def test_get_me(self):
+        """Test get_me method."""
+        client = YooKassa(api_key="test_api_key", shop_id=123456)
+
+        # Mock _send_request
+        mock_response = {
+            "account_id": "123456",
+            "status": "enabled",
+            "test": True,
+            "fiscalization": {
+                "enabled": True,
+                "provider": "fns",
+            },
+            "payment_methods": ["bank_card", "yoo_money"],
+            "itn": "1234567890",
+        }
+
+        client._send_request = AsyncMock(return_value=mock_response)
+
+        # Test get_me
+        result = await client.get_me()
+
+        assert result.account_id == "123456"
+        assert result.status == "enabled"
+        assert result.test is True
+        assert result.fiscalization is not None
+        assert result.fiscalization.enabled is True
+        assert result.fiscalization.provider == "fns"
+        assert result.payment_methods == ["bank_card", "yoo_money"]
+        assert result.itn == "1234567890"
+
+        # Verify the request was made correctly
+        from aioyookassa.core.methods.me import GetMe
+
+        client._send_request.assert_called_once_with(GetMe, params={})
+
+    @pytest.mark.asyncio
+    async def test_get_me_with_on_behalf_of(self):
+        """Test get_me method with on_behalf_of parameter."""
+        client = YooKassa(api_key="test_api_key", shop_id=123456)
+
+        # Mock _send_request
+        mock_response = {
+            "account_id": "789012",
+            "status": "enabled",
+            "test": False,
+        }
+
+        client._send_request = AsyncMock(return_value=mock_response)
+
+        # Test get_me with on_behalf_of
+        result = await client.get_me(on_behalf_of="789012")
+
+        assert result.account_id == "789012"
+        assert result.status == "enabled"
+        assert result.test is False
+
+        # Verify the request was made with correct params
+        from aioyookassa.core.methods.me import GetMe
+
+        client._send_request.assert_called_once_with(
+            GetMe, params={"on_behalf_of": "789012"}
+        )

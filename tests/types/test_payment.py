@@ -13,6 +13,7 @@ from aioyookassa.types.enum import (
     CancellationReason,
     ConfirmationType,
     Currency,
+    PaymentMethodStatus,
     PaymentMethodType,
     PaymentMode,
     PaymentStatus,
@@ -250,10 +251,16 @@ class TestPaymentMethod:
 
     def test_payment_method_required_fields(self):
         """Test PaymentMethod with required fields."""
-        payment_method = PaymentMethod(type="bank_card", id="pm_123456789", saved=True)
+        payment_method = PaymentMethod(
+            type="bank_card",
+            id="pm_123456789",
+            saved=True,
+            status=PaymentMethodStatus.ACTIVE,
+        )
         assert payment_method.type == "bank_card"
         assert payment_method.id == "pm_123456789"
         assert payment_method.saved is True
+        assert payment_method.status == PaymentMethodStatus.ACTIVE
 
     def test_payment_method_with_card(self):
         """Test PaymentMethod with card info."""
@@ -261,7 +268,11 @@ class TestPaymentMethod:
             last4="1234", expiry_year="2025", expiry_month="12", card_type="Visa"
         )
         payment_method = PaymentMethod(
-            type="bank_card", id="pm_123456789", saved=True, card=card
+            type="bank_card",
+            id="pm_123456789",
+            saved=True,
+            status=PaymentMethodStatus.ACTIVE,
+            card=card,
         )
         assert payment_method.card == card
 
@@ -664,7 +675,12 @@ class TestPayment:
 
     def test_payment_with_optional_fields(self):
         """Test Payment with optional fields."""
-        payment_method = PaymentMethod(type="bank_card", id="pm_123456789", saved=True)
+        payment_method = PaymentMethod(
+            type="bank_card",
+            id="pm_123456789",
+            saved=True,
+            status=PaymentMethodStatus.ACTIVE,
+        )
         confirmation = Confirmation(
             type=ConfirmationType.REDIRECT, url="https://example.com/confirm"
         )

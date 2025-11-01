@@ -9,6 +9,7 @@ from .enum import (
     CancellationReason,
     ConfirmationType,
     Currency,
+    PaymentMethodStatus,
     PaymentMode,
     PaymentStatus,
     PaymentSubject,
@@ -81,7 +82,6 @@ class Confirmation(BaseModel):
                         f"confirmation_url is required for type 'redirect'"
                     )
 
-            # ConfirmationType.EXTERNAL doesn't require additional fields
 
         return data
 
@@ -115,15 +115,19 @@ class PayerBankDetails(BaseModel):
     Bank details of the payer
     """
 
-    full_name: str
-    short_name: str
-    address: str
-    inn: str
-    bank_name: str
-    bank_branch: str
-    bank_bik: str
-    bank_account: str
+    full_name: Optional[str] = None
+    short_name: Optional[str] = None
+    address: Optional[str] = None
+    inn: Optional[str] = None
+    bank_name: Optional[str] = None
+    bank_branch: Optional[str] = None
+    bank_bik: Optional[str] = None
+    bank_account: Optional[str] = None
     kpp: Optional[str] = None
+    # SBP-specific fields
+    bank_id: Optional[str] = None
+    bic: Optional[str] = None
+    sbp_operation_id: Optional[str] = None
 
 
 class VatData(BaseModel):
@@ -136,6 +140,15 @@ class VatData(BaseModel):
     rate: Optional[str] = None
 
 
+class CardProduct(BaseModel):
+    """
+    Card product information
+    """
+
+    code: str
+    name: Optional[str] = None
+
+
 class CardInfo(BaseModel):
     """
     Card information
@@ -146,9 +159,41 @@ class CardInfo(BaseModel):
     expiry_year: str
     expiry_month: str
     card_type: str
+    card_product: Optional[CardProduct] = None
     card_country: Optional[str] = Field(None, alias="issuer_country")
     bank_name: Optional[str] = Field(None, alias="issuer_name")
     source: Optional[str] = None
+
+
+class CertificateCompensation(BaseModel):
+    """
+    Certificate compensation information
+    """
+
+    value: Union[int, float, str, Decimal]
+    currency: Union[Currency, str] = Currency.RUB
+
+
+class Certificate(BaseModel):
+    """
+    Electronic certificate information
+    """
+
+    certificate_id: str
+    tru_quantity: int
+    available_compensation: CertificateCompensation
+    applied_compensation: CertificateCompensation
+
+
+class Article(BaseModel):
+    """
+    Article information for electronic certificate
+    """
+
+    article_number: int
+    tru_code: str
+    article_code: Optional[str] = None
+    certificates: List[Certificate]
 
 
 class PaymentMethod(BaseModel):
@@ -159,6 +204,7 @@ class PaymentMethod(BaseModel):
     type: str
     id: str
     saved: bool
+    status: PaymentMethodStatus
     title: Optional[str] = None
     login: Optional[str] = None
     card: Optional[CardInfo] = None
@@ -167,6 +213,11 @@ class PaymentMethod(BaseModel):
     payment_purpose: Optional[str] = None
     vat_data: Optional[VatData] = None
     account_number: Optional[str] = None
+    discount_amount: Optional[PaymentAmount] = None
+    loan_option: Optional[str] = None
+    suspended_until: Optional[datetime.datetime] = None
+    # Electronic certificate fields
+    articles: Optional[List[Article]] = None
 
 
 class CancellationDetails(BaseModel):
@@ -207,6 +258,14 @@ class Deal(BaseModel):
     settlements: List[PaymentAmount]
 
 
+class InvoiceDetails(BaseModel):
+    """
+    Invoice details
+    """
+
+    id: Optional[str] = None
+
+
 class Payment(BaseModel):
     """
     Payment
@@ -234,6 +293,7 @@ class Payment(BaseModel):
     transfers: Optional[List[Transfer]] = None
     deal: Optional[Deal] = None
     merchant_customer_id: Optional[str] = None
+    invoice_details: Optional[InvoiceDetails] = None
 
 
 class PaymentsList(BaseModel):

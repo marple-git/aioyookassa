@@ -34,6 +34,7 @@ from aioyookassa.types.enum import (
     CancellationReason,
     ConfirmationType,
     Currency,
+    PaymentMethodStatus,
     PaymentMethodType,
     PaymentMode,
     PaymentStatus,
@@ -63,6 +64,7 @@ def sample_payment_method():
         type=PaymentMethodType.CARD,
         id="pm_123456789",
         saved=True,
+        status=PaymentMethodStatus.ACTIVE,
         title="Test Card",
         card=sample_card_info(),
     )

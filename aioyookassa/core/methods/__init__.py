@@ -1,5 +1,6 @@
 from .base import APIMethod
 from .invoices import CreateInvoice, GetInvoice
+from .me import GetMe
 from .payment_methods import CreatePaymentMethod, GetPaymentMethod
 from .payments import (
     CancelPayment,
@@ -28,4 +29,5 @@ __all__ = [
     "CreateReceipt",
     "GetReceipts",
     "GetReceipt",
+    "GetMe",
 ]

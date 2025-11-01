@@ -17,6 +17,7 @@ from aioyookassa.core.methods.payments import (
 from aioyookassa.types.enum import (
     ConfirmationType,
     Currency,
+    PaymentMethodStatus,
     PaymentMethodType,
     PaymentMode,
     PaymentSubject,
@@ -107,7 +108,11 @@ class TestCreatePayment:
             last4="1234", expiry_year="2025", expiry_month="12", card_type="Visa"
         )
         payment_method = PaymentMethod(
-            type=PaymentMethodType.CARD, id="pm_123456789", saved=True, card=card
+            type=PaymentMethodType.CARD,
+            id="pm_123456789",
+            saved=True,
+            status=PaymentMethodStatus.ACTIVE,
+            card=card,
         )
         confirmation = Confirmation(
             type=ConfirmationType.REDIRECT,

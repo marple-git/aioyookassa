@@ -121,6 +121,10 @@ class PaymentMethodType(StrEnum):
     MOBILE_BALANCE = "mobile_balance"
     CASH = "cash"
     INSTALLMENTS = "installments"
+    SBER_LOAN = "sber_loan"
+    SBER_BNPL = "sber_bnpl"
+    ELECTRONIC_CERTIFICATE = "electronic_certificate"
+    APPLE_PAY = "apple_pay"
 
 
 class PaymentSubject(StrEnum):
@@ -215,3 +219,16 @@ class ReceiptStatus(StrEnum):
     PENDING = "pending"  # In progress
     SUCCEEDED = "succeeded"  # Successfully registered
     CANCELED = "canceled"  # Canceled
+
+
+class PaymentMethodStatus(StrEnum):
+    """
+    Payment method status for saved payment methods.
+
+    More detailed documentation:
+    https://yookassa.ru/developers/api#payment_object
+    """
+
+    PENDING = "pending"  # Waiting for user actions
+    ACTIVE = "active"  # Payment method saved, can be used for autopayments or payouts
+    INACTIVE = "inactive"  # Payment method not saved: error occurred or no save attempt

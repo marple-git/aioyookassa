@@ -12,6 +12,7 @@ from aioyookassa.core.api.payments import PaymentsAPI
 from aioyookassa.types.enum import (
     ConfirmationType,
     Currency,
+    PaymentMethodStatus,
     PaymentMethodType,
     PaymentMode,
     PaymentStatus,
@@ -61,6 +62,7 @@ def sample_payment_data():
             "type": "bank_card",
             "id": "pm_123456789",
             "saved": True,
+            "status": "active",
             "title": "Test Card",
             "card": {
                 "last4": "1234",
@@ -91,6 +93,7 @@ def sample_payment_list_data():
                     "type": "bank_card",
                     "id": "pm_123456789",
                     "saved": True,
+                    "status": "active",
                     "title": "Test Card",
                     "card": {
                         "last4": "1234",
@@ -151,7 +154,11 @@ class TestPaymentsAPI:
             last4="1234", expiry_year="2025", expiry_month="12", card_type="Visa"
         )
         payment_method = PaymentMethod(
-            type=PaymentMethodType.CARD, id="pm_123456789", saved=True, card=card
+            type=PaymentMethodType.CARD,
+            id="pm_123456789",
+            saved=True,
+            status=PaymentMethodStatus.ACTIVE,
+            card=card,
         )
         confirmation = Confirmation(
             type=ConfirmationType.REDIRECT,
