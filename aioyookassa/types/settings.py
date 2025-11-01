@@ -25,7 +25,7 @@ class Fiscalization(BaseModel):
 class Settings(BaseModel):
     """
     Settings object for shop or gateway (Me)
-    
+
     Contains actual information about the settings of the requested shop or gateway.
     """
 
@@ -38,4 +38,3 @@ class Settings(BaseModel):
     payout_methods: Optional[List[str]] = None
     name: Optional[str] = None
     payout_balance: Optional[PaymentAmount] = None
-

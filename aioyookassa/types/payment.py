@@ -1,6 +1,6 @@
 import datetime
 from decimal import Decimal
-from typing import List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 from pydantic import BaseModel, Field, model_validator
 
@@ -39,7 +39,7 @@ class Confirmation(BaseModel):
 
     @model_validator(mode="before")
     @classmethod
-    def validate_confirmation_fields(cls, data):
+    def validate_confirmation_fields(cls, data: Any) -> Any:
         """
         Validate that required fields are present based on confirmation type.
         """
@@ -47,41 +47,52 @@ class Confirmation(BaseModel):
             # Normalize: if 'url' is provided, map it to 'confirmation_url' (the alias)
             if "url" in data and "confirmation_url" not in data:
                 data["confirmation_url"] = data["url"]
-            
+
             confirmation_type = data.get("type")
-            
+
             # Handle both enum and string values
-            if hasattr(confirmation_type, "value"):
+            if confirmation_type is not None and hasattr(confirmation_type, "value"):
                 confirmation_type_value = confirmation_type.value
             elif isinstance(confirmation_type, str):
                 confirmation_type_value = confirmation_type
             else:
-                confirmation_type_value = str(confirmation_type) if confirmation_type else None
+                confirmation_type_value = (
+                    str(confirmation_type) if confirmation_type else None
+                )
 
-            if confirmation_type_value == ConfirmationType.EMBEDDED or confirmation_type_value == "embedded":
+            if (
+                confirmation_type_value == ConfirmationType.EMBEDDED
+                or confirmation_type_value == "embedded"
+            ):
                 if not data.get("confirmation_token"):
                     raise ValueError(
                         f"confirmation_token is required for type 'embedded'"
                     )
 
-            elif confirmation_type_value == ConfirmationType.MOBILE_APPLICATION or confirmation_type_value == "mobile_application":
+            elif (
+                confirmation_type_value == ConfirmationType.MOBILE_APPLICATION
+                or confirmation_type_value == "mobile_application"
+            ):
                 if not data.get("confirmation_url"):
                     raise ValueError(
                         f"confirmation_url is required for type 'mobile_application'"
                     )
 
-            elif confirmation_type_value == ConfirmationType.QR_CODE or confirmation_type_value == "qr":
+            elif (
+                confirmation_type_value == ConfirmationType.QR_CODE
+                or confirmation_type_value == "qr"
+            ):
                 if not data.get("confirmation_data"):
-                    raise ValueError(
-                        f"confirmation_data is required for type 'qr'"
-                    )
+                    raise ValueError(f"confirmation_data is required for type 'qr'")
 
-            elif confirmation_type_value == ConfirmationType.REDIRECT or confirmation_type_value == "redirect":
+            elif (
+                confirmation_type_value == ConfirmationType.REDIRECT
+                or confirmation_type_value == "redirect"
+            ):
                 if not data.get("confirmation_url"):
                     raise ValueError(
                         f"confirmation_url is required for type 'redirect'"
                     )
-
 
         return data
 
