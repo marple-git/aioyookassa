@@ -1,0 +1,9 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📚 Документация
+    url: https://aioyookassa.readthedocs.io/en/latest/
+    about: Ознакомьтесь с документацией перед созданием Issue
+  - name: 💬 Telegram
+    url: https://t.me/masaasibaata
+    about: Свяжитесь с разработчиком для вопросов и обсуждений
+
