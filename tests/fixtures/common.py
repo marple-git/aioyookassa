@@ -9,9 +9,10 @@ from typing import Any, Dict
 import pytest
 
 from aioyookassa.types import (
-    CardInfo,
+    Airline,
     Confirmation,
     Customer,
+    Deal,
     Invoice,
     InvoiceCartItem,
     InvoiceReceipt,
@@ -19,15 +20,13 @@ from aioyookassa.types import (
     Payment,
     PaymentAmount,
     PaymentItem,
-    PaymentMethod,
     PaymentsList,
     Receipt,
-    Recipient,
     Refund,
     RefundDeal,
-    RefundSettlement,
     RefundsList,
     RefundSource,
+    Transfer,
 )
 from aioyookassa.types.enum import (
     CancellationParty,
@@ -41,6 +40,8 @@ from aioyookassa.types.enum import (
     PaymentSubject,
     ReceiptRegistration,
 )
+from aioyookassa.types.payment import CardInfo, PaymentMethod, Recipient
+from aioyookassa.types.refund import RefundSettlement
 
 
 @pytest.fixture
@@ -53,12 +54,12 @@ def sample_payment_amount():
 def sample_card_info():
     """Sample card info fixture."""
     return CardInfo(
-        last_four="1234", expiry_year="2025", expiry_month="12", card_type="Visa"
+        last4="1234", expiry_year="2025", expiry_month="12", card_type="Visa"
     )
 
 
 @pytest.fixture
-def sample_payment_method():
+def sample_payment_method(sample_card_info):
     """Sample payment method fixture."""
     return PaymentMethod(
         type=PaymentMethodType.CARD,
@@ -66,7 +67,7 @@ def sample_payment_method():
         saved=True,
         status=PaymentMethodStatus.ACTIVE,
         title="Test Card",
-        card=sample_card_info(),
+        card=sample_card_info,
     )
 
 
@@ -106,26 +107,26 @@ def sample_payment_item():
 
 
 @pytest.fixture
-def sample_receipt():
+def sample_receipt(sample_customer, sample_payment_item):
     """Sample receipt fixture."""
     return Receipt(
-        customer=sample_customer(),
-        items=[sample_payment_item()],
+        customer=sample_customer,
+        items=[sample_payment_item],
         phone="+1234567890",
         email="john@example.com",
     )
 
 
 @pytest.fixture
-def sample_payment():
+def sample_payment(sample_recipient, sample_payment_method):
     """Sample payment fixture."""
     return Payment(
         id="payment_123456789",
         status=PaymentStatus.SUCCEEDED,
         amount=PaymentAmount(value=100.50, currency=Currency.RUB),
         description="Test payment",
-        recipient=sample_recipient(),
-        payment_method=sample_payment_method(),
+        recipient=sample_recipient,
+        payment_method=sample_payment_method,
         created_at=datetime.datetime.now(),
         test=True,
         paid=True,
@@ -134,9 +135,9 @@ def sample_payment():
 
 
 @pytest.fixture
-def sample_payments_list():
+def sample_payments_list(sample_payment):
     """Sample payments list fixture."""
-    return PaymentsList(list=[sample_payment()], cursor="next_cursor_123")
+    return PaymentsList(list=[sample_payment], cursor="next_cursor_123")
 
 
 @pytest.fixture
@@ -161,20 +162,20 @@ def sample_invoice_receipt_item():
 
 
 @pytest.fixture
-def sample_invoice_receipt():
+def sample_invoice_receipt(sample_customer, sample_invoice_receipt_item):
     """Sample invoice receipt fixture."""
     return InvoiceReceipt(
-        customer=sample_customer(), items=[sample_invoice_receipt_item()], internet=True
+        customer=sample_customer, items=[sample_invoice_receipt_item], internet=True
     )
 
 
 @pytest.fixture
-def sample_invoice():
+def sample_invoice(sample_invoice_cart_item):
     """Sample invoice fixture."""
     return Invoice(
         id="invoice_123456789",
         status="active",
-        cart=[sample_invoice_cart_item()],
+        cart=[sample_invoice_cart_item],
         created_at=datetime.datetime.now(),
         expires_at=datetime.datetime.now() + datetime.timedelta(days=1),
     )
@@ -189,10 +190,10 @@ def sample_refund_settlement():
 
 
 @pytest.fixture
-def sample_refund_deal():
+def sample_refund_deal(sample_refund_settlement):
     """Sample refund deal fixture."""
     return RefundDeal(
-        id="deal_123456789", refund_settlements=[sample_refund_settlement()]
+        id="deal_123456789", refund_settlements=[sample_refund_settlement]
     )
 
 
@@ -217,9 +218,34 @@ def sample_refund():
 
 
 @pytest.fixture
-def sample_refunds_list():
+def sample_refunds_list(sample_refund):
     """Sample refunds list fixture."""
-    return RefundsList(list=[sample_refund()], next_cursor="next_cursor_123")
+    return RefundsList(list=[sample_refund], next_cursor="next_cursor_123")
+
+
+@pytest.fixture
+def sample_airline():
+    """Sample airline fixture."""
+    return Airline(ticket_number="TK123456", booking_reference="ABC123")
+
+
+@pytest.fixture
+def sample_transfer():
+    """Sample transfer fixture."""
+    return Transfer(
+        account_id="123456",
+        amount=PaymentAmount(value=100.50, currency=Currency.RUB),
+        status=PaymentStatus.SUCCEEDED,
+    )
+
+
+@pytest.fixture
+def sample_deal():
+    """Sample deal fixture."""
+    return Deal(
+        id="deal_123456789",
+        settlements=[PaymentAmount(value=100.50, currency=Currency.RUB)],
+    )
 
 
 @pytest.fixture
@@ -235,6 +261,7 @@ def sample_api_response():
             "type": "bank_card",
             "id": "pm_123456789",
             "saved": True,
+            "status": "active",
             "title": "Test Card",
             "card": {
                 "last4": "1234",

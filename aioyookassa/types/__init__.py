@@ -21,20 +21,35 @@ from .invoice import (
 )
 from .payment import (
     Airline,
+    Article,
+    AuthorizationDetails,
     CancellationDetails,
+    CardInfo,
+    CardProduct,
+    Certificate,
+    CertificateCompensation,
     Confirmation,
     Customer,
     Deal,
+    Flight,
     IndustryDetails,
+    InvoiceDetails,
     MarkCodeInfo,
     MarkQuantity,
     OperationDetails,
+    Passenger,
+    PayerBankDetails,
     Payment,
     PaymentAmount,
     PaymentItem,
+    PaymentMethod,
     PaymentsList,
     Receipt,
+    Recipient,
+    Settlement,
+    ThreeDSInfo,
     Transfer,
+    VatData,
 )
 from .receipt_registration import (
     AdditionalUserProps,
@@ -48,7 +63,7 @@ from .refund import Refund, RefundDeal, RefundMethod, RefundsList, RefundSource
 from .settings import Settings
 
 __all__ = [
-    # Payment types
+    # Payment types - Core
     "Confirmation",
     "Payment",
     "PaymentsList",
@@ -56,14 +71,34 @@ __all__ = [
     "PaymentAmount",
     "Receipt",
     "Customer",
+    "Recipient",
+    "PaymentMethod",
+    # Payment types - Card & Bank
+    "CardInfo",
+    "CardProduct",
+    "PayerBankDetails",
+    "VatData",
+    # Payment types - Details
     "IndustryDetails",
     "OperationDetails",
+    "CancellationDetails",
+    "AuthorizationDetails",
+    "ThreeDSInfo",
+    "InvoiceDetails",
+    # Payment types - Marking
     "MarkQuantity",
     "MarkCodeInfo",
-    "CancellationDetails",
-    "Airline",
+    "Article",
+    "Certificate",
+    "CertificateCompensation",
+    # Payment types - Transfers & Deals
     "Transfer",
+    "Settlement",
     "Deal",
+    # Payment types - Airline
+    "Airline",
+    "Passenger",
+    "Flight",
     # Enums
     "PaymentSubject",
     "PaymentMode",

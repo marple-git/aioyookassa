@@ -12,27 +12,10 @@ from aioyookassa.core.api.payments import PaymentsAPI
 from aioyookassa.types.enum import (
     ConfirmationType,
     Currency,
-    PaymentMethodStatus,
     PaymentMethodType,
-    PaymentMode,
     PaymentStatus,
-    PaymentSubject,
 )
-from aioyookassa.types.payment import (
-    Airline,
-    CardInfo,
-    Confirmation,
-    Customer,
-    Deal,
-    Payment,
-    PaymentAmount,
-    PaymentItem,
-    PaymentMethod,
-    PaymentsList,
-    Receipt,
-    Recipient,
-    Transfer,
-)
+from aioyookassa.types.payment import Payment, PaymentAmount, PaymentsList
 
 
 @pytest.fixture
@@ -50,64 +33,16 @@ def payments_api(mock_client):
 
 
 @pytest.fixture
-def sample_payment_data():
+def sample_payment_data(sample_api_response):
     """Sample payment data for testing."""
-    return {
-        "id": "payment_123456789",
-        "status": "succeeded",
-        "amount": {"value": 100.50, "currency": "RUB"},
-        "description": "Test payment",
-        "recipient": {"account_id": "123456", "gateway_id": "gateway_123"},
-        "payment_method": {
-            "type": "bank_card",
-            "id": "pm_123456789",
-            "saved": True,
-            "status": "active",
-            "title": "Test Card",
-            "card": {
-                "last4": "1234",
-                "expiry_year": "2025",
-                "expiry_month": "12",
-                "card_type": "Visa",
-            },
-        },
-        "created_at": "2023-01-01T00:00:00.000Z",
-        "test": True,
-        "paid": True,
-        "refundable": True,
-    }
+    return sample_api_response
 
 
 @pytest.fixture
-def sample_payment_list_data():
+def sample_payment_list_data(sample_api_response):
     """Sample payment list data for testing."""
     return {
-        "items": [
-            {
-                "id": "payment_123456789",
-                "status": "succeeded",
-                "amount": {"value": 100.50, "currency": "RUB"},
-                "description": "Test payment",
-                "recipient": {"account_id": "123456", "gateway_id": "gateway_123"},
-                "payment_method": {
-                    "type": "bank_card",
-                    "id": "pm_123456789",
-                    "saved": True,
-                    "status": "active",
-                    "title": "Test Card",
-                    "card": {
-                        "last4": "1234",
-                        "expiry_year": "2025",
-                        "expiry_month": "12",
-                        "card_type": "Visa",
-                    },
-                },
-                "created_at": "2023-01-01T00:00:00.000Z",
-                "test": True,
-                "paid": True,
-                "refundable": True,
-            }
-        ],
+        "items": [sample_api_response],
         "cursor": "next_cursor_123",
     }
 
@@ -122,13 +57,12 @@ class TestPaymentsAPI:
 
     @pytest.mark.asyncio
     async def test_create_payment_minimal(
-        self, payments_api, mock_client, sample_payment_data
+        self, payments_api, mock_client, sample_payment_data, sample_payment_amount
     ):
         """Test create_payment with minimal parameters."""
         mock_client._send_request.return_value = sample_payment_data
 
-        amount = PaymentAmount(value=100.50, currency=Currency.RUB)
-        result = await payments_api.create_payment(amount=amount)
+        result = await payments_api.create_payment(amount=sample_payment_amount)
 
         assert isinstance(result, Payment)
         assert result.id == "payment_123456789"
@@ -144,65 +78,38 @@ class TestPaymentsAPI:
 
     @pytest.mark.asyncio
     async def test_create_payment_with_all_parameters(
-        self, payments_api, mock_client, sample_payment_data
+        self,
+        payments_api,
+        mock_client,
+        sample_payment_data,
+        sample_payment_amount,
+        sample_payment_method,
+        sample_confirmation,
+        sample_recipient,
+        sample_receipt,
+        sample_airline,
+        sample_transfer,
+        sample_deal,
     ):
         """Test create_payment with all parameters."""
         mock_client._send_request.return_value = sample_payment_data
 
-        amount = PaymentAmount(value=100.50, currency=Currency.RUB)
-        card = CardInfo(
-            last4="1234", expiry_year="2025", expiry_month="12", card_type="Visa"
-        )
-        payment_method = PaymentMethod(
-            type=PaymentMethodType.CARD,
-            id="pm_123456789",
-            saved=True,
-            status=PaymentMethodStatus.ACTIVE,
-            card=card,
-        )
-        confirmation = Confirmation(
-            type=ConfirmationType.REDIRECT,
-            url="https://example.com/confirm",
-            return_url="https://example.com/return",
-        )
-        recipient = Recipient(account_id="123456", gateway_id="gateway_123")
-        customer = Customer(full_name="John Doe", email="john@example.com")
-        item = PaymentItem(
-            description="Test item",
-            amount=PaymentAmount(value=100.50, currency=Currency.RUB),
-            vat_code=1,
-            quantity=1,
-            payment_subject=PaymentSubject.COMMODITY,
-            payment_mode=PaymentMode.FULL_PAYMENT,
-        )
-        receipt = Receipt(customer=customer, items=[item])
-        airline = Airline(ticket_number="TK123456", booking_reference="ABC123")
-        transfer = Transfer(
-            account_id="123456",
-            amount=PaymentAmount(value=100.50, currency=Currency.RUB),
-            status=PaymentStatus.SUCCEEDED,
-        )
-        deal = Deal(
-            id="deal_123456789",
-            settlements=[PaymentAmount(value=100.50, currency=Currency.RUB)],
-        )
-
         result = await payments_api.create_payment(
-            amount=amount,
+            amount=sample_payment_amount,
             description="Test payment",
-            receipt=receipt,
-            recipient=recipient,
+            receipt=sample_receipt,
+            recipient=sample_recipient,
             payment_token="payment_token_123",
             payment_method_id="pm_123456789",
-            payment_method_data=payment_method,
-            confirmation=confirmation,
+            payment_method_data=sample_payment_method,
+            confirmation=sample_confirmation,
             save_payment_method=True,
             capture=True,
             client_ip="192.168.1.1",
             metadata={"key": "value"},
-            airline=airline,
-            transfers=[transfer],
-            deal=deal,
+            airline=sample_airline,
+            transfers=[sample_transfer],
+            deal=sample_deal,
             merchant_customer_id="customer_123",
         )
 
@@ -316,40 +223,26 @@ class TestPaymentsAPI:
 
     @pytest.mark.asyncio
     async def test_capture_payment_with_parameters(
-        self, payments_api, mock_client, sample_payment_data
+        self,
+        payments_api,
+        mock_client,
+        sample_payment_data,
+        sample_payment_amount,
+        sample_receipt,
+        sample_airline,
+        sample_transfer,
+        sample_deal,
     ):
         """Test capture_payment with parameters."""
         mock_client._send_request.return_value = sample_payment_data
 
-        amount = PaymentAmount(value=100.50, currency=Currency.RUB)
-        customer = Customer(full_name="John Doe", email="john@example.com")
-        item = PaymentItem(
-            description="Test item",
-            amount=PaymentAmount(value=100.50, currency=Currency.RUB),
-            vat_code=1,
-            quantity=1,
-            payment_subject=PaymentSubject.COMMODITY,
-            payment_mode=PaymentMode.FULL_PAYMENT,
-        )
-        receipt = Receipt(customer=customer, items=[item])
-        airline = Airline(ticket_number="TK123456", booking_reference="ABC123")
-        transfer = Transfer(
-            account_id="123456",
-            amount=PaymentAmount(value=100.50, currency=Currency.RUB),
-            status=PaymentStatus.SUCCEEDED,
-        )
-        deal = Deal(
-            id="deal_123456789",
-            settlements=[PaymentAmount(value=100.50, currency=Currency.RUB)],
-        )
-
         result = await payments_api.capture_payment(
             "payment_123456789",
-            amount=amount,
-            receipt=receipt,
-            airline=airline,
-            transfers=[transfer],
-            deal=deal,
+            amount=sample_payment_amount,
+            receipt=sample_receipt,
+            airline=sample_airline,
+            transfers=[sample_transfer],
+            deal=sample_deal,
         )
 
         assert isinstance(result, Payment)
@@ -382,53 +275,28 @@ class TestPaymentsAPI:
         assert "json" not in call_args[1] or call_args[1]["json"] is None
 
     @pytest.mark.asyncio
-    async def test_create_payment_handles_api_errors(self, payments_api, mock_client):
-        """Test create_payment handles API errors."""
+    @pytest.mark.parametrize(
+        "method_name,method_args,kwargs",
+        [
+            (
+                "create_payment",
+                (),
+                {"amount": PaymentAmount(value=100.50, currency=Currency.RUB)},
+            ),
+            ("get_payments", (), {}),
+            ("get_payment", ("payment_123456789",), {}),
+            ("capture_payment", ("payment_123456789",), {}),
+            ("cancel_payment", ("payment_123456789",), {}),
+        ],
+    )
+    async def test_api_methods_handle_errors(
+        self, payments_api, mock_client, method_name, method_args, kwargs
+    ):
+        """Test API methods handle errors."""
         from aioyookassa.exceptions import APIError
 
         mock_client._send_request.side_effect = APIError("API Error")
 
-        amount = PaymentAmount(value=100.50, currency=Currency.RUB)
-
+        method = getattr(payments_api, method_name)
         with pytest.raises(APIError):
-            await payments_api.create_payment(amount=amount)
-
-    @pytest.mark.asyncio
-    async def test_get_payments_handles_api_errors(self, payments_api, mock_client):
-        """Test get_payments handles API errors."""
-        from aioyookassa.exceptions import APIError
-
-        mock_client._send_request.side_effect = APIError("API Error")
-
-        with pytest.raises(APIError):
-            await payments_api.get_payments()
-
-    @pytest.mark.asyncio
-    async def test_get_payment_handles_api_errors(self, payments_api, mock_client):
-        """Test get_payment handles API errors."""
-        from aioyookassa.exceptions import APIError
-
-        mock_client._send_request.side_effect = APIError("API Error")
-
-        with pytest.raises(APIError):
-            await payments_api.get_payment("payment_123456789")
-
-    @pytest.mark.asyncio
-    async def test_capture_payment_handles_api_errors(self, payments_api, mock_client):
-        """Test capture_payment handles API errors."""
-        from aioyookassa.exceptions import APIError
-
-        mock_client._send_request.side_effect = APIError("API Error")
-
-        with pytest.raises(APIError):
-            await payments_api.capture_payment("payment_123456789")
-
-    @pytest.mark.asyncio
-    async def test_cancel_payment_handles_api_errors(self, payments_api, mock_client):
-        """Test cancel_payment handles API errors."""
-        from aioyookassa.exceptions import APIError
-
-        mock_client._send_request.side_effect = APIError("API Error")
-
-        with pytest.raises(APIError):
-            await payments_api.cancel_payment("payment_123456789")
+            await method(*method_args, **kwargs)
