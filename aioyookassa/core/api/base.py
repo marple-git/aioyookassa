@@ -126,3 +126,24 @@ class BaseAPI(Generic[TParams, TResult]):
             method, json=json_data, headers=headers
         )
         return result_class(**result)
+
+    async def _action_resource(
+        self,
+        resource_id: str,
+        method_class: Type[APIMethod],
+        result_class: Type[TResult],
+        id_param_name: str = "id",
+    ) -> TResult:
+        """
+        Perform an action on a resource by its ID (without parameters).
+
+        :param resource_id: Resource identifier.
+        :param method_class: API method class to use.
+        :param result_class: Result model class.
+        :param id_param_name: Name of the ID parameter in build method (default: "id").
+        :returns: Resource instance.
+        """
+        method = method_class.build(**{id_param_name: resource_id})
+        headers = create_idempotence_headers()
+        result = await self._client._send_request(method, headers=headers)
+        return result_class(**result)

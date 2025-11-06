@@ -8,7 +8,6 @@ from aioyookassa.core.methods.payments import (
     GetPayment,
     GetPayments,
 )
-from aioyookassa.core.utils import create_idempotence_headers
 from aioyookassa.types import Payment, PaymentsList
 from aioyookassa.types.params import (
     CapturePaymentParams,
@@ -140,7 +139,9 @@ class PaymentsAPI(BaseAPI):
         :rtype: Payment
         :seealso: https://yookassa.ru/developers/api#cancel_payment
         """
-        method = CancelPayment.build(payment_id=payment_id)
-        headers = create_idempotence_headers()
-        result = await self._client._send_request(method, headers=headers)
-        return Payment(**result)
+        return await self._action_resource(
+            resource_id=payment_id,
+            method_class=CancelPayment,
+            result_class=Payment,
+            id_param_name="payment_id",
+        )
