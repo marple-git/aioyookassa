@@ -118,7 +118,7 @@ class BaseAPIClient(abc.ABC):
                 for v_i in value:
                     if isinstance(v_i, dict):
                         self._delete_none(v_i)
-        
+
         for key in keys_to_delete:
             del _dict[key]
 

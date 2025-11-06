@@ -43,8 +43,7 @@ class TestBaseAPIClient:
 
         assert client.BASE_URL == "https://api.yookassa.ru/v3"
 
-    @pytest.mark.asyncio
-    async def test_get_session_creates_new_session(self):
+    def test_get_session_creates_new_session(self):
         """Test _get_session creates new session when none exists."""
         client = BaseAPIClient(api_key="test_api_key", shop_id=123456)
 
@@ -52,14 +51,13 @@ class TestBaseAPIClient:
             mock_session = AsyncMock()
             mock_session_class.return_value = mock_session
 
-            session = await client._get_session()
+            session = client._get_session()
 
             assert session == mock_session
             assert client._session == mock_session
             mock_session_class.assert_called_once()
 
-    @pytest.mark.asyncio
-    async def test_get_session_reuses_existing_session(self):
+    def test_get_session_reuses_existing_session(self):
         """Test _get_session reuses existing session."""
         client = BaseAPIClient(api_key="test_api_key", shop_id=123456)
 
@@ -68,12 +66,11 @@ class TestBaseAPIClient:
         mock_session.closed = False
         client._session = mock_session
 
-        session = await client._get_session()
+        session = client._get_session()
 
         assert session == mock_session
 
-    @pytest.mark.asyncio
-    async def test_get_session_creates_new_when_closed(self):
+    def test_get_session_creates_new_when_closed(self):
         """Test _get_session creates new session when existing is closed."""
         client = BaseAPIClient(api_key="test_api_key", shop_id=123456)
 
@@ -86,7 +83,7 @@ class TestBaseAPIClient:
             mock_new_session = AsyncMock()
             mock_session_class.return_value = mock_new_session
 
-            session = await client._get_session()
+            session = client._get_session()
 
             assert session == mock_new_session
             assert client._session == mock_new_session

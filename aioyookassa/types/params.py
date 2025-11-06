@@ -7,7 +7,6 @@ from typing import Any, List, Optional, Union
 
 from pydantic import BaseModel
 
-from aioyookassa.types.payment import Confirmation
 from aioyookassa.types.enum import (
     PaymentMethodType,
     PaymentStatus,
@@ -21,6 +20,7 @@ from aioyookassa.types.invoice import (
 )
 from aioyookassa.types.payment import (
     Airline,
+    Confirmation,
     Customer,
     Deal,
     IndustryDetails,
