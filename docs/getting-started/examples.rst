@@ -30,7 +30,7 @@
             )
             payment = await client.payments.create_payment(params)
             print(f"Payment ID: {payment.id}")
-            print(f"Confirmation URL: {payment.confirmation.confirmation_url}")
+            print(f"Confirmation URL: {payment.confirmation.url}")
 
     asyncio.run(create_payment())
 

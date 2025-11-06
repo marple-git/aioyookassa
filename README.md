@@ -103,7 +103,7 @@ async def main():
     payment = await client.payments.create_payment(params)
 
     print(f"Payment created: {payment.id}")
-    print(f"Confirmation URL: {payment.confirmation.confirmation_url}")
+    print(f"Confirmation URL: {payment.confirmation.url}")
 
     # Получение информации о платеже
     payment_info = await client.payments.get_payment(payment.id)

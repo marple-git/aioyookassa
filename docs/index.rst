@@ -56,7 +56,7 @@ aioyookassa Documentation
         )
         
         print(f"Payment created: {payment.id}")
-        print(f"Confirmation URL: {payment.confirmation.confirmation_url}")
+        print(f"Confirmation URL: {payment.confirmation.url}")
         
         # Закрытие клиента
         await client.close()
