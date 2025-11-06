@@ -37,62 +37,55 @@ class Confirmation(BaseModel):
     confirmation_data: Optional[str] = None
     url: Optional[str] = Field(None, alias="confirmation_url")
 
+    @staticmethod
+    def _normalize_confirmation_type(confirmation_type: Any) -> Optional[str]:
+        """Normalize confirmation type to string value."""
+        if confirmation_type is None:
+            return None
+        if hasattr(confirmation_type, "value"):
+            value = confirmation_type.value
+            return str(value) if value is not None else None
+        if isinstance(confirmation_type, str):
+            return confirmation_type
+        return str(confirmation_type)
+
     @model_validator(mode="before")
     @classmethod
     def validate_confirmation_fields(cls, data: Any) -> Any:
         """
         Validate that required fields are present based on confirmation type.
         """
-        if isinstance(data, dict):
-            # Normalize: if 'url' is provided, map it to 'confirmation_url' (the alias)
-            if "url" in data and "confirmation_url" not in data:
-                data["confirmation_url"] = data["url"]
+        if not isinstance(data, dict):
+            return data
 
-            confirmation_type = data.get("type")
+        # Normalize: if 'url' is provided, map it to 'confirmation_url' (the alias)
+        if "url" in data and "confirmation_url" not in data:
+            data["confirmation_url"] = data["url"]
 
-            # Handle both enum and string values
-            if confirmation_type is not None and hasattr(confirmation_type, "value"):
-                confirmation_type_value = confirmation_type.value
-            elif isinstance(confirmation_type, str):
-                confirmation_type_value = confirmation_type
-            else:
-                confirmation_type_value = (
-                    str(confirmation_type) if confirmation_type else None
-                )
+        confirmation_type_value = cls._normalize_confirmation_type(data.get("type"))
+        if not confirmation_type_value:
+            return data
 
-            if (
-                confirmation_type_value == ConfirmationType.EMBEDDED
-                or confirmation_type_value == "embedded"
-            ):
-                if not data.get("confirmation_token"):
-                    raise ValueError(
-                        f"confirmation_token is required for type 'embedded'"
-                    )
+        # Map confirmation types to required fields
+        type_requirements = {
+            ConfirmationType.EMBEDDED: ("confirmation_token", "embedded"),
+            "embedded": ("confirmation_token", "embedded"),
+            ConfirmationType.MOBILE_APPLICATION: (
+                "confirmation_url",
+                "mobile_application",
+            ),
+            "mobile_application": ("confirmation_url", "mobile_application"),
+            ConfirmationType.QR_CODE: ("confirmation_data", "qr"),
+            "qr": ("confirmation_data", "qr"),
+            ConfirmationType.REDIRECT: ("confirmation_url", "redirect"),
+            "redirect": ("confirmation_url", "redirect"),
+        }
 
-            elif (
-                confirmation_type_value == ConfirmationType.MOBILE_APPLICATION
-                or confirmation_type_value == "mobile_application"
-            ):
-                if not data.get("confirmation_url"):
-                    raise ValueError(
-                        f"confirmation_url is required for type 'mobile_application'"
-                    )
-
-            elif (
-                confirmation_type_value == ConfirmationType.QR_CODE
-                or confirmation_type_value == "qr"
-            ):
-                if not data.get("confirmation_data"):
-                    raise ValueError(f"confirmation_data is required for type 'qr'")
-
-            elif (
-                confirmation_type_value == ConfirmationType.REDIRECT
-                or confirmation_type_value == "redirect"
-            ):
-                if not data.get("confirmation_url"):
-                    raise ValueError(
-                        f"confirmation_url is required for type 'redirect'"
-                    )
+        required_field, type_name = type_requirements.get(
+            confirmation_type_value, (None, None)
+        )
+        if required_field and not data.get(required_field):
+            raise ValueError(f"{required_field} is required for type '{type_name}'")
 
         return data
 

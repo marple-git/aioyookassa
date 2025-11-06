@@ -40,8 +40,7 @@ from aioyookassa.types.enum import (
     PaymentSubject,
     ReceiptRegistration,
 )
-from aioyookassa.types.payment import CardInfo, PaymentMethod, Recipient
-from aioyookassa.types.refund import RefundSettlement
+from aioyookassa.types.payment import CardInfo, PaymentMethod, Recipient, Settlement
 
 
 @pytest.fixture
@@ -184,7 +183,7 @@ def sample_invoice(sample_invoice_cart_item):
 @pytest.fixture
 def sample_refund_settlement():
     """Sample refund settlement fixture."""
-    return RefundSettlement(
+    return Settlement(
         type="payout", amount=PaymentAmount(value=100.50, currency=Currency.RUB)
     )
 

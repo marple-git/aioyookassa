@@ -251,8 +251,9 @@ API модули
 
 .. code-block:: python
 
+    from aioyookassa.types.payment import Settlement
     from aioyookassa.types.receipt_registration import (
-        ReceiptRegistrationItem, ReceiptSettlement, Supplier
+        ReceiptRegistrationItem, Supplier
     )
     from aioyookassa.types.enum import Currency
 
@@ -288,7 +289,7 @@ API модули
         
         # Настройка расчетов
         settlements = [
-            ReceiptSettlement(
+            Settlement(
                 type="prepayment",
                 amount=PaymentAmount(value=400.00, currency=Currency.RUB)
             )

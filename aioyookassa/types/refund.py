@@ -4,17 +4,8 @@ from typing import List, Optional, Union
 
 from pydantic import BaseModel, Field
 
-from .enum import CancellationParty, CancellationReason, ReceiptRegistration
-from .payment import Deal, PaymentAmount, Receipt
-
-
-class RefundCancellationDetails(BaseModel):
-    """
-    Refund cancellation details.
-    """
-
-    party: CancellationParty
-    reason: CancellationReason
+from .enum import ReceiptRegistration
+from .payment import CancellationDetails, Deal, PaymentAmount, Receipt, Settlement
 
 
 class RefundSource(BaseModel):
@@ -27,22 +18,13 @@ class RefundSource(BaseModel):
     platform_fee_amount: Optional[PaymentAmount] = None
 
 
-class RefundSettlement(BaseModel):
-    """
-    Refund settlement for deal money distribution.
-    """
-
-    type: str  # payout
-    amount: PaymentAmount
-
-
 class RefundDeal(BaseModel):
     """
     Refund deal - данные о сделке
     """
 
     id: str
-    refund_settlements: List[RefundSettlement]
+    refund_settlements: List[Settlement]
 
 
 class RefundArticle(BaseModel):
@@ -95,7 +77,7 @@ class Refund(BaseModel):
     amount: PaymentAmount
     created_at: datetime.datetime
     description: Optional[str] = None
-    cancellation_details: Optional[RefundCancellationDetails] = None
+    cancellation_details: Optional[CancellationDetails] = None
     receipt_registration: Optional[ReceiptRegistration] = None
     sources: Optional[List[RefundSource]] = None
     deal: Optional[RefundDeal] = None

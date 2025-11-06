@@ -1,9 +1,9 @@
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
-from .base import APIMethod
+from .base import BaseAPIMethod
 
 
-class PaymentMethodBase(APIMethod):
+class PaymentMethodBase(BaseAPIMethod):
     """
     Base class for payment method API methods.
     """
@@ -11,20 +11,16 @@ class PaymentMethodBase(APIMethod):
     http_method = "GET"
     path = "/payment_methods"
 
-    def __init__(self, path: Optional[str] = None) -> None:
-        if path:
-            self.path = path
-
     @classmethod
-    def build(cls, payment_method_id: str) -> "PaymentMethodBase":
+    def build(cls, payment_method_id: str) -> "PaymentMethodBase":  # type: ignore[override]
         """
         Build method for payment method-specific endpoints.
 
         :param payment_method_id: Payment method ID
         :return: Method instance
         """
-        path = cls.path.format(payment_method_id=payment_method_id)
-        return cls(path=path)
+        result = super().build(payment_method_id=payment_method_id)
+        return result  # type: ignore[return-value]
 
 
 class CreatePaymentMethod(PaymentMethodBase):

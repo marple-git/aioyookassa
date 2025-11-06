@@ -15,6 +15,7 @@
     from aioyookassa import YooKassa
     from aioyookassa.types.payment import PaymentAmount, Confirmation
     from aioyookassa.types.enum import ConfirmationType, Currency
+    from aioyookassa.types.params import CreatePaymentParams
 
     async def create_payment():
         async with YooKassa('your_api_key', 12345) as client:
@@ -22,11 +23,12 @@
                 type=ConfirmationType.REDIRECT, 
                 return_url='https://example.com/return'
             )
-            payment = await client.payments.create_payment(
+            params = CreatePaymentParams(
                 amount=PaymentAmount(value=100.00, currency=Currency.RUB),
                 description='Тестовый платеж',
                 confirmation=confirmation
             )
+            payment = await client.payments.create_payment(params)
             print(f"Payment ID: {payment.id}")
             print(f"Confirmation URL: {payment.confirmation.confirmation_url}")
 
@@ -41,6 +43,7 @@
     from datetime import datetime
     from aioyookassa import YooKassa
     from aioyookassa.types.enum import PaymentStatus
+    from aioyookassa.types.params import GetPaymentsParams
 
     async def get_payments():
         async with YooKassa('your_api_key', 12345) as client:
@@ -48,12 +51,13 @@
             payments = await client.payments.get_payments()
             print(f"Всего платежей: {len(payments.list)}")
             
-            # Получение платежей с фильтрами
-            filtered_payments = await client.payments.get_payments(
+            # Получение платежей с фильтрами (используем Pydantic модель)
+            params = GetPaymentsParams(
                 created_at=datetime(2023, 1, 1, 12, 0, 0),
                 status=PaymentStatus.SUCCEEDED,
                 limit=10
             )
+            filtered_payments = await client.payments.get_payments(params)
             
             for payment in filtered_payments.list:
                 print(f"Payment: {payment.id}, Amount: {payment.amount.value} {payment.amount.currency}")
@@ -122,14 +126,16 @@
     from aioyookassa import YooKassa
     from aioyookassa.types.payment import PaymentAmount
     from aioyookassa.types.enum import Currency
+    from aioyookassa.types.params import CreateRefundParams
 
     async def create_refund():
         async with YooKassa('your_api_key', 12345) as client:
-            refund = await client.refunds.create_refund(
+            params = CreateRefundParams(
                 payment_id='payment_id',
                 amount=PaymentAmount(value=50.00, currency=Currency.RUB),
                 description='Частичный возврат'
             )
+            refund = await client.refunds.create_refund(params)
             print(f"Refund ID: {refund.id}")
             print(f"Status: {refund.status}")
 
@@ -162,25 +168,33 @@
 
     import asyncio
     from aioyookassa import YooKassa
-    from aioyookassa.types.payment import PaymentAmount, PaymentItem
-    from aioyookassa.types.enum import Currency, PaymentSubject, PaymentMode
+    from aioyookassa.types.payment import PaymentAmount, Customer, Settlement
+    from aioyookassa.types.enum import Currency, ReceiptType
+    from aioyookassa.types.params import CreateReceiptParams
+    from aioyookassa.types.receipt_registration import ReceiptRegistrationItem
 
     async def create_receipt():
         async with YooKassa('your_api_key', 12345) as client:
-            receipt = await client.receipts.create_receipt(
+            params = CreateReceiptParams(
+                type=ReceiptType.PAYMENT,
                 payment_id='payment_id',
+                customer=Customer(email="customer@example.com"),
                 items=[
-                    PaymentItem(
+                    ReceiptRegistrationItem(
                         description="Товар",
                         quantity=1,
                         amount=PaymentAmount(value=1000.00, currency=Currency.RUB),
                         vat_code=1,
-                        payment_subject=PaymentSubject.COMMODITY,
-                        payment_mode=PaymentMode.FULL_PAYMENT
+                        payment_subject="commodity",
+                        payment_mode="full_payment"
                     )
+                ],
+                settlements=[
+                    Settlement(type="prepayment", amount=PaymentAmount(value=1000.00, currency=Currency.RUB))
                 ],
                 tax_system_code=1
             )
+            receipt = await client.receipts.create_receipt(params)
             print(f"Receipt ID: {receipt.id}")
             print(f"Status: {receipt.status}")
 
@@ -198,13 +212,15 @@
     from aioyookassa import YooKassa
     from aioyookassa.types.payment import PaymentAmount
     from aioyookassa.types.enum import Currency
+    from aioyookassa.types.params import CreateInvoiceParams
 
     async def create_invoice():
         async with YooKassa('your_api_key', 12345) as client:
-            invoice = await client.invoices.create_invoice(
+            params = CreateInvoiceParams(
                 amount=PaymentAmount(value=2000.00, currency=Currency.RUB),
                 description='Счет на оплату'
             )
+            invoice = await client.invoices.create_invoice(params)
             print(f"Invoice ID: {invoice.id}")
             print(f"Status: {invoice.status}")
 

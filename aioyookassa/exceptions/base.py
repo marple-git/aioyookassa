@@ -45,9 +45,8 @@ class _MatchErrorMixin:
         for err in cls.__subclasses:
             if err is cls:
                 continue
-            if err.check(description):
-                if issubclass(err, Exception):
-                    raise err(err.text or message or description)
+            if err.check(description) and issubclass(err, Exception):
+                raise err(err.text or message or description)
         if issubclass(cls, Exception):
             raise cls(description)
 

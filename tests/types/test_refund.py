@@ -12,27 +12,25 @@ from aioyookassa.types.enum import (
     CancellationReason,
     ReceiptRegistration,
 )
-from aioyookassa.types.payment import PaymentAmount
+from aioyookassa.types.payment import CancellationDetails, PaymentAmount, Settlement
 from aioyookassa.types.refund import (
     ElectronicCertificateData,
     Refund,
     RefundArticle,
     RefundAuthorizationDetails,
-    RefundCancellationDetails,
     RefundDeal,
     RefundMethod,
-    RefundSettlement,
     RefundsList,
     RefundSource,
 )
 
 
 class TestRefundCancellationDetails:
-    """Test RefundCancellationDetails model."""
+    """Test CancellationDetails model (used for refunds)."""
 
     def test_refund_cancellation_details_creation(self):
-        """Test RefundCancellationDetails creation."""
-        details = RefundCancellationDetails(
+        """Test CancellationDetails creation for refunds."""
+        details = CancellationDetails(
             party=CancellationParty.MERCHANT,
             reason=CancellationReason.CANCELED_BY_MERCHANT,
         )
@@ -62,11 +60,11 @@ class TestRefundSource:
 
 
 class TestRefundSettlement:
-    """Test RefundSettlement model."""
+    """Test Settlement model (used for refunds)."""
 
     def test_refund_settlement_creation(self):
-        """Test RefundSettlement creation."""
-        settlement = RefundSettlement(
+        """Test Settlement creation for refunds."""
+        settlement = Settlement(
             type="payout", amount=PaymentAmount(value=100.50, currency="RUB")
         )
         assert settlement.type == "payout"
@@ -78,7 +76,7 @@ class TestRefundDeal:
 
     def test_refund_deal_creation(self):
         """Test RefundDeal creation."""
-        settlement = RefundSettlement(
+        settlement = Settlement(
             type="payout", amount=PaymentAmount(value=100.50, currency="RUB")
         )
         deal = RefundDeal(id="deal_123456789", refund_settlements=[settlement])
@@ -228,14 +226,14 @@ class TestRefund:
 
     def test_refund_with_optional_fields(self):
         """Test Refund with optional fields."""
-        cancellation_details = RefundCancellationDetails(
+        cancellation_details = CancellationDetails(
             party=CancellationParty.MERCHANT,
             reason=CancellationReason.CANCELED_BY_MERCHANT,
         )
         source = RefundSource(
             account_id="123456", amount=PaymentAmount(value=100.50, currency="RUB")
         )
-        settlement = RefundSettlement(
+        settlement = Settlement(
             type="payout", amount=PaymentAmount(value=100.50, currency="RUB")
         )
         deal = RefundDeal(id="deal_123456789", refund_settlements=[settlement])

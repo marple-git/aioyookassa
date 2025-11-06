@@ -1,9 +1,6 @@
-# This file has been refactored. See core/payments/api.py for PaymentsAPI implementation.
+from typing import Any, Optional, Union
 
-from datetime import datetime
-from typing import Any, List, Optional
-
-from aioyookassa.core.abc.client import BaseAPIClient
+from aioyookassa.core.api.base import BaseAPI
 from aioyookassa.core.methods.payments import (
     CancelPayment,
     CapturePayment,
@@ -11,136 +8,80 @@ from aioyookassa.core.methods.payments import (
     GetPayment,
     GetPayments,
 )
-from aioyookassa.core.utils import generate_idempotence_key
-from aioyookassa.types import Confirmation, Payment, PaymentsList
-from aioyookassa.types.enum import PaymentMethodType, PaymentStatus
-from aioyookassa.types.payment import (
-    Airline,
-    Deal,
-    PaymentAmount,
-    PaymentMethod,
-    Receipt,
-    Recipient,
-    Transfer,
+from aioyookassa.core.utils import create_idempotence_headers
+from aioyookassa.types import Payment, PaymentsList
+from aioyookassa.types.params import (
+    CapturePaymentParams,
+    CreatePaymentParams,
+    GetPaymentsParams,
 )
 
 
-class PaymentsAPI:
+class PaymentsAPI(BaseAPI):
     """
     YooKassa payments API client.
 
     Provides methods for creating, retrieving, capturing, and canceling payments.
     """
 
-    def __init__(self, client: BaseAPIClient):
-        self._client = client
-
     async def create_payment(
         self,
-        amount: PaymentAmount,
-        description: Optional[str] = None,
-        receipt: Optional[Receipt] = None,
-        recipient: Optional[Recipient] = None,
-        payment_token: Optional[str] = None,
-        payment_method_id: Optional[str] = None,
-        payment_method_data: Optional[PaymentMethod] = None,
-        confirmation: Optional[Confirmation] = None,
-        save_payment_method: Optional[bool] = False,
-        capture: Optional[bool] = False,
-        client_ip: Optional[str] = None,
-        metadata: Optional[Any] = None,
-        airline: Optional[Airline] = None,
-        transfers: Optional[List[Transfer]] = None,
-        deal: Optional[Deal] = None,
-        merchant_customer_id: Optional[str] = None,
+        params: Union[CreatePaymentParams, dict],
     ) -> Payment:
         """
         Create a new payment in YooKassa.
 
-        :param amount: Payment amount.
-        :type amount: PaymentAmount
-        :param description: Payment description.
-        :type description: Optional[str]
-        :param receipt: Receipt data.
-        :type receipt: Optional[Receipt]
-        :param recipient: Payment recipient.
-        :type recipient: Optional[Recipient]
-        :param payment_token: Payment token.
-        :type payment_token: Optional[str]
-        :param payment_method_id: Payment method ID.
-        :type payment_method_id: Optional[str]
-        :param payment_method_data: Payment method data.
-        :type payment_method_data: Optional[PaymentMethod]
-        :param confirmation: Confirmation method.
-        :type confirmation: Optional[Confirmation]
-        :param save_payment_method: Save payment method flag.
-        :type save_payment_method: Optional[bool]
-        :param capture: Capture payment immediately flag.
-        :type capture: Optional[bool]
-        :param client_ip: Client IP address.
-        :type client_ip: Optional[str]
-        :param metadata: Additional metadata.
-        :type metadata: Optional[Any]
-        :param airline: Airline data.
-        :type airline: Optional[Airline]
-        :param transfers: Transfers list.
-        :type transfers: Optional[List[Transfer]]
-        :param deal: Deal data.
-        :type deal: Optional[Deal]
-        :param merchant_customer_id: Merchant customer ID.
-        :type merchant_customer_id: Optional[str]
+        :param params: Payment creation parameters (CreatePaymentParams or dict).
+        :type params: Union[CreatePaymentParams, dict]
         :returns: Payment object.
         :rtype: Payment
         :seealso: https://yookassa.ru/developers/api#create_payment
+
+        Example:
+            >>> from aioyookassa.types.params import CreatePaymentParams
+            >>> from aioyookassa.types.payment import PaymentAmount
+            >>> from aioyookassa.types.enum import Currency
+            >>> params = CreatePaymentParams(
+            ...     amount=PaymentAmount(value=100.00, currency=Currency.RUB),
+            ...     description="Test payment"
+            ... )
+            >>> payment = await client.payments.create_payment(params)
         """
-        params = CreatePayment.build_params(**locals())
-        headers = {"Idempotence-Key": generate_idempotence_key()}
-        result = await self._client._send_request(
-            CreatePayment, json=params, headers=headers
+        return await self._create_resource(
+            params=params,
+            params_class=CreatePaymentParams,
+            method_class=CreatePayment,
+            result_class=Payment,
         )
-        return Payment(**result)
 
     async def get_payments(
         self,
-        created_at: Optional[datetime] = None,
-        captured_at: Optional[datetime] = None,
-        payment_method: Optional[PaymentMethodType] = None,
-        status: Optional[PaymentStatus] = None,
-        limit: Optional[int] = None,
-        cursor: Optional[str] = None,
+        params: Optional[Union[GetPaymentsParams, dict]] = None,
         **kwargs: Any,
     ) -> PaymentsList:
         """
         Retrieve a list of payments with optional filtering.
 
-        :param created_at: Creation date.
-        :type created_at: Optional[datetime]
-        :param captured_at: Capture date.
-        :type captured_at: Optional[datetime]
-        :param payment_method: Payment method type.
-        :type payment_method: Optional[PaymentMethodType]
-        :param status: Payment status.
-        :type status: Optional[PaymentStatus]
-        :param limit: Maximum number of records.
-        :type limit: Optional[int]
-        :param cursor: Pagination cursor.
-        :type cursor: Optional[str]
-        :param kwargs: Additional parameters.
+        :param params: Filter parameters (GetPaymentsParams or dict).
+        :type params: Optional[Union[GetPaymentsParams, dict]]
+        :param kwargs: Additional parameters (merged with params).
         :returns: Payments list object.
         :rtype: PaymentsList
         :seealso: https://yookassa.ru/developers/api#list_payments
+
+        Example:
+            >>> from aioyookassa.types.params import GetPaymentsParams
+            >>> from aioyookassa.types.enum import PaymentStatus
+            >>> params = GetPaymentsParams(status=PaymentStatus.SUCCEEDED, limit=10)
+            >>> payments = await client.payments.get_payments(params)
         """
-        params = GetPayments.build_params(
-            created_at=created_at,
-            captured_at=captured_at,
-            payment_method=payment_method,
-            status=status,
-            limit=limit,
-            cursor=cursor,
+        return await self._get_list(
+            params=params,
+            params_class=GetPaymentsParams,
+            method_class=GetPayments,
+            result_class=PaymentsList,
             **kwargs,
         )
-        result = await self._client._send_request(GetPayments, params=params)
-        return PaymentsList(**result)
 
     async def get_payment(self, payment_id: str) -> Payment:
         """
@@ -152,49 +93,42 @@ class PaymentsAPI:
         :rtype: Payment
         :seealso: https://yookassa.ru/developers/api#get_payment
         """
-        method = GetPayment.build(payment_id=payment_id)
-        result = await self._client._send_request(method)
-        return Payment(**result)
+        return await self._get_by_id(
+            resource_id=payment_id,
+            method_class=GetPayment,
+            result_class=Payment,
+            id_param_name="payment_id",
+        )
 
     async def capture_payment(
         self,
         payment_id: str,
-        amount: Optional[PaymentAmount] = None,
-        receipt: Optional[Receipt] = None,
-        airline: Optional[Airline] = None,
-        transfers: Optional[List[Transfer]] = None,
-        deal: Optional[Deal] = None,
+        params: Optional[Union[CapturePaymentParams, dict]] = None,
     ) -> Payment:
         """
         Capture (confirm) a payment.
 
         :param payment_id: Payment identifier.
         :type payment_id: str
-        :param amount: Payment amount.
-        :type amount: Optional[PaymentAmount]
-        :param receipt: Receipt data.
-        :type receipt: Optional[Receipt]
-        :param airline: Airline data.
-        :type airline: Optional[Airline]
-        :param transfers: Transfers list.
-        :type transfers: Optional[List[Transfer]]
-        :param deal: Deal data.
-        :type deal: Optional[Deal]
+        :param params: Capture parameters (CapturePaymentParams or dict).
+        :type params: Optional[Union[CapturePaymentParams, dict]]
         :returns: Payment object.
         :rtype: Payment
         :seealso: https://yookassa.ru/developers/api#capture_payment
+
+        Example:
+            >>> from aioyookassa.types.params import CapturePaymentParams
+            >>> params = CapturePaymentParams(amount=PaymentAmount(value=100.00, currency=Currency.RUB))
+            >>> payment = await client.payments.capture_payment("payment_id", params)
         """
-        method = CapturePayment.build(payment_id=payment_id)
-        params = method.build_params(
-            amount=amount,
-            receipt=receipt,
-            airline=airline,
-            transfers=transfers,
-            deal=deal,
+        return await self._update_resource(
+            resource_id=payment_id,
+            params=params,
+            params_class=CapturePaymentParams,
+            method_class=CapturePayment,
+            result_class=Payment,
+            id_param_name="payment_id",
         )
-        headers = {"Idempotence-Key": generate_idempotence_key()}
-        result = await self._client._send_request(method, json=params, headers=headers)
-        return Payment(**result)
 
     async def cancel_payment(self, payment_id: str) -> Payment:
         """
@@ -207,6 +141,6 @@ class PaymentsAPI:
         :seealso: https://yookassa.ru/developers/api#cancel_payment
         """
         method = CancelPayment.build(payment_id=payment_id)
-        headers = {"Idempotence-Key": generate_idempotence_key()}
+        headers = create_idempotence_headers()
         result = await self._client._send_request(method, headers=headers)
         return Payment(**result)

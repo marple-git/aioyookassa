@@ -108,7 +108,8 @@ class BaseAPIClient(abc.ABC):
 
     def _delete_none(self, _dict: dict) -> dict:
         """Delete None values recursively from all the dictionaries"""
-        for key, value in list(_dict.items()):
+        for key in list(_dict.keys()):
+            value = _dict[key]
             if isinstance(value, dict):
                 self._delete_none(value)
             elif value is None:

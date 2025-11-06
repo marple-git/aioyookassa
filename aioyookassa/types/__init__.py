@@ -19,6 +19,20 @@ from .invoice import (
     InvoiceReceipt,
     InvoiceReceiptItem,
 )
+from .params import (
+    CapturePaymentParams,
+    CreateInvoiceParams,
+    CreatePaymentMethodParams,
+    CreatePaymentParams,
+    CreateReceiptParams,
+    CreateRefundParams,
+    GetPaymentsParams,
+    GetReceiptsParams,
+    GetRefundsParams,
+    PaymentMethodCardData,
+    PaymentMethodConfirmation,
+    PaymentMethodHolder,
+)
 from .payment import (
     Airline,
     Article,
@@ -56,7 +70,6 @@ from .receipt_registration import (
     FiscalReceipt,
     FiscalReceiptsList,
     ReceiptRegistrationItem,
-    ReceiptSettlement,
     Supplier,
 )
 from .refund import Refund, RefundDeal, RefundMethod, RefundsList, RefundSource
@@ -128,9 +141,22 @@ __all__ = [
     "FiscalReceipt",
     "FiscalReceiptsList",
     "ReceiptRegistrationItem",
-    "ReceiptSettlement",
     "AdditionalUserProps",
     "Supplier",
     # Settings types
     "Settings",
+    # API Parameters
+    "CreatePaymentParams",
+    "CapturePaymentParams",
+    "GetPaymentsParams",
+    "CreateRefundParams",
+    "GetRefundsParams",
+    "CreateInvoiceParams",
+    "CreateReceiptParams",
+    "GetReceiptsParams",
+    # Payment Methods API Parameters
+    "CreatePaymentMethodParams",
+    "PaymentMethodCardData",
+    "PaymentMethodHolder",
+    "PaymentMethodConfirmation",
 ]

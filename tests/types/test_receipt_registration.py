@@ -8,23 +8,22 @@ from decimal import Decimal
 import pytest
 
 from aioyookassa.types.enum import ReceiptStatus, ReceiptType
-from aioyookassa.types.payment import PaymentAmount
+from aioyookassa.types.payment import PaymentAmount, Settlement
 from aioyookassa.types.receipt_registration import (
     AdditionalUserProps,
     FiscalReceipt,
     FiscalReceiptsList,
     ReceiptRegistrationItem,
-    ReceiptSettlement,
     Supplier,
 )
 
 
 class TestReceiptSettlement:
-    """Test ReceiptSettlement model."""
+    """Test Settlement model (used for receipts)."""
 
     def test_receipt_settlement_creation(self):
-        """Test ReceiptSettlement creation."""
-        settlement = ReceiptSettlement(
+        """Test Settlement creation for receipts."""
+        settlement = Settlement(
             type="prepayment", amount=PaymentAmount(value=100.50, currency="RUB")
         )
         assert settlement.type == "prepayment"
@@ -78,7 +77,7 @@ class TestReceiptRegistrationItem:
 
     def test_receipt_registration_item_with_optional_fields(self):
         """Test ReceiptRegistrationItem with optional fields."""
-        settlement = ReceiptSettlement(
+        settlement = Settlement(
             type="prepayment", amount=PaymentAmount(value=100.50, currency="RUB")
         )
         additional_props = AdditionalUserProps(name="Test property", value="Test value")
@@ -216,7 +215,7 @@ class TestFiscalReceipt:
             payment_subject="commodity",
             payment_mode="full_payment",
         )
-        settlement = ReceiptSettlement(
+        settlement = Settlement(
             type="prepayment", amount=PaymentAmount(value=100.50, currency="RUB")
         )
 

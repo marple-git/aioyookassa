@@ -15,6 +15,11 @@ from aioyookassa.types.enum import (
     PaymentMethodType,
     PaymentStatus,
 )
+from aioyookassa.types.params import (
+    CapturePaymentParams,
+    CreatePaymentParams,
+    GetPaymentsParams,
+)
 from aioyookassa.types.payment import Payment, PaymentAmount, PaymentsList
 
 
@@ -62,7 +67,8 @@ class TestPaymentsAPI:
         """Test create_payment with minimal parameters."""
         mock_client._send_request.return_value = sample_payment_data
 
-        result = await payments_api.create_payment(amount=sample_payment_amount)
+        params = CreatePaymentParams(amount=sample_payment_amount)
+        result = await payments_api.create_payment(params)
 
         assert isinstance(result, Payment)
         assert result.id == "payment_123456789"
@@ -94,7 +100,7 @@ class TestPaymentsAPI:
         """Test create_payment with all parameters."""
         mock_client._send_request.return_value = sample_payment_data
 
-        result = await payments_api.create_payment(
+        params = CreatePaymentParams(
             amount=sample_payment_amount,
             description="Test payment",
             receipt=sample_receipt,
@@ -112,6 +118,7 @@ class TestPaymentsAPI:
             deal=sample_deal,
             merchant_customer_id="customer_123",
         )
+        result = await payments_api.create_payment(params)
 
         assert isinstance(result, Payment)
 
@@ -163,30 +170,30 @@ class TestPaymentsAPI:
         created_at = datetime(2023, 1, 1, 12, 0, 0)
         captured_at = datetime(2023, 1, 2, 12, 0, 0)
 
-        result = await payments_api.get_payments(
+        params = GetPaymentsParams(
             created_at=created_at,
             captured_at=captured_at,
             payment_method=PaymentMethodType.CARD,
             status=PaymentStatus.SUCCEEDED,
             limit=10,
             cursor="next_cursor_123",
-            additional_param="test_value",
         )
+        result = await payments_api.get_payments(params, additional_param="test_value")
 
         assert isinstance(result, PaymentsList)
 
         # Verify the request was made with filters
         mock_client._send_request.assert_called_once()
         call_args = mock_client._send_request.call_args
-        params = call_args[1]["params"]
+        request_params = call_args[1]["params"]
 
-        assert params["created_at_gte"] == created_at
-        assert params["captured_at_gte"] == captured_at
-        assert params["payment_method"] == PaymentMethodType.CARD
-        assert params["status"] == PaymentStatus.SUCCEEDED
-        assert params["limit"] == 10
-        assert params["cursor"] == "next_cursor_123"
-        assert params["additional_param"] == "test_value"
+        assert request_params["created_at_gte"] == created_at
+        assert request_params["captured_at_gte"] == captured_at
+        assert request_params["payment_method"] == PaymentMethodType.CARD
+        assert request_params["status"] == PaymentStatus.SUCCEEDED
+        assert request_params["limit"] == 10
+        assert request_params["cursor"] == "next_cursor_123"
+        assert request_params["additional_param"] == "test_value"
 
     @pytest.mark.asyncio
     async def test_get_payment(self, payments_api, mock_client, sample_payment_data):
@@ -236,14 +243,14 @@ class TestPaymentsAPI:
         """Test capture_payment with parameters."""
         mock_client._send_request.return_value = sample_payment_data
 
-        result = await payments_api.capture_payment(
-            "payment_123456789",
+        params = CapturePaymentParams(
             amount=sample_payment_amount,
             receipt=sample_receipt,
             airline=sample_airline,
             transfers=[sample_transfer],
             deal=sample_deal,
         )
+        result = await payments_api.capture_payment("payment_123456789", params)
 
         assert isinstance(result, Payment)
 
@@ -281,7 +288,11 @@ class TestPaymentsAPI:
             (
                 "create_payment",
                 (),
-                {"amount": PaymentAmount(value=100.50, currency=Currency.RUB)},
+                {
+                    "params": CreatePaymentParams(
+                        amount=PaymentAmount(value=100.50, currency=Currency.RUB)
+                    )
+                },
             ),
             ("get_payments", (), {}),
             ("get_payment", ("payment_123456789",), {}),

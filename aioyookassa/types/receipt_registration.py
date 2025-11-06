@@ -11,6 +11,7 @@ from .payment import (
     MarkQuantity,
     OperationDetails,
     PaymentAmount,
+    Settlement,
 )
 
 
@@ -49,15 +50,6 @@ class ReceiptRegistrationItem(BaseModel):
     mark_mode: Optional[str] = None
 
 
-class ReceiptSettlement(BaseModel):
-    """
-    Receipt settlement.
-    """
-
-    type: str
-    amount: PaymentAmount
-
-
 class AdditionalUserProps(BaseModel):
     """
     Additional user properties.
@@ -84,7 +76,7 @@ class FiscalReceipt(BaseModel):
     registered_at: Optional[datetime.datetime] = None
     fiscal_provider_id: Optional[str] = None
     internet: Optional[bool] = None
-    settlements: Optional[List[ReceiptSettlement]] = None
+    settlements: Optional[List[Settlement]] = None
     on_behalf_of: Optional[str] = None
     tax_system_code: Optional[int] = None
     timezone: Optional[int] = None

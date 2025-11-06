@@ -1,4 +1,4 @@
-from .base import APIMethod
+from .base import APIMethod, BaseAPIMethod
 from .invoices import CreateInvoice, GetInvoice
 from .me import GetMe
 from .payment_methods import CreatePaymentMethod, GetPaymentMethod
@@ -14,6 +14,7 @@ from .refunds import CreateRefund, GetRefund, GetRefunds
 
 __all__ = [
     "APIMethod",
+    "BaseAPIMethod",
     "CreatePayment",
     "GetPayments",
     "GetPayment",

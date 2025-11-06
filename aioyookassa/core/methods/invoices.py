@@ -7,10 +7,10 @@ from aioyookassa.types.invoice import (
     InvoicePaymentData,
 )
 
-from .base import APIMethod
+from .base import APIMethod, BaseAPIMethod
 
 
-class InvoicesAPIMethod(APIMethod):
+class InvoicesAPIMethod(BaseAPIMethod):
     """
     Base class for invoices API methods.
     """
@@ -18,20 +18,16 @@ class InvoicesAPIMethod(APIMethod):
     http_method = "GET"
     path = "/invoices"
 
-    def __init__(self, path: Optional[str] = None) -> None:
-        if path:
-            self.path = path
-
     @classmethod
-    def build(cls, invoice_id: str) -> "InvoicesAPIMethod":
+    def build(cls, invoice_id: str) -> "InvoicesAPIMethod":  # type: ignore[override]
         """
         Build method for invoice-specific endpoints.
 
         :param invoice_id: Invoice ID
         :return: Method instance
         """
-        path = cls.path.format(invoice_id=invoice_id)
-        return cls(path=path)
+        result = super().build(invoice_id=invoice_id)
+        return result  # type: ignore[return-value]
 
 
 class CreateInvoice(InvoicesAPIMethod):
@@ -53,24 +49,20 @@ class CreateInvoice(InvoicesAPIMethod):
         cart = kwargs.get("cart", [])
         delivery_method_data = kwargs.get("delivery_method_data")
 
-        if payment_data:
-            payment_data_dict = payment_data.model_dump(
-                exclude_none=True, mode="python"
-            )
-        else:
-            payment_data_dict = None
-
         params = {
-            "payment_data": payment_data_dict,
+            "payment_data": APIMethod._safe_model_dump(
+                payment_data, exclude_none=True, mode="python"
+            ),
             "cart": (
-                [item.model_dump(exclude_none=True, mode="python") for item in cart]
+                [
+                    APIMethod._safe_model_dump(item, exclude_none=True, mode="python")
+                    for item in cart
+                ]
                 if cart
                 else None
             ),
-            "delivery_method_data": (
-                delivery_method_data.model_dump(exclude_none=True, mode="python")
-                if delivery_method_data
-                else None
+            "delivery_method_data": APIMethod._safe_model_dump(
+                delivery_method_data, exclude_none=True, mode="python"
             ),
             "expires_at": expires_at,
             "locale": kwargs.get("locale"),

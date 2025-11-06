@@ -1,116 +1,74 @@
-from datetime import datetime
-from typing import Any, List, Optional
+from typing import Any, Optional, Union
 
-from aioyookassa.core.abc.client import BaseAPIClient
+from aioyookassa.core.api.base import BaseAPI
 from aioyookassa.core.methods.refunds import CreateRefund, GetRefund, GetRefunds
-from aioyookassa.core.utils import generate_idempotence_key
-from aioyookassa.types.payment import PaymentAmount, Receipt
-from aioyookassa.types.refund import (
-    Refund,
-    RefundDeal,
-    RefundMethod,
-    RefundsList,
-    RefundSource,
-)
+from aioyookassa.types.params import CreateRefundParams, GetRefundsParams
+from aioyookassa.types.refund import Refund, RefundsList
 
 
-class RefundsAPI:
+class RefundsAPI(BaseAPI):
     """
     YooKassa refunds API client.
 
     Provides methods for creating, retrieving, and listing refunds.
     """
 
-    def __init__(self, client: BaseAPIClient):
-        self._client = client
-
     async def create_refund(
         self,
-        payment_id: str,
-        amount: PaymentAmount,
-        description: Optional[str] = None,
-        receipt: Optional[Receipt] = None,
-        sources: Optional[List[RefundSource]] = None,
-        deal: Optional[RefundDeal] = None,
-        refund_method_data: Optional[RefundMethod] = None,
+        params: Union[CreateRefundParams, dict],
     ) -> Refund:
         """
         Create a new refund for a successful payment.
 
-        :param payment_id: Payment identifier.
-        :type payment_id: str
-        :param amount: Refund amount.
-        :type amount: PaymentAmount
-        :param description: Refund description/reason.
-        :type description: Optional[str]
-        :param receipt: Receipt data.
-        :type receipt: Optional[Receipt]
-        :param sources: Refund sources for split payments.
-        :type sources: Optional[List[RefundSource]]
-        :param deal: Deal data for safe deal.
-        :type deal: Optional[RefundDeal]
-        :param refund_method_data: Refund method details.
-        :type refund_method_data: Optional[RefundMethod]
+        :param params: Refund creation parameters (CreateRefundParams or dict).
+        :type params: Union[CreateRefundParams, dict]
         :returns: Refund object.
         :rtype: Refund
         :seealso: https://yookassa.ru/developers/api#create_refund
+
+        Example:
+            >>> from aioyookassa.types.params import CreateRefundParams
+            >>> from aioyookassa.types.payment import PaymentAmount
+            >>> params = CreateRefundParams(
+            ...     payment_id="payment_id",
+            ...     amount=PaymentAmount(value=100.00, currency=Currency.RUB)
+            ... )
+            >>> refund = await client.refunds.create_refund(params)
         """
-        params = CreateRefund.build_params(**locals())
-        headers = {"Idempotence-Key": generate_idempotence_key()}
-        result = await self._client._send_request(
-            CreateRefund, json=params, headers=headers
+        return await self._create_resource(
+            params=params,
+            params_class=CreateRefundParams,
+            method_class=CreateRefund,
+            result_class=Refund,
         )
-        return Refund(**result)
 
     async def get_refunds(
         self,
-        created_at_gte: Optional[datetime] = None,
-        created_at_gt: Optional[datetime] = None,
-        created_at_lte: Optional[datetime] = None,
-        created_at_lt: Optional[datetime] = None,
-        payment_id: Optional[str] = None,
-        status: Optional[str] = None,
-        limit: Optional[int] = None,
-        cursor: Optional[str] = None,
-        **kwargs,
+        params: Optional[Union[GetRefundsParams, dict]] = None,
+        **kwargs: Any,
     ) -> RefundsList:
         """
         Retrieve a list of refunds with optional filtering.
 
-        :param created_at_gte: Creation date greater than or equal.
-        :type created_at_gte: Optional[datetime]
-        :param created_at_gt: Creation date greater than.
-        :type created_at_gt: Optional[datetime]
-        :param created_at_lte: Creation date less than or equal.
-        :type created_at_lte: Optional[datetime]
-        :param created_at_lt: Creation date less than.
-        :type created_at_lt: Optional[datetime]
-        :param payment_id: Filter by payment ID.
-        :type payment_id: Optional[str]
-        :param status: Refund status (pending, succeeded, canceled).
-        :type status: Optional[str]
-        :param limit: Maximum number of records.
-        :type limit: Optional[int]
-        :param cursor: Pagination cursor.
-        :type cursor: Optional[str]
-        :param kwargs: Additional parameters.
+        :param params: Filter parameters (GetRefundsParams or dict).
+        :type params: Optional[Union[GetRefundsParams, dict]]
+        :param kwargs: Additional parameters (merged with params).
         :returns: Refunds list object.
         :rtype: RefundsList
         :seealso: https://yookassa.ru/developers/api#get_refunds_list
+
+        Example:
+            >>> from aioyookassa.types.params import GetRefundsParams
+            >>> params = GetRefundsParams(status="succeeded", limit=10)
+            >>> refunds = await client.refunds.get_refunds(params)
         """
-        params = GetRefunds.build_params(
-            created_at_gte=created_at_gte,
-            created_at_gt=created_at_gt,
-            created_at_lte=created_at_lte,
-            created_at_lt=created_at_lt,
-            payment_id=payment_id,
-            status=status,
-            limit=limit,
-            cursor=cursor,
+        return await self._get_list(
+            params=params,
+            params_class=GetRefundsParams,
+            method_class=GetRefunds,
+            result_class=RefundsList,
             **kwargs,
         )
-        result = await self._client._send_request(GetRefunds, params=params)
-        return RefundsList(**result)
 
     async def get_refund(self, refund_id: str) -> Refund:
         """
@@ -122,6 +80,9 @@ class RefundsAPI:
         :rtype: Refund
         :seealso: https://yookassa.ru/developers/api#get_refund
         """
-        method = GetRefund.build(refund_id=refund_id)
-        result = await self._client._send_request(method)
-        return Refund(**result)
+        return await self._get_by_id(
+            resource_id=refund_id,
+            method_class=GetRefund,
+            result_class=Refund,
+            id_param_name="refund_id",
+        )

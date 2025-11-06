@@ -1,17 +1,21 @@
-import datetime
 from typing import Any, Dict, List, Optional
 
-from aioyookassa.types.payment import Customer, IndustryDetails, OperationDetails
+from aioyookassa.core.utils import format_datetime_params
+from aioyookassa.types.payment import (
+    Customer,
+    IndustryDetails,
+    OperationDetails,
+    Settlement,
+)
 from aioyookassa.types.receipt_registration import (
     AdditionalUserProps,
     ReceiptRegistrationItem,
-    ReceiptSettlement,
 )
 
-from .base import APIMethod
+from .base import APIMethod, BaseAPIMethod
 
 
-class ReceiptsAPIMethod(APIMethod):
+class ReceiptsAPIMethod(BaseAPIMethod):
     """
     Base class for receipts API methods.
     """
@@ -19,20 +23,16 @@ class ReceiptsAPIMethod(APIMethod):
     http_method = "GET"
     path = "/receipts"
 
-    def __init__(self, path: Optional[str] = None) -> None:
-        if path:
-            self.path = path
-
     @classmethod
-    def build(cls, receipt_id: str) -> "ReceiptsAPIMethod":
+    def build(cls, receipt_id: str) -> "ReceiptsAPIMethod":  # type: ignore[override]
         """
         Build method for receipt-specific endpoints.
 
         :param receipt_id: Receipt ID
         :return: Method instance
         """
-        path = cls.path.format(receipt_id=receipt_id)
-        return cls(path=path)
+        result = super().build(receipt_id=receipt_id)
+        return result  # type: ignore[return-value]
 
 
 class CreateReceipt(ReceiptsAPIMethod):
@@ -50,17 +50,20 @@ class CreateReceipt(ReceiptsAPIMethod):
         receipt_industry_details = kwargs.get("receipt_industry_details", [])
         receipt_operational_details = kwargs.get("receipt_operational_details")
 
+        settlements = kwargs.get("settlements", [])
+
         params = {
             "type": kwargs.get("type"),
             "payment_id": kwargs.get("payment_id"),
             "refund_id": kwargs.get("refund_id"),
-            "customer": (
-                customer.model_dump(exclude_none=True, mode="python")
-                if customer
-                else None
+            "customer": APIMethod._safe_model_dump(
+                customer, exclude_none=True, mode="python"
             ),
             "items": (
-                [item.model_dump(exclude_none=True, mode="python") for item in items]
+                [
+                    APIMethod._safe_model_dump(item, exclude_none=True, mode="python")
+                    for item in items
+                ]
                 if items
                 else None
             ),
@@ -68,30 +71,28 @@ class CreateReceipt(ReceiptsAPIMethod):
             "internet": kwargs.get("internet"),
             "tax_system_code": kwargs.get("tax_system_code"),
             "timezone": kwargs.get("timezone"),
-            "additional_user_props": (
-                additional_user_props.model_dump(exclude_none=True, mode="python")
-                if additional_user_props
-                else None
+            "additional_user_props": APIMethod._safe_model_dump(
+                additional_user_props, exclude_none=True, mode="python"
             ),
             "receipt_industry_details": (
                 [
-                    detail.model_dump(exclude_none=True, mode="python")
+                    APIMethod._safe_model_dump(detail, exclude_none=True, mode="python")
                     for detail in receipt_industry_details
                 ]
                 if receipt_industry_details
                 else None
             ),
-            "receipt_operational_details": (
-                receipt_operational_details.model_dump(exclude_none=True, mode="python")
-                if receipt_operational_details
-                else None
+            "receipt_operational_details": APIMethod._safe_model_dump(
+                receipt_operational_details, exclude_none=True, mode="python"
             ),
             "settlements": (
                 [
-                    settlement.model_dump(exclude_none=True, mode="python")
-                    for settlement in kwargs.get("settlements", [])
+                    APIMethod._safe_model_dump(
+                        settlement, exclude_none=True, mode="python"
+                    )
+                    for settlement in settlements
                 ]
-                if kwargs.get("settlements")
+                if settlements
                 else None
             ),
             "on_behalf_of": kwargs.get("on_behalf_of"),
@@ -119,21 +120,11 @@ class GetReceipts(ReceiptsAPIMethod):
         cursor: Any = None,
         **kwargs: Any,
     ) -> Dict[str, Any]:
-        # Format datetime if it's a datetime object
-        if created_at_gte and isinstance(created_at_gte, datetime.datetime):
-            created_at_gte = created_at_gte.isoformat()
-        if created_at_gt and isinstance(created_at_gt, datetime.datetime):
-            created_at_gt = created_at_gt.isoformat()
-        if created_at_lte and isinstance(created_at_lte, datetime.datetime):
-            created_at_lte = created_at_lte.isoformat()
-        if created_at_lt and isinstance(created_at_lt, datetime.datetime):
-            created_at_lt = created_at_lt.isoformat()
-
         params = {
-            "created_at.gte": created_at_gte,
-            "created_at.gt": created_at_gt,
-            "created_at.lte": created_at_lte,
-            "created_at.lt": created_at_lt,
+            "created_at_gte": created_at_gte,
+            "created_at_gt": created_at_gt,
+            "created_at_lte": created_at_lte,
+            "created_at_lt": created_at_lt,
             "payment_id": payment_id,
             "refund_id": refund_id,
             "status": status,
@@ -141,7 +132,25 @@ class GetReceipts(ReceiptsAPIMethod):
             "cursor": cursor,
             **kwargs,
         }
-        return {k: v for k, v in params.items() if v is not None}
+        # Format datetime fields
+        params = format_datetime_params(
+            params,
+            ["created_at_gte", "created_at_gt", "created_at_lte", "created_at_lt"],
+        )
+        # Map to API field names
+        result = {
+            "created_at.gte": params.get("created_at_gte"),
+            "created_at.gt": params.get("created_at_gt"),
+            "created_at.lte": params.get("created_at_lte"),
+            "created_at.lt": params.get("created_at_lt"),
+            "payment_id": params.get("payment_id"),
+            "refund_id": params.get("refund_id"),
+            "status": params.get("status"),
+            "limit": params.get("limit"),
+            "cursor": params.get("cursor"),
+        }
+        result.update({k: v for k, v in kwargs.items() if k not in result})
+        return {k: v for k, v in result.items() if v is not None}
 
 
 class GetReceipt(ReceiptsAPIMethod):

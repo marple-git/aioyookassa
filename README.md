@@ -16,7 +16,7 @@
 - 🛡️ **Типизация** — полная поддержка типов с использованием Pydantic моделей
 - 🔧 **Простота** — интуитивно понятный API для быстрой интеграции
 - 📚 **Документация** — подробная документация с примерами использования
-- 🧪 **Тестирование** — 90% покрытие кода тестами
+- 🧪 **Тестирование** — 92% покрытие кода тестами
 - ⚡ **Производительность** — оптимизированная работа с HTTP запросами
 
 ## 🔗 Links
@@ -51,12 +51,33 @@ aioyookassa/
 └── __init__.py            # Package exports
 ```
 
+## ⚠️ Breaking Changes в версии 2.0.0
+
+**Версия 2.0.0 содержит breaking changes:**
+
+- **Удалены дублирующиеся типы:**
+  - `RefundCancellationDetails` → используйте `CancellationDetails`
+  - `RefundSettlement` → используйте `Settlement`
+  - `ReceiptSettlement` → используйте `Settlement`
+
+**Миграция:**
+
+```python
+# До версии 2.0.0
+from aioyookassa.types import RefundCancellationDetails, RefundSettlement, ReceiptSettlement
+
+# Версия 2.0.0+
+from aioyookassa.types import CancellationDetails, Settlement
+```
+
+Подробности в [Changelog](https://aioyookassa.readthedocs.io/en/latest/changelog.html).
+
 ## 🚀 Quick Start
 
 ### Установка
 
 ```bash
-pip install aioyookassa
+pip install aioyookassa>=2.0.0
 ```
 
 ### Базовое использование
@@ -67,17 +88,19 @@ from datetime import datetime
 from aioyookassa import YooKassa
 from aioyookassa.types.payment import PaymentAmount, Confirmation
 from aioyookassa.types.enum import PaymentStatus, ConfirmationType, Currency
+from aioyookassa.types.params import CreatePaymentParams, GetPaymentsParams
 
 async def main():
     # Инициализация клиента
     client = YooKassa(api_key="your_api_key", shop_id=12345)
 
-    # Создание платежа
-    payment = await client.payments.create_payment(
+    # Создание платежа (используем Pydantic модель)
+    params = CreatePaymentParams(
         amount=PaymentAmount(value=100.00, currency=Currency.RUB),
         confirmation=Confirmation(type=ConfirmationType.REDIRECT, return_url="https://example.com/return"),
         description="Тестовый платеж"
     )
+    payment = await client.payments.create_payment(params)
 
     print(f"Payment created: {payment.id}")
     print(f"Confirmation URL: {payment.confirmation.confirmation_url}")
@@ -86,12 +109,13 @@ async def main():
     payment_info = await client.payments.get_payment(payment.id)
     print(f"Payment status: {payment_info.status}")
 
-    # Получение списка платежей за сегодня
+    # Получение списка платежей за сегодня (используем Pydantic модель)
     today = datetime.now()
-    payments = await client.payments.get_payments(
+    params = GetPaymentsParams(
         created_at=today,
         status=PaymentStatus.SUCCEEDED
     )
+    payments = await client.payments.get_payments(params)
     print(f"Found {len(payments.list)} successful payments today")
 
     # Закрытие клиента
@@ -108,40 +132,49 @@ asyncio.run(main())
 ```python
 from datetime import datetime
 from aioyookassa.types.enum import PaymentStatus, ConfirmationType, Currency
+from aioyookassa.types.params import CreatePaymentParams, GetPaymentsParams
 
-# Создание платежа
-payment = await client.payments.create_payment(
+# Создание платежа (используем Pydantic модель)
+params = CreatePaymentParams(
     amount=PaymentAmount(value=1000.00, currency=Currency.RUB),
     confirmation=Confirmation(type=ConfirmationType.REDIRECT, return_url="https://example.com/return"),
     description="Оплата заказа #12345"
 )
+payment = await client.payments.create_payment(params)
 
-# Получение списка платежей
-payments = await client.payments.get_payments(
+# Получение списка платежей (используем Pydantic модель)
+params = GetPaymentsParams(
     created_at=datetime(2023, 1, 1, 12, 0, 0),
     status=PaymentStatus.SUCCEEDED,
     limit=10
 )
+payments = await client.payments.get_payments(params)
 
 # Получение конкретного платежа
 payment = await client.payments.get_payment("payment_id")
 
-# Подтверждение платежа
-await client.payments.capture_payment("payment_id")
+# Подтверждение платежа (используем Pydantic модель)
+from aioyookassa.types.params import CapturePaymentParams
+
+params = CapturePaymentParams(amount=PaymentAmount(value=1000.00, currency=Currency.RUB))
+payment = await client.payments.capture_payment("payment_id", params)
 
 # Отмена платежа
-await client.payments.cancel_payment("payment_id")
+payment = await client.payments.cancel_payment("payment_id")
 ```
 
 ### 💰 Возвраты (Refunds)
 
 ```python
-# Создание возврата
-refund = await client.refunds.create_refund(
+from aioyookassa.types.params import CreateRefundParams
+
+# Создание возврата (используем Pydantic модель)
+params = CreateRefundParams(
     payment_id="payment_id",
     amount=PaymentAmount(value=500.00, currency=Currency.RUB),
     description="Частичный возврат"
 )
+refund = await client.refunds.create_refund(params)
 
 # Получение информации о возврате
 refund_info = await client.refunds.get_refund("refund_id")
@@ -150,24 +183,32 @@ refund_info = await client.refunds.get_refund("refund_id")
 ### 🧾 Чеки (Receipts)
 
 ```python
-from aioyookassa.types.payment import PaymentItem
-from aioyookassa.types.enum import PaymentSubject, PaymentMode
+from aioyookassa.types.payment import Customer, Settlement
+from aioyookassa.types.enum import ReceiptType
+from aioyookassa.types.params import CreateReceiptParams
+from aioyookassa.types.receipt_registration import ReceiptRegistrationItem
 
-# Регистрация чека
-receipt = await client.receipts.create_receipt(
+# Регистрация чека (используем Pydantic модель)
+params = CreateReceiptParams(
+    type=ReceiptType.PAYMENT,
     payment_id="payment_id",
+    customer=Customer(email="customer@example.com"),
     items=[
-        PaymentItem(
+        ReceiptRegistrationItem(
             description="Товар",
             quantity=1,
             amount=PaymentAmount(value=1000.00, currency=Currency.RUB),
             vat_code=1,
-            payment_subject=PaymentSubject.COMMODITY,
-            payment_mode=PaymentMode.FULL_PAYMENT
+            payment_subject="commodity",
+            payment_mode="full_payment"
         )
+    ],
+    settlements=[
+        Settlement(type="prepayment", amount=PaymentAmount(value=1000.00, currency=Currency.RUB))
     ],
     tax_system_code=1
 )
+receipt = await client.receipts.create_receipt(params)
 
 # Получение информации о чеке
 receipt_info = await client.receipts.get_receipt("receipt_id")
@@ -176,11 +217,14 @@ receipt_info = await client.receipts.get_receipt("receipt_id")
 ### 📄 Счета (Invoices)
 
 ```python
-# Создание счета
-invoice = await client.invoices.create_invoice(
+from aioyookassa.types.params import CreateInvoiceParams
+
+# Создание счета (используем Pydantic модель)
+params = CreateInvoiceParams(
     amount=PaymentAmount(value=2000.00, currency=Currency.RUB),
     description="Счет на оплату"
 )
+invoice = await client.invoices.create_invoice(params)
 
 # Получение информации о счете
 invoice_info = await client.invoices.get_invoice("invoice_id")
@@ -191,19 +235,23 @@ invoice_info = await client.invoices.get_invoice("invoice_id")
 ```python
 from datetime import datetime
 from aioyookassa.types.enum import PaymentStatus, ConfirmationType, Currency
+from aioyookassa.types.params import CreatePaymentParams, GetPaymentsParams
 
 async with YooKassa(api_key="your_key", shop_id=12345) as client:
-    payment = await client.payments.create_payment(
+    # Создание платежа (используем Pydantic модель)
+    params = CreatePaymentParams(
         amount=PaymentAmount(value=100.00, currency=Currency.RUB),
         confirmation=Confirmation(type=ConfirmationType.REDIRECT, return_url="https://example.com/return")
     )
+    payment = await client.payments.create_payment(params)
 
-    # Получение платежей за последний час
-    recent_payments = await client.payments.get_payments(
+    # Получение платежей за последний час (используем Pydantic модель)
+    params = GetPaymentsParams(
         created_at=datetime.now(),
         status=PaymentStatus.SUCCEEDED,
         limit=5
     )
+    recent_payments = await client.payments.get_payments(params)
     # Клиент автоматически закроется
 ```
 
@@ -311,7 +359,7 @@ make dev                 # Запуск пайплайна разработки 
 ### Требования к Pull Request
 
 - ✅ **Все тесты проходят** (`make test`)
-- ✅ **Покрытие кода не менее 90%** (`make test-cov`)
+- ✅ **Покрытие кода не менее 92%** (`make test-cov`)
 - ✅ **Код отформатирован** (`make format`)
 - ✅ **Форматирование проходит** (`make lint`)
 - ✅ **Проверка типов проходит** (`make type-check`)

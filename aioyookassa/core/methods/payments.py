@@ -2,10 +2,10 @@ from typing import Any, Dict, List, Optional
 
 from aioyookassa.types.payment import Airline, Deal, PaymentAmount, Receipt, Transfer
 
-from .base import APIMethod
+from .base import APIMethod, BaseAPIMethod
 
 
-class PaymentsAPIMethod(APIMethod):
+class PaymentsAPIMethod(BaseAPIMethod):
     """
     Base class for payments API methods.
     """
@@ -13,20 +13,16 @@ class PaymentsAPIMethod(APIMethod):
     http_method = "GET"
     path = "/payments"
 
-    def __init__(self, path: Optional[str] = None) -> None:
-        if path:
-            self.path = path
-
     @classmethod
-    def build(cls, payment_id: str) -> "PaymentsAPIMethod":
+    def build(cls, payment_id: str) -> "PaymentsAPIMethod":  # type: ignore[override]
         """
         Build method for payment-specific endpoints.
 
         :param payment_id: Payment ID
         :return: Method instance
         """
-        path = cls.path.format(payment_id=payment_id)
-        return cls(path=path)
+        result = super().build(payment_id=payment_id)
+        return result  # type: ignore[return-value]
 
 
 class CreatePayment(PaymentsAPIMethod):
@@ -38,8 +34,11 @@ class CreatePayment(PaymentsAPIMethod):
 
     @staticmethod
     def build_params(**kwargs: Any) -> Dict[str, Any]:
-        if confirmation := kwargs.get("confirmation"):
-            kwargs["confirmation"] = confirmation.model_dump(exclude_none=True)
+        confirmation = kwargs.get("confirmation")
+        if confirmation:
+            kwargs["confirmation"] = APIMethod._safe_model_dump(
+                confirmation, exclude_none=True
+            )
         amount = kwargs.get("amount")
         receipt = kwargs.get("receipt")
         recipient = kwargs.get("recipient")
@@ -49,23 +48,25 @@ class CreatePayment(PaymentsAPIMethod):
         deal = kwargs.get("deal")
 
         params = {
-            "amount": amount.model_dump() if amount else None,
+            "amount": APIMethod._safe_model_dump(amount),
             "description": kwargs.get("description"),
-            "receipt": receipt.model_dump() if receipt else None,
-            "recipient": recipient.model_dump() if recipient else None,
+            "receipt": APIMethod._safe_model_dump(receipt),
+            "recipient": APIMethod._safe_model_dump(recipient),
             "payment_token": kwargs.get("payment_token"),
             "payment_method_id": kwargs.get("payment_method_id"),
-            "payment_method_data": (
-                payment_method_data.model_dump() if payment_method_data else None
-            ),
+            "payment_method_data": APIMethod._safe_model_dump(payment_method_data),
             "confirmation": kwargs.get("confirmation"),
             "save_payment_method": kwargs.get("save_payment_method"),
             "capture": kwargs.get("capture"),
             "client_ip": kwargs.get("client_ip"),
             "metadata": kwargs.get("metadata"),
-            "airline": airline.model_dump() if airline else None,
-            "transfers": [t.model_dump() for t in transfers] if transfers else None,
-            "deal": deal.model_dump() if deal else None,
+            "airline": APIMethod._safe_model_dump(airline),
+            "transfers": (
+                [APIMethod._safe_model_dump(t) for t in transfers]
+                if transfers
+                else None
+            ),
+            "deal": APIMethod._safe_model_dump(deal),
             "merchant_customer_id": kwargs.get("merchant_customer_id"),
         }
         return {k: v for k, v in params.items() if v is not None}
@@ -80,12 +81,12 @@ class GetPayments(PaymentsAPIMethod):
 
     @staticmethod
     def build_params(
-        created_at: Any,
-        captured_at: Any,
-        payment_method: Any,
-        status: Any,
-        limit: Any,
-        cursor: Any,
+        created_at: Any = None,
+        captured_at: Any = None,
+        payment_method: Any = None,
+        status: Any = None,
+        limit: Any = None,
+        cursor: Any = None,
         **kwargs: Any,
     ) -> Dict[str, Any]:
         params = {
@@ -119,20 +120,30 @@ class CapturePayment(PaymentsAPIMethod):
 
     @staticmethod
     def build_params(
-        amount: Optional[PaymentAmount],
-        receipt: Optional[Receipt],
-        airline: Optional[Airline],
-        transfers: Optional[List[Transfer]],
-        deal: Optional[Deal],
+        amount: Optional[PaymentAmount] = None,
+        receipt: Optional[Receipt] = None,
+        airline: Optional[Airline] = None,
+        transfers: Optional[List[Transfer]] = None,
+        deal: Optional[Deal] = None,
+        **kwargs: Any,
     ) -> Dict[str, Any]:
+        # Support both positional and keyword arguments
+        amount = kwargs.get("amount", amount)
+        receipt = kwargs.get("receipt", receipt)
+        airline = kwargs.get("airline", airline)
+        transfers = kwargs.get("transfers", transfers)
+        deal = kwargs.get("deal", deal)
+
         params = {
-            "amount": amount.model_dump() if amount else None,
-            "receipt": receipt.model_dump() if receipt else None,
-            "airline": airline.model_dump() if airline else None,
+            "amount": APIMethod._safe_model_dump(amount),
+            "receipt": APIMethod._safe_model_dump(receipt),
+            "airline": APIMethod._safe_model_dump(airline),
             "transfers": (
-                [transfer.model_dump() for transfer in transfers] if transfers else None
+                [APIMethod._safe_model_dump(t) for t in transfers]
+                if transfers
+                else None
             ),
-            "deal": deal.model_dump() if deal else None,
+            "deal": APIMethod._safe_model_dump(deal),
         }
         return {k: v for k, v in params.items() if v is not None}
 

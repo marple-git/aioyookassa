@@ -1,13 +1,13 @@
-import datetime
 from typing import Any, Dict, List, Optional
 
+from aioyookassa.core.utils import format_datetime_params
 from aioyookassa.types.payment import PaymentAmount, Receipt
 from aioyookassa.types.refund import RefundDeal, RefundMethod, RefundSource
 
-from .base import APIMethod
+from .base import APIMethod, BaseAPIMethod
 
 
-class RefundsAPIMethod(APIMethod):
+class RefundsAPIMethod(BaseAPIMethod):
     """
     Base class for refunds API methods.
     """
@@ -15,20 +15,16 @@ class RefundsAPIMethod(APIMethod):
     http_method = "GET"
     path = "/refunds"
 
-    def __init__(self, path: Optional[str] = None) -> None:
-        if path:
-            self.path = path
-
     @classmethod
-    def build(cls, refund_id: str) -> "RefundsAPIMethod":
+    def build(cls, refund_id: str) -> "RefundsAPIMethod":  # type: ignore[override]
         """
         Build method for refund-specific endpoints.
 
         :param refund_id: Refund ID
         :return: Method instance
         """
-        path = cls.path.format(refund_id=refund_id)
-        return cls(path=path)
+        result = super().build(refund_id=refund_id)
+        return result  # type: ignore[return-value]
 
 
 class CreateRefund(RefundsAPIMethod):
@@ -48,28 +44,24 @@ class CreateRefund(RefundsAPIMethod):
 
         params = {
             "payment_id": kwargs.get("payment_id"),
-            "amount": (
-                amount.model_dump(exclude_none=True, mode="python") if amount else None
+            "amount": APIMethod._safe_model_dump(
+                amount, exclude_none=True, mode="python"
             ),
             "description": kwargs.get("description"),
-            "receipt": (
-                receipt.model_dump(exclude_none=True, mode="python")
-                if receipt
-                else None
+            "receipt": APIMethod._safe_model_dump(
+                receipt, exclude_none=True, mode="python"
             ),
             "sources": (
                 [
-                    source.model_dump(exclude_none=True, mode="python")
+                    APIMethod._safe_model_dump(source, exclude_none=True, mode="python")
                     for source in sources
                 ]
                 if sources
                 else None
             ),
-            "deal": deal.model_dump(exclude_none=True, mode="python") if deal else None,
-            "refund_method_data": (
-                refund_method_data.model_dump(exclude_none=True, mode="python")
-                if refund_method_data
-                else None
+            "deal": APIMethod._safe_model_dump(deal, exclude_none=True, mode="python"),
+            "refund_method_data": APIMethod._safe_model_dump(
+                refund_method_data, exclude_none=True, mode="python"
             ),
         }
         return {k: v for k, v in params.items() if v is not None}
@@ -94,28 +86,35 @@ class GetRefunds(RefundsAPIMethod):
         cursor: Any = None,
         **kwargs: Any,
     ) -> Dict[str, Any]:
-        # Format datetime if it's a datetime object
-        if created_at_gte and isinstance(created_at_gte, datetime.datetime):
-            created_at_gte = created_at_gte.isoformat()
-        if created_at_gt and isinstance(created_at_gt, datetime.datetime):
-            created_at_gt = created_at_gt.isoformat()
-        if created_at_lte and isinstance(created_at_lte, datetime.datetime):
-            created_at_lte = created_at_lte.isoformat()
-        if created_at_lt and isinstance(created_at_lt, datetime.datetime):
-            created_at_lt = created_at_lt.isoformat()
-
         params = {
-            "created_at.gte": created_at_gte,
-            "created_at.gt": created_at_gt,
-            "created_at.lte": created_at_lte,
-            "created_at.lt": created_at_lt,
+            "created_at_gte": created_at_gte,
+            "created_at_gt": created_at_gt,
+            "created_at_lte": created_at_lte,
+            "created_at_lt": created_at_lt,
             "payment_id": payment_id,
             "status": status,
             "limit": limit,
             "cursor": cursor,
             **kwargs,
         }
-        return {k: v for k, v in params.items() if v is not None}
+        # Format datetime fields
+        params = format_datetime_params(
+            params,
+            ["created_at_gte", "created_at_gt", "created_at_lte", "created_at_lt"],
+        )
+        # Map to API field names
+        result = {
+            "created_at.gte": params.get("created_at_gte"),
+            "created_at.gt": params.get("created_at_gt"),
+            "created_at.lte": params.get("created_at_lte"),
+            "created_at.lt": params.get("created_at_lt"),
+            "payment_id": params.get("payment_id"),
+            "status": params.get("status"),
+            "limit": params.get("limit"),
+            "cursor": params.get("cursor"),
+        }
+        result.update({k: v for k, v in kwargs.items() if k not in result})
+        return {k: v for k, v in result.items() if v is not None}
 
 
 class GetRefund(RefundsAPIMethod):
