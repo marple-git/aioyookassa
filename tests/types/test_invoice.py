@@ -49,7 +49,7 @@ class TestInvoiceCartItem:
             discount_price=PaymentAmount(value=90.00, currency=Currency.RUB),
             quantity=1,
         )
-        assert item.discount_price.value == 90.00
+        assert item.discount_price.value == pytest.approx(90.00)
 
     def test_invoice_cart_item_with_different_quantity_types(self):
         """Test InvoiceCartItem with different quantity types."""
@@ -171,7 +171,7 @@ class TestInvoiceReceiptItem:
             vat_code=1,
             quantity=1.5,
         )
-        assert item_float.quantity == 1.5
+        assert item_float.quantity == pytest.approx(1.5)
 
         # Test with string
         item_string = InvoiceReceiptItem(

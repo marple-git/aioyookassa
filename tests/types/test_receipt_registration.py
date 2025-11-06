@@ -145,7 +145,7 @@ class TestReceiptRegistrationItem:
             payment_subject="commodity",
             payment_mode="full_payment",
         )
-        assert item_float.quantity == 1.5
+        assert item_float.quantity == pytest.approx(1.5)
 
         # Test with string
         item_string = ReceiptRegistrationItem(

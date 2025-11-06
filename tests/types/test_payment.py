@@ -349,7 +349,7 @@ class TestTransfer:
             description="Test transfer",
             metadata={"key": "value"},
         )
-        assert transfer.fee_amount.value == 5.00
+        assert transfer.fee_amount.value == pytest.approx(5.00)
         assert transfer.description == "Test transfer"
         assert transfer.metadata == {"key": "value"}
 
@@ -710,11 +710,11 @@ class TestPayment:
             cancellation_details=cancellation_details,
             merchant_customer_id="customer_123",
         )
-        assert payment.income_amount.value == 95.50
+        assert payment.income_amount.value == pytest.approx(95.50)
         assert payment.description == "Test payment"
         assert payment.payment_method == payment_method
         assert payment.confirmation == confirmation
-        assert payment.refunded_amount.value == 50.00
+        assert payment.refunded_amount.value == pytest.approx(50.00)
         assert payment.receipt_registration == "succeeded"
         assert payment.metadata == {"key": "value"}
         assert payment.cancellation_details == cancellation_details

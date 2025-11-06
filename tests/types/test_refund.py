@@ -56,7 +56,7 @@ class TestRefundSource:
             amount=PaymentAmount(value=100.50, currency="RUB"),
             platform_fee_amount=PaymentAmount(value=5.00, currency="RUB"),
         )
-        assert source.platform_fee_amount.value == 5.00
+        assert source.platform_fee_amount.value == pytest.approx(5.00)
 
 
 class TestRefundSettlement:
@@ -119,7 +119,7 @@ class TestRefundArticle:
             tru_code="TRU123456",
             quantity=1.5,
         )
-        assert article_float.quantity == 1.5
+        assert article_float.quantity == pytest.approx(1.5)
 
         # Test with string
         article_string = RefundArticle(
