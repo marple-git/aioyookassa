@@ -64,15 +64,17 @@ aioyookassa предоставляет иерархию исключений д�
     logger = logging.getLogger(__name__)
 
     from aioyookassa.types.enum import Currency
+    from aioyookassa.types.params import CreatePaymentParams
     
     async def create_payment_safely(amount: float, description: str):
         """Безопасное создание платежа с обработкой ошибок."""
         
         try:
-            payment = await client.payments.create_payment(
+            params = CreatePaymentParams(
                 amount=PaymentAmount(value=amount, currency=Currency.RUB),
                 description=description
             )
+            payment = await client.payments.create_payment(params)
             logger.info(f"Payment created successfully: {payment.id}")
             return payment
             
@@ -123,10 +125,12 @@ aioyookassa предоставляет иерархию исключений д�
 
     async def get_payments_with_retry(max_retries: int = 3):
         """Получение списка платежей с повторными попытками."""
+        from aioyookassa.types.params import GetPaymentsParams
         
         for attempt in range(max_retries):
             try:
-                payments = await client.payments.get_payments(limit=10)
+                params = GetPaymentsParams(limit=10)
+                payments = await client.payments.get_payments(params)
                 return payments
                 
             except APIError as e:
@@ -189,10 +193,13 @@ aioyookassa предоставляет иерархию исключений д�
     # Использование декоратора
     @handle_api_errors
     async def create_payment_decorated(amount: float, description: str):
-        return await client.payments.create_payment(
+        from aioyookassa.types.params import CreatePaymentParams
+        
+        params = CreatePaymentParams(
             amount=PaymentAmount(value=amount, currency=Currency.RUB),
             description=description
         )
+        return await client.payments.create_payment(params)
 
 Создание класса для обработки ошибок
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -207,11 +214,14 @@ aioyookassa предоставляет иерархию исключений д�
         
         async def create_payment(self, amount: float, description: str):
             """Создание платежа с обработкой ошибок."""
+            from aioyookassa.types.params import CreatePaymentParams
+            
             try:
-                return await client.payments.create_payment(
+                params = CreatePaymentParams(
                     amount=PaymentAmount(value=amount, currency=Currency.RUB),
                     description=description
                 )
+                return await client.payments.create_payment(params)
             except InvalidCredentials:
                 self.logger.error("Invalid API credentials")
                 raise ValueError("Invalid credentials")

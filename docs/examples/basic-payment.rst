@@ -13,6 +13,7 @@
     from aioyookassa import YooKassa
     from aioyookassa.types.payment import PaymentAmount, Confirmation
     from aioyookassa.types.enum import PaymentStatus, ConfirmationType, Currency
+    from aioyookassa.types.params import CreatePaymentParams, GetPaymentsParams
     from aioyookassa.exceptions import APIError, NotFound
 
     async def process_payment():
@@ -24,7 +25,7 @@
             try:
                 # 1. Создание платежа
                 print("Создание платежа...")
-                payment = await client.payments.create_payment(
+                params = CreatePaymentParams(
                     amount=PaymentAmount(value=1000.00, currency=Currency.RUB),
                     confirmation=Confirmation(
                         type=ConfirmationType.REDIRECT, 
@@ -33,6 +34,7 @@
                     description="Оплата заказа #12345",
                     metadata={"order_id": "12345", "user_id": "67890"}
                 )
+                payment = await client.payments.create_payment(params)
                 
                 print(f"✅ Платеж создан: {payment.id}")
                 print(f"🔗 URL для оплаты: {payment.confirmation.url}")
@@ -53,11 +55,12 @@
                 
                 # 5. Получение списка платежей за сегодня
                 today = datetime.now()
-                recent_payments = await client.payments.get_payments(
+                params = GetPaymentsParams(
                     created_at=today,
                     status=PaymentStatus.SUCCEEDED,
                     limit=5
                 )
+                recent_payments = await client.payments.get_payments(params)
                 
                 print(f"📈 Успешных платежей сегодня: {len(recent_payments.list)}")
                 

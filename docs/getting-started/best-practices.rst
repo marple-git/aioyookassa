@@ -40,11 +40,13 @@
         
         async def process_payment(self, amount: float, currency: str):
             from aioyookassa.types.enum import ConfirmationType
+            from aioyookassa.types.params import CreatePaymentParams
             
-            return await self.client.payments.create_payment(
+            params = CreatePaymentParams(
                 amount=PaymentAmount(value=amount, currency=currency),
                 confirmation=Confirmation(type=ConfirmationType.REDIRECT, return_url="https://example.com")
             )
+            return await self.client.payments.create_payment(params)
 
 Обработка ошибок
 ----------------
@@ -83,15 +85,17 @@
     logger = logging.getLogger(__name__)
 
     from aioyookassa.types.enum import Currency
+    from aioyookassa.types.params import CreatePaymentParams
     
     async def create_payment_with_logging(amount: float, description: str):
         logger.info(f"Creating payment: amount={amount}, description={description}")
         
         try:
-            payment = await client.payments.create_payment(
+            params = CreatePaymentParams(
                 amount=PaymentAmount(value=amount, currency=Currency.RUB),
                 description=description
             )
+            payment = await client.payments.create_payment(params)
             logger.info(f"Payment created successfully: {payment.id}")
             return payment
         except APIError as e:
@@ -121,8 +125,11 @@
 
     # Использование
     try:
+        from aioyookassa.types.params import CreatePaymentParams
+        
         amount = validate_payment_data(100.0, "RUB")
-        payment = await client.payments.create_payment(amount=amount, ...)
+        params = CreatePaymentParams(amount=amount, ...)
+        payment = await client.payments.create_payment(params)
     except ValueError as e:
         logger.error(f"Validation error: {e}")
 
@@ -163,9 +170,12 @@
 
     async def create_payment_with_timeout(amount: float, timeout: int = 30):
         """Создание платежа с таймаутом."""
+        from aioyookassa.types.params import CreatePaymentParams
+        
         try:
+            params = CreatePaymentParams(amount=amount, ...)
             return await asyncio.wait_for(
-                client.payments.create_payment(amount=amount, ...),
+                client.payments.create_payment(params),
                 timeout=timeout
             )
         except asyncio.TimeoutError:
@@ -261,8 +271,11 @@
     rate_limiter = RateLimiter(max_requests=100, time_window=60)  # 100 запросов в минуту
 
     async def create_payment_with_rate_limit(amount: float):
+        from aioyookassa.types.params import CreatePaymentParams
+        
         await rate_limiter.acquire()
-        return await client.payments.create_payment(amount=amount, ...)
+        params = CreatePaymentParams(amount=amount, ...)
+        return await client.payments.create_payment(params)
 
 Тестирование
 ------------
@@ -283,12 +296,14 @@
             mock_create.return_value.id = "test_payment_id"
             
             from aioyookassa.types.enum import Currency
+            from aioyookassa.types.params import CreatePaymentParams
             
             client = YooKassa(api_key="test", shop_id=12345)
-            payment = await client.payments.create_payment(
+            params = CreatePaymentParams(
                 amount=PaymentAmount(value=100, currency=Currency.RUB),
                 description="Test"
             )
+            payment = await client.payments.create_payment(params)
             
             assert payment.id == "test_payment_id"
             mock_create.assert_called_once()

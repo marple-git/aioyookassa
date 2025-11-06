@@ -18,12 +18,14 @@ create_payment
 .. code-block:: python
 
     from aioyookassa.types.enum import ConfirmationType, Currency
+    from aioyookassa.types.params import CreatePaymentParams
     
-    payment = await client.payments.create_payment(
+    params = CreatePaymentParams(
         amount=PaymentAmount(value=100.00, currency=Currency.RUB),
         confirmation=Confirmation(type=ConfirmationType.REDIRECT, return_url="https://example.com/return"),
         description="Тестовый платеж"
     )
+    payment = await client.payments.create_payment(params)
 
 get_payments
 ~~~~~~~~~~~~
@@ -34,12 +36,14 @@ get_payments
 
     from datetime import datetime
     from aioyookassa.types.enum import PaymentStatus
+    from aioyookassa.types.params import GetPaymentsParams
 
-    payments = await client.payments.get_payments(
+    params = GetPaymentsParams(
         created_at=datetime(2023, 1, 1, 12, 0, 0),
         status=PaymentStatus.SUCCEEDED,
         limit=10
     )
+    payments = await client.payments.get_payments(params)
 
 get_payment
 ~~~~~~~~~~~

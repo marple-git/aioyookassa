@@ -43,17 +43,19 @@ aioyookassa Documentation
     from aioyookassa import YooKassa
     from aioyookassa.types.payment import PaymentAmount, Confirmation
     from aioyookassa.types.enum import PaymentStatus, ConfirmationType, Currency
+    from aioyookassa.types.params import CreatePaymentParams
 
     async def main():
         # Инициализация клиента
         client = YooKassa(api_key="your_api_key", shop_id=12345)
         
-        # Создание платежа
-        payment = await client.payments.create_payment(
+        # Создание платежа (используем Pydantic модель)
+        params = CreatePaymentParams(
             amount=PaymentAmount(value=100.00, currency=Currency.RUB),
             confirmation=Confirmation(type=ConfirmationType.REDIRECT, return_url="https://example.com/return"),
             description="Тестовый платеж"
         )
+        payment = await client.payments.create_payment(params)
         
         print(f"Payment created: {payment.id}")
         print(f"Confirmation URL: {payment.confirmation.url}")

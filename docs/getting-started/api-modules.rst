@@ -32,20 +32,23 @@ API модули
 .. code-block:: python
 
     from aioyookassa.types.enum import ConfirmationType, Currency
+    from aioyookassa.types.params import CreatePaymentParams, GetPaymentsParams
     
     # Создание платежа
-    payment = await client.payments.create_payment(
+    params = CreatePaymentParams(
         amount=PaymentAmount(value=100.00, currency=Currency.RUB),
         confirmation=Confirmation(type=ConfirmationType.REDIRECT, return_url="https://example.com"),
         description="Тестовый платеж"
     )
+    payment = await client.payments.create_payment(params)
 
     # Получение списка платежей
-    payments = await client.payments.get_payments(
+    params = GetPaymentsParams(
         created_at=datetime(2023, 1, 1),
         status=PaymentStatus.SUCCEEDED,
         limit=10
     )
+    payments = await client.payments.get_payments(params)
 
     # Получение конкретного платежа
     payment = await client.payments.get_payment("payment_id")
@@ -126,7 +129,9 @@ API модули
         )
         
         # Создание платежа
-        payment = await client.payments.create_payment(
+        from aioyookassa.types.params import CreatePaymentParams
+        
+        params = CreatePaymentParams(
             amount=PaymentAmount(value=100.00, currency=Currency.RUB),
             description="Оплата заказа #12345",
             payment_method=payment_method,
@@ -135,6 +140,7 @@ API модули
             receipt=receipt,
             metadata={"order_id": "12345", "user_id": "67890"}
         )
+        payment = await client.payments.create_payment(params)
         
         return payment
 
@@ -149,13 +155,15 @@ API модули
 .. code-block:: python
 
     from aioyookassa.types.enum import Currency
+    from aioyookassa.types.params import CreateRefundParams
     
     # Создание возврата
-    refund = await client.refunds.create_refund(
+    params = CreateRefundParams(
         payment_id="payment_id",
         amount=PaymentAmount(value=50.00, currency=Currency.RUB),
         description="Частичный возврат"
     )
+    refund = await client.refunds.create_refund(params)
 
     # Получение информации о возврате
     refund = await client.refunds.get_refund("refund_id")
@@ -195,13 +203,16 @@ API модули
         ]
         
         # Создание возврата
-        refund = await client.refunds.create_refund(
+        from aioyookassa.types.params import CreateRefundParams
+        
+        params = CreateRefundParams(
             payment_id="payment_id",
             amount=PaymentAmount(value=50.00, currency=Currency.RUB),
             description="Возврат за некачественный товар",
             refund_method=refund_method,
             articles=articles
         )
+        refund = await client.refunds.create_refund(params)
         
         return refund
 
@@ -217,9 +228,10 @@ API модули
 
     from aioyookassa.types.payment import PaymentItem
     from aioyookassa.types.enum import Currency, PaymentSubject, PaymentMode
+    from aioyookassa.types.params import CreateReceiptParams
     
     # Создание чека
-    receipt = await client.receipts.create_receipt(
+    params = CreateReceiptParams(
         payment_id="payment_id",
         items=[
             PaymentItem(
@@ -233,6 +245,7 @@ API модули
         ],
         tax_system_code=1
     )
+    receipt = await client.receipts.create_receipt(params)
 
     # Получение информации о чеке
     receipt = await client.receipts.get_receipt("receipt_id")
@@ -296,12 +309,15 @@ API модули
         ]
         
         # Создание чека
-        receipt = await client.receipts.create_receipt(
+        from aioyookassa.types.params import CreateReceiptParams
+        
+        params = CreateReceiptParams(
             payment_id="payment_id",
             items=items,
             tax_system_code=1,
             settlements=settlements
         )
+        receipt = await client.receipts.create_receipt(params)
         
         return receipt
 
@@ -316,12 +332,14 @@ API модули
 .. code-block:: python
 
     from aioyookassa.types.enum import Currency
+    from aioyookassa.types.params import CreateInvoiceParams
     
     # Создание счета
-    invoice = await client.invoices.create_invoice(
+    params = CreateInvoiceParams(
         amount=PaymentAmount(value=1000.00, currency=Currency.RUB),
         description="Счет на оплату"
     )
+    invoice = await client.invoices.create_invoice(params)
 
     # Получение информации о счете
     invoice = await client.invoices.get_invoice("invoice_id")
@@ -390,13 +408,16 @@ API модули
         )
         
         # Создание счета
-        invoice = await client.invoices.create_invoice(
+        from aioyookassa.types.params import CreateInvoiceParams
+        
+        params = CreateInvoiceParams(
             amount=PaymentAmount(value=1000.00, currency=Currency.RUB),
             description="Счет на оплату услуг",
             cart=cart_items,
             receipt=receipt,
             payment_method=payment_data
         )
+        invoice = await client.invoices.create_invoice(params)
         
         return invoice
 
@@ -456,11 +477,14 @@ API модули
         
         try:
             # 1. Создание платежа
-            payment = await client.payments.create_payment(
+            from aioyookassa.types.params import CreatePaymentParams
+            
+            params = CreatePaymentParams(
                 amount=PaymentAmount(value=1000.00, currency=Currency.RUB),
                 description="Комплексный платеж",
                 confirmation=Confirmation(type=ConfirmationType.REDIRECT, return_url="https://example.com")
             )
+            payment = await client.payments.create_payment(params)
             
             print(f"✅ Платеж создан: {payment.id}")
             
@@ -472,7 +496,9 @@ API модули
             
             if payment_info.status == PaymentStatus.SUCCEEDED:
                 # 4. Создание чека
-                receipt = await client.receipts.create_receipt(
+                from aioyookassa.types.params import CreateReceiptParams
+                
+                params = CreateReceiptParams(
                     payment_id=payment.id,
                     items=[
                         PaymentItem(
@@ -486,16 +512,20 @@ API модули
                     ],
                     tax_system_code=1
                 )
+                receipt = await client.receipts.create_receipt(params)
                 
                 print(f"✅ Чек создан: {receipt.id}")
                 
                 # 5. Создание возврата (если нужно)
                 if should_refund:
-                    refund = await client.refunds.create_refund(
+                    from aioyookassa.types.params import CreateRefundParams
+                    
+                    params = CreateRefundParams(
                         payment_id=payment.id,
                         amount=PaymentAmount(value=500.00, currency=Currency.RUB),
                         description="Частичный возврат"
                     )
+                    refund = await client.refunds.create_refund(params)
                     
                     print(f"✅ Возврат создан: {refund.id}")
             

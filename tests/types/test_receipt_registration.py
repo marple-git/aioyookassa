@@ -77,10 +77,6 @@ class TestReceiptRegistrationItem:
 
     def test_receipt_registration_item_with_optional_fields(self):
         """Test ReceiptRegistrationItem with optional fields."""
-        settlement = Settlement(
-            type="prepayment", amount=PaymentAmount(value=100.50, currency="RUB")
-        )
-        additional_props = AdditionalUserProps(name="Test property", value="Test value")
         supplier = Supplier(name="Test Supplier", inn="1234567890")
 
         item = ReceiptRegistrationItem(
