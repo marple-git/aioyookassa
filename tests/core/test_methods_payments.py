@@ -80,24 +80,6 @@ class TestCreatePayment:
         amount = PaymentAmount(value=100.50, currency=Currency.RUB)
         params = CreatePayment.build_params(amount=amount)
 
-        expected = {
-            "amount": {"value": 100.50, "currency": "RUB"},
-            "description": None,
-            "receipt": None,
-            "recipient": None,
-            "payment_token": None,
-            "payment_method_id": None,
-            "payment_method_data": None,
-            "confirmation": None,
-            "save_payment_method": None,
-            "capture": None,
-            "client_ip": None,
-            "metadata": None,
-            "airline": None,
-            "transfers": None,
-            "deal": None,
-            "merchant_customer_id": None,
-        }
         # Only non-None values should be included
         assert params == {"amount": {"value": 100.50, "currency": "RUB"}}
 

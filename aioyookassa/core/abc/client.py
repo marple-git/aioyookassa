@@ -21,7 +21,7 @@ class BaseAPIClient(abc.ABC):
         self.shop_id = str(shop_id)
         self._session: Optional[ClientSession] = None
 
-    async def _get_session(self) -> ClientSession:
+    def _get_session(self) -> ClientSession:
         """
         Get or create aiohttp ClientSession
         :return: ClientSession
@@ -53,7 +53,7 @@ class BaseAPIClient(abc.ABC):
         :param headers: Additional headers
         :return: JSON response
         """
-        session = await self._get_session()
+        session = self._get_session()
 
         params = self._delete_none(params or {})
         json = self._delete_none(json or {})
@@ -108,16 +108,19 @@ class BaseAPIClient(abc.ABC):
 
     def _delete_none(self, _dict: dict) -> dict:
         """Delete None values recursively from all the dictionaries"""
-        for key in list(_dict.keys()):
-            value = _dict[key]
+        keys_to_delete = []
+        for key, value in _dict.items():
             if isinstance(value, dict):
                 self._delete_none(value)
             elif value is None:
-                del _dict[key]
+                keys_to_delete.append(key)
             elif isinstance(value, list):
                 for v_i in value:
                     if isinstance(v_i, dict):
                         self._delete_none(v_i)
+        
+        for key in keys_to_delete:
+            del _dict[key]
 
         return _dict
 

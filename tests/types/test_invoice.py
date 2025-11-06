@@ -67,7 +67,7 @@ class TestInvoiceCartItem:
             price=PaymentAmount(value=100.50, currency=Currency.RUB),
             quantity=1.5,
         )
-        assert item_float.quantity == 1.5
+        assert item_float.quantity == pytest.approx(1.5)
 
         # Test with string
         item_string = InvoiceCartItem(
