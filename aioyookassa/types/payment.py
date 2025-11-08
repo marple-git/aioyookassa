@@ -18,16 +18,7 @@ from .enum import (
 
 
 class Confirmation(BaseModel):
-    """
-    Confirmation
-
-    Validation rules by type:
-    - embedded: requires confirmation_token
-    - external: no additional fields required
-    - mobile_application: requires confirmation_url (url)
-    - qr: requires confirmation_data
-    - redirect: requires confirmation_url (url)
-    """
+    """Confirmation"""
 
     type: ConfirmationType
     enforce: Optional[bool] = None
@@ -37,55 +28,15 @@ class Confirmation(BaseModel):
     confirmation_data: Optional[str] = None
     url: Optional[str] = Field(None, alias="confirmation_url")
 
-    @staticmethod
-    def _normalize_confirmation_type(confirmation_type: Any) -> Optional[str]:
-        """Normalize confirmation type to string value."""
-        if confirmation_type is None:
-            return None
-        if hasattr(confirmation_type, "value"):
-            value = confirmation_type.value
-            return str(value) if value is not None else None
-        if isinstance(confirmation_type, str):
-            return confirmation_type
-        return str(confirmation_type)
-
     @model_validator(mode="before")
     @classmethod
     def validate_confirmation_fields(cls, data: Any) -> Any:
-        """
-        Validate that required fields are present based on confirmation type.
-        """
         if not isinstance(data, dict):
             return data
 
         # Normalize: if 'url' is provided, map it to 'confirmation_url' (the alias)
         if "url" in data and "confirmation_url" not in data:
             data["confirmation_url"] = data["url"]
-
-        confirmation_type_value = cls._normalize_confirmation_type(data.get("type"))
-        if not confirmation_type_value:
-            return data
-
-        # Map confirmation types to required fields
-        type_requirements = {
-            ConfirmationType.EMBEDDED: ("confirmation_token", "embedded"),
-            "embedded": ("confirmation_token", "embedded"),
-            ConfirmationType.MOBILE_APPLICATION: (
-                "confirmation_url",
-                "mobile_application",
-            ),
-            "mobile_application": ("confirmation_url", "mobile_application"),
-            ConfirmationType.QR_CODE: ("confirmation_data", "qr"),
-            "qr": ("confirmation_data", "qr"),
-            ConfirmationType.REDIRECT: ("confirmation_url", "redirect"),
-            "redirect": ("confirmation_url", "redirect"),
-        }
-
-        required_field, type_name = type_requirements.get(
-            confirmation_type_value, (None, None)
-        )
-        if required_field and not data.get(required_field):
-            raise ValueError(f"{required_field} is required for type '{type_name}'")
 
         return data
 

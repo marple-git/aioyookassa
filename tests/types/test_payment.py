@@ -169,46 +169,81 @@ class TestConfirmation:
         confirmation = Confirmation(**confirmation_data)
         assert confirmation.url == "https://example.com/confirm"
 
-    def test_confirmation_embedded_requires_token(self):
-        """Test that embedded type requires confirmation_token."""
-        with pytest.raises(ValueError, match="confirmation_token is required"):
-            Confirmation(type=ConfirmationType.EMBEDDED)
+    def test_confirmation_embedded_without_token(self):
+        """Test that embedded confirmation can be created without token (request scenario)."""
+        confirmation = Confirmation(type=ConfirmationType.EMBEDDED)
+        assert confirmation.type == ConfirmationType.EMBEDDED
+        assert confirmation.confirmation_token is None
 
-        confirmation = Confirmation(
+        confirmation_with_token = Confirmation(
             type=ConfirmationType.EMBEDDED, confirmation_token="token_123"
         )
-        assert confirmation.confirmation_token == "token_123"
+        assert confirmation_with_token.confirmation_token == "token_123"
 
-    def test_confirmation_mobile_application_requires_url(self):
-        """Test that mobile_application type requires confirmation_url."""
-        with pytest.raises(ValueError, match="confirmation_url is required"):
-            Confirmation(type=ConfirmationType.MOBILE_APPLICATION)
+    def test_confirmation_mobile_application_without_url(self):
+        """Test that mobile_application confirmation can be created without URL (request scenario)."""
+        confirmation = Confirmation(type=ConfirmationType.MOBILE_APPLICATION)
+        assert confirmation.type == ConfirmationType.MOBILE_APPLICATION
+        assert confirmation.url is None
 
-        confirmation = Confirmation(
+        confirmation_with_url = Confirmation(
             type=ConfirmationType.MOBILE_APPLICATION,
             url="myapp://payment/confirm",
         )
-        assert confirmation.url == "myapp://payment/confirm"
+        assert confirmation_with_url.url == "myapp://payment/confirm"
 
-    def test_confirmation_qr_requires_data(self):
-        """Test that qr type requires confirmation_data."""
-        with pytest.raises(ValueError, match="confirmation_data is required"):
-            Confirmation(type=ConfirmationType.QR_CODE)
+    def test_confirmation_qr_without_data(self):
+        """Test that qr confirmation can be created without data (request scenario)."""
+        confirmation = Confirmation(type=ConfirmationType.QR_CODE)
+        assert confirmation.type == ConfirmationType.QR_CODE
+        assert confirmation.confirmation_data is None
 
-        confirmation = Confirmation(
+        confirmation_with_data = Confirmation(
             type=ConfirmationType.QR_CODE, confirmation_data="QR_DATA_123"
         )
-        assert confirmation.confirmation_data == "QR_DATA_123"
+        assert confirmation_with_data.confirmation_data == "QR_DATA_123"
 
-    def test_confirmation_redirect_requires_url(self):
-        """Test that redirect type requires confirmation_url."""
-        with pytest.raises(ValueError, match="confirmation_url is required"):
-            Confirmation(type=ConfirmationType.REDIRECT)
+    def test_confirmation_redirect_without_url(self):
+        """Test that redirect confirmation can be created without URL (request scenario)."""
+        confirmation = Confirmation(type=ConfirmationType.REDIRECT)
+        assert confirmation.type == ConfirmationType.REDIRECT
+        assert confirmation.url is None
 
     def test_confirmation_external_no_requirements(self):
         """Test that external type has no additional requirements."""
         confirmation = Confirmation(type=ConfirmationType.EXTERNAL)
         assert confirmation.type == ConfirmationType.EXTERNAL
+
+    def test_confirmation_redirect_with_return_url(self):
+        """Test redirect confirmation with return_url (payment creation scenario)."""
+        confirmation = Confirmation(
+            type=ConfirmationType.REDIRECT,
+            return_url="https://example.com/return",
+            locale="ru_RU",
+        )
+        assert confirmation.type == ConfirmationType.REDIRECT
+        assert confirmation.return_url == "https://example.com/return"
+        assert confirmation.locale == "ru_RU"
+
+    def test_confirmation_mobile_application_with_return_url(self):
+        """Test mobile_application confirmation with return_url (payment creation scenario)."""
+        confirmation = Confirmation(
+            type=ConfirmationType.MOBILE_APPLICATION,
+            return_url="myapp://payment/return",
+            locale="ru_RU",
+        )
+        assert confirmation.type == ConfirmationType.MOBILE_APPLICATION
+        assert confirmation.return_url == "myapp://payment/return"
+        assert confirmation.locale == "ru_RU"
+
+    def test_confirmation_embedded_with_locale(self):
+        """Test embedded confirmation with locale (payment creation scenario)."""
+        confirmation = Confirmation(
+            type=ConfirmationType.EMBEDDED,
+            locale="en_US",
+        )
+        assert confirmation.type == ConfirmationType.EMBEDDED
+        assert confirmation.locale == "en_US"
 
 
 class TestRecipient:
