@@ -134,3 +134,39 @@ class TestMatchErrorMixin:
 
         # Should return the original message when text is None
         assert TestError.get_text("original message") == "original message"
+
+    def test_match_error_mixin_with_error_details(self):
+        """Test _MatchErrorMixin with detailed error information from API."""
+        from aioyookassa.exceptions.authorization import InvalidRequestError
+
+        # Test with error details including parameter
+        error_details = {
+            "code": "invalid_request",
+            "description": "Invalid parameter value",
+            "parameter": "confirmation.return_url",
+            "type": "validation_error",
+        }
+        with pytest.raises(InvalidRequestError) as exc_info:
+            APIError.detect(
+                "invalid_request", "Invalid parameter value", error_details=error_details
+            )
+        error_message = str(exc_info.value)
+        assert "Invalid parameter value" in error_message
+        assert "Parameter: confirmation.return_url" in error_message
+        assert "Type: validation_error" in error_message
+
+        # Test with error details including retry_after
+        error_details_retry = {
+            "code": "rate_limit_exceeded",
+            "description": "Too many requests",
+            "retry_after": 60,
+        }
+        with pytest.raises(APIError) as exc_info:
+            APIError.detect(
+                "rate_limit_exceeded",
+                "Too many requests",
+                error_details=error_details_retry,
+            )
+        error_message = str(exc_info.value)
+        assert "Too many requests" in error_message
+        assert "Retry after: 60" in error_message

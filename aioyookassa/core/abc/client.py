@@ -85,6 +85,7 @@ class BaseAPIClient(abc.ABC):
                 APIError.detect(
                     error_data.get("code", "unknown_error"),
                     error_data.get("description", f"HTTP {response.status}"),
+                    error_details=error_data,
                 )
 
             # Parse successful response

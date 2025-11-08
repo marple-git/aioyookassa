@@ -35,20 +35,37 @@ class _MatchErrorMixin:
         return cls.text or message
 
     @classmethod
-    def detect(cls, description: str, message: str) -> None:
+    def detect(cls, description: str, message: str, error_details: Optional[dict] = None) -> None:
         """
         Find existing exception
-        :param description: error description
+        :param description: error code/description
+        :param message: error message
+        :param error_details: full error response from API
         :return:
         """
-        description = description.lower()
+        # Build detailed error message for matched errors
+        if error_details:
+            parts = [message or description]
+            if "parameter" in error_details:
+                parts.append(f"Parameter: {error_details['parameter']}")
+            if "type" in error_details:
+                parts.append(f"Type: {error_details['type']}")
+            if "retry_after" in error_details:
+                parts.append(f"Retry after: {error_details['retry_after']}")
+            detailed_message = " | ".join(parts)
+        else:
+            detailed_message = message or description
+        
+        description_lower = description.lower()
         for err in cls.__subclasses:
             if err is cls:
                 continue
-            if err.check(description) and issubclass(err, Exception):
-                raise err(err.text or message or description)
+            if err.check(description_lower) and issubclass(err, Exception):
+                raise err(err.text or detailed_message)
+        
+        # For unknown errors, use description if no error_details (backward compatibility)
         if issubclass(cls, Exception):
-            raise cls(description)
+            raise cls(detailed_message if error_details else description)
 
 
 class APIError(Exception, _MatchErrorMixin):
