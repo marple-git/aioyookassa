@@ -148,7 +148,9 @@ class TestMatchErrorMixin:
         }
         with pytest.raises(InvalidRequestError) as exc_info:
             APIError.detect(
-                "invalid_request", "Invalid parameter value", error_details=error_details
+                "invalid_request",
+                "Invalid parameter value",
+                error_details=error_details,
             )
         error_message = str(exc_info.value)
         assert "Invalid parameter value" in error_message

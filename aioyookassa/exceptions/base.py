@@ -35,7 +35,9 @@ class _MatchErrorMixin:
         return cls.text or message
 
     @classmethod
-    def detect(cls, description: str, message: str, error_details: Optional[dict] = None) -> None:
+    def detect(
+        cls, description: str, message: str, error_details: Optional[dict] = None
+    ) -> None:
         """
         Find existing exception
         :param description: error code/description
@@ -55,14 +57,14 @@ class _MatchErrorMixin:
             detailed_message = " | ".join(parts)
         else:
             detailed_message = message or description
-        
+
         description_lower = description.lower()
         for err in cls.__subclasses:
             if err is cls:
                 continue
             if err.check(description_lower) and issubclass(err, Exception):
                 raise err(err.text or detailed_message)
-        
+
         # For unknown errors, use description if no error_details (backward compatibility)
         if issubclass(cls, Exception):
             raise cls(detailed_message if error_details else description)
