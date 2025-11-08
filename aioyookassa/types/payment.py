@@ -367,17 +367,18 @@ class PaymentItem(BaseModel):
     amount: PaymentAmount
     vat_code: int
     quantity: Union[int, float, str, Decimal]
-    payment_subject: PaymentSubject
-    payment_mode: PaymentMode
+    payment_subject: Optional[Union[PaymentSubject, str]] = None
+    payment_mode: Optional[Union[PaymentMode, str]] = None
     measure: Optional[str] = None
     mark_quantity: Optional[MarkQuantity] = None
     country_of_origin_code: Optional[str] = None
     customs_declaration_number: Optional[str] = None
     excise: Optional[str] = None
     product_code: Optional[str] = None
+    planned_status: Optional[int] = None
     mark_code_info: Optional[MarkCodeInfo] = None
     mark_mode: Optional[str] = None
-    payment_subject_industry_details: Optional[IndustryDetails] = None
+    payment_subject_industry_details: Optional[List[IndustryDetails]] = None
 
 
 class OperationDetails(BaseModel):

@@ -579,7 +579,7 @@ class TestPaymentItem:
             product_code="1234567890123",
             mark_code_info=mark_code,
             mark_mode="unknown",
-            payment_subject_industry_details=industry,
+            payment_subject_industry_details=[industry],
         )
         assert item.measure == "piece"
         assert item.mark_quantity == mark_quantity
@@ -589,7 +589,7 @@ class TestPaymentItem:
         assert item.product_code == "1234567890123"
         assert item.mark_code_info == mark_code
         assert item.mark_mode == "unknown"
-        assert item.payment_subject_industry_details == industry
+        assert item.payment_subject_industry_details == [industry]
 
 
 class TestReceipt:
