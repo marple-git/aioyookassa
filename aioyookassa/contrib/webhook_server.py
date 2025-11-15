@@ -12,6 +12,8 @@ from aioyookassa.core.webhook_validator import WebhookIPValidator
 
 logger = logging.getLogger(__name__)
 
+DEFAULT_WEBHOOK_PATH = "/webhook"
+
 
 class WebhookServer:
     """
@@ -50,7 +52,7 @@ class WebhookServer:
         :return: Configured aiohttp Application instance.
         """
         app = web.Application()
-        app.router.add_post("/webhook", self._handle_webhook)
+        app.router.add_post(DEFAULT_WEBHOOK_PATH, self._handle_webhook)
         return app
 
     async def _handle_webhook(self, request: web.Request) -> web.Response:
@@ -105,7 +107,7 @@ class WebhookServer:
         self,
         host: str = "0.0.0.0",
         port: int = 8080,
-        path: str = "/webhook",
+        path: str = DEFAULT_WEBHOOK_PATH,
     ) -> None:
         """
         Run webhook server.
@@ -115,7 +117,7 @@ class WebhookServer:
         :param path: Webhook endpoint path. Default: /webhook.
         """
         app = self.create_app()
-        if path != "/webhook":
+        if path != DEFAULT_WEBHOOK_PATH:
             # Update route if custom path provided
             # Create new app with custom path
             app = web.Application()

@@ -38,6 +38,55 @@ class BaseAPIClient(abc.ABC):
             await self._session.close()
             self._session = None
 
+    async def _handle_http_error(self, response: Any) -> None:
+        """
+        Handle HTTP error responses.
+
+        :param response: aiohttp response object
+        """
+        try:
+            error_data = await response.json()
+        except Exception:
+            # Failed to parse JSON, fallback to text
+            error_text = await response.text()
+            raise APIError(f"HTTP {response.status}: {error_text}")
+
+        # Detect and raise the appropriate exception
+        APIError.detect(
+            error_data.get("code", "unknown_error"),
+            error_data.get("description", f"HTTP {response.status}"),
+            error_details=error_data,
+        )
+
+    async def _parse_response(self, response: Any, method: Type[APIMethod]) -> dict:
+        """
+        Parse successful HTTP response.
+
+        :param response: aiohttp response object
+        :param method: API Method
+        :return: Parsed JSON response or empty dict
+        """
+        # DELETE methods may return empty body (204 No Content)
+        if response.status == 204 or method.http_method == "DELETE":
+            # Consume response body if present
+            try:
+                await response.read()
+            except Exception:
+                pass
+            return {}
+
+        try:
+            return await response.json()  # type: ignore[no-any-return]
+        except Exception as e:
+            # If response is empty but not 204/DELETE, try to read it
+            try:
+                text = await response.text()
+                if not text or text.strip() == "":
+                    return {}
+            except Exception:
+                pass
+            raise APIError(f"Failed to parse JSON response: {str(e)}")
+
     async def _send_request(
         self,
         method: Type[APIMethod],
@@ -79,43 +128,10 @@ class BaseAPIClient(abc.ABC):
 
             # Handle HTTP errors
             if response.status >= 400:
-                try:
-                    error_data = await response.json()
-                except Exception:
-                    # Failed to parse JSON, fallback to text
-                    error_text = await response.text()
-                    raise APIError(f"HTTP {response.status}: {error_text}")
-
-                # Detect and raise the appropriate exception
-                APIError.detect(
-                    error_data.get("code", "unknown_error"),
-                    error_data.get("description", f"HTTP {response.status}"),
-                    error_details=error_data,
-                )
+                await self._handle_http_error(response)
 
             # Parse successful response
-            # DELETE methods may return empty body (204 No Content)
-            if response.status == 204 or method.http_method == "DELETE":
-                # Consume response body if present
-                try:
-                    await response.read()
-                except Exception:
-                    pass
-                return {}  # Return empty dict for DELETE/204 responses
-
-            try:
-                response_json = await response.json()
-            except Exception as e:
-                # If response is empty but not 204/DELETE, try to read it
-                try:
-                    text = await response.text()
-                    if not text or text.strip() == "":
-                        return {}
-                except Exception:
-                    pass
-                raise APIError(f"Failed to parse JSON response: {str(e)}")
-
-            return response_json  # type: ignore[no-any-return]
+            return await self._parse_response(response, method)
 
         except ClientError as e:
             raise APIError(f"Network error: {str(e)}")

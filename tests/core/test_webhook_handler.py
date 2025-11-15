@@ -141,6 +141,7 @@ class TestWebhookHandler:
 
         @handler.register_callback("payment.*")
         def callback(payment: Payment):
+            # Empty callback - this test only verifies registration, not execution
             pass
 
         assert len(handler.pattern_callbacks) == 1
@@ -149,6 +150,7 @@ class TestWebhookHandler:
         """Test adding callback without decorator."""
 
         def callback(payment: Payment):
+            # Empty callback - this test only verifies registration, not execution
             pass
 
         handler.add_callback(WebhookEvent.PAYMENT_SUCCEEDED, callback)

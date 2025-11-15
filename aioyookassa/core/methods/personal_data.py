@@ -35,11 +35,8 @@ class CreatePersonalData(PersonalDataAPIMethod):
     def build_params(**kwargs: Any) -> Dict[str, Any]:
         # Handle birthdate - convert datetime/date to ISO 8601 string if needed
         birthdate = kwargs.get("birthdate")
-        if birthdate is not None:
-            if isinstance(birthdate, datetime):
-                kwargs["birthdate"] = birthdate.isoformat()
-            elif isinstance(birthdate, date):
-                kwargs["birthdate"] = birthdate.isoformat()
+        if birthdate is not None and isinstance(birthdate, (datetime, date)):
+            kwargs["birthdate"] = birthdate.isoformat()
             # If it's already a string, keep it as is
 
         params = {
