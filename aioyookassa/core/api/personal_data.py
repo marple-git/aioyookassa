@@ -41,7 +41,7 @@ class PersonalDataAPI(BaseAPI):
         """
         return await self._create_resource(
             params=params,
-            params_class=CreatePersonalDataParams,
+            params_class=CreatePersonalDataParams,  # type: ignore[arg-type]
             method_class=CreatePersonalData,
             result_class=PersonalData,
         )

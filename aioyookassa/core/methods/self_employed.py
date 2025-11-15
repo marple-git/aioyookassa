@@ -1,5 +1,6 @@
 from typing import Any, Dict
 
+from aioyookassa.core.utils import remove_none_values
 from aioyookassa.types.params import SelfEmployedConfirmationData
 
 from .base import APIMethod, BaseAPIMethod
@@ -41,7 +42,7 @@ class CreateSelfEmployed(SelfEmployedAPIMethod):
             "phone": kwargs.get("phone"),
             "confirmation": APIMethod._safe_model_dump(confirmation, exclude_none=True),
         }
-        return {k: v for k, v in params.items() if v is not None}
+        return remove_none_values(params)
 
 
 class GetSelfEmployed(SelfEmployedAPIMethod):

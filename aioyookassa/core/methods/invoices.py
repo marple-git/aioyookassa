@@ -1,6 +1,7 @@
 import datetime
 from typing import Any, Dict, List, Optional, Union
 
+from aioyookassa.core.utils import remove_none_values
 from aioyookassa.types.invoice import (
     InvoiceCartItem,
     InvoiceDeliveryMethodData,
@@ -69,7 +70,7 @@ class CreateInvoice(InvoicesAPIMethod):
             "description": kwargs.get("description"),
             "metadata": kwargs.get("metadata"),
         }
-        return {k: v for k, v in params.items() if v is not None}
+        return remove_none_values(params)
 
 
 class GetInvoice(InvoicesAPIMethod):

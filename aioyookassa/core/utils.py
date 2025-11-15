@@ -79,3 +79,19 @@ def format_datetime_params(
         if field in formatted:
             formatted[field] = format_datetime_to_iso(formatted[field])
     return formatted
+
+
+def remove_none_values(data: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Remove None values from dictionary.
+
+    This utility function removes all keys with None values from a dictionary,
+    which is commonly needed when building API request parameters.
+
+    :param data: Dictionary to clean.
+    :returns: Dictionary without None values.
+    :example:
+        >>> remove_none_values({"a": 1, "b": None, "c": "value"})
+        {"a": 1, "c": "value"}
+    """
+    return {k: v for k, v in data.items() if v is not None}

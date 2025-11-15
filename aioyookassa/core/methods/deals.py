@@ -4,7 +4,7 @@ Deals API methods.
 
 from typing import Any, Dict
 
-from aioyookassa.core.utils import format_datetime_params
+from aioyookassa.core.utils import format_datetime_params, remove_none_values
 
 from .base import APIMethod, BaseAPIMethod
 
@@ -44,7 +44,7 @@ class CreateDeal(DealsAPIMethod):
             "metadata": kwargs.get("metadata"),
             "description": kwargs.get("description"),
         }
-        return {k: v for k, v in params.items() if v is not None}
+        return remove_none_values(params)
 
 
 class GetDeals(DealsAPIMethod):
@@ -115,7 +115,7 @@ class GetDeals(DealsAPIMethod):
             "cursor": params.get("cursor"),
         }
         result.update({k: v for k, v in kwargs.items() if k not in result})
-        return {k: v for k, v in result.items() if v is not None}
+        return remove_none_values(result)
 
 
 class GetDeal(DealsAPIMethod):

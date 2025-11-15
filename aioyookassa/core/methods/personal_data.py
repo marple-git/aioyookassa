@@ -1,6 +1,8 @@
 from datetime import date, datetime
 from typing import Any, Dict
 
+from aioyookassa.core.utils import remove_none_values
+
 from .base import APIMethod, BaseAPIMethod
 
 
@@ -47,7 +49,7 @@ class CreatePersonalData(PersonalDataAPIMethod):
             "birthdate": kwargs.get("birthdate"),
             "metadata": kwargs.get("metadata"),
         }
-        return {k: v for k, v in params.items() if v is not None}
+        return remove_none_values(params)
 
 
 class GetPersonalData(PersonalDataAPIMethod):

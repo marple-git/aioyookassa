@@ -1,4 +1,7 @@
+import logging
 from typing import Optional, Union
+
+from aiohttp import ClientTimeout, TCPConnector
 
 from aioyookassa.core.abc.client import BaseAPIClient
 from aioyookassa.core.api import (
@@ -37,14 +40,25 @@ class YooKassa(BaseAPIClient):
     - webhooks: Webhook operations (requires OAuth token)
     """
 
-    def __init__(self, api_key: str, shop_id: Union[int, str]):
-        """
-        Initialize YooKassa client.
-
-        :param api_key: YooKassa API key
-        :param shop_id: YooKassa shop ID
-        """
-        super().__init__(api_key, shop_id)
+    def __init__(
+        self,
+        api_key: str,
+        shop_id: Union[int, str],
+        timeout: Optional[ClientTimeout] = None,
+        connector: Optional[TCPConnector] = None,
+        proxy: Optional[str] = None,
+        enable_logging: bool = False,
+        logger: Optional[logging.Logger] = None,
+    ):
+        super().__init__(
+            api_key=api_key,
+            shop_id=shop_id,
+            timeout=timeout,
+            connector=connector,
+            proxy=proxy,
+            enable_logging=enable_logging,
+            logger=logger,
+        )
         self.payments = PaymentsAPI(self)
         self.payment_methods = PaymentMethodsAPI(self)
         self.invoices = InvoicesAPI(self)

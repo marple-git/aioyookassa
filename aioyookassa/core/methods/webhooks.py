@@ -4,6 +4,8 @@ Webhooks API methods.
 
 from typing import Any, Dict
 
+from aioyookassa.core.utils import remove_none_values
+
 from .base import BaseAPIMethod
 
 
@@ -40,7 +42,7 @@ class CreateWebhook(WebhooksAPIMethod):
             "event": kwargs.get("event"),
             "url": kwargs.get("url"),
         }
-        return {k: v for k, v in params.items() if v is not None}
+        return remove_none_values(params)
 
 
 class GetWebhooks(WebhooksAPIMethod):

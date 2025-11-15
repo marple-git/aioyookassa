@@ -1,5 +1,6 @@
 from typing import Any, Dict, Optional
 
+from aioyookassa.core.utils import remove_none_values
 from aioyookassa.types.params import PayoutReceiptData
 from aioyookassa.types.payout import SelfEmployed
 
@@ -57,7 +58,7 @@ class CreatePayout(PayoutsAPIMethod):
             "personal_data": kwargs.get("personal_data"),
             "metadata": kwargs.get("metadata"),
         }
-        return {k: v for k, v in params.items() if v is not None}
+        return remove_none_values(params)
 
 
 class GetPayout(PayoutsAPIMethod):

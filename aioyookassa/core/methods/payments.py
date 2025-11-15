@@ -1,5 +1,6 @@
 from typing import Any, Dict, List, Optional
 
+from aioyookassa.core.utils import remove_none_values
 from aioyookassa.types.payment import Airline, Deal, PaymentAmount, Receipt, Transfer
 
 from .base import APIMethod, BaseAPIMethod
@@ -69,7 +70,7 @@ class CreatePayment(PaymentsAPIMethod):
             "deal": APIMethod._safe_model_dump(deal),
             "merchant_customer_id": kwargs.get("merchant_customer_id"),
         }
-        return {k: v for k, v in params.items() if v is not None}
+        return remove_none_values(params)
 
 
 class GetPayments(PaymentsAPIMethod):
@@ -98,7 +99,7 @@ class GetPayments(PaymentsAPIMethod):
             "cursor": cursor,
             **kwargs,
         }
-        return {k: v for k, v in params.items() if v is not None}
+        return remove_none_values(params)
 
 
 class GetPayment(PaymentsAPIMethod):
@@ -145,7 +146,7 @@ class CapturePayment(PaymentsAPIMethod):
             ),
             "deal": APIMethod._safe_model_dump(deal),
         }
-        return {k: v for k, v in params.items() if v is not None}
+        return remove_none_values(params)
 
 
 class CancelPayment(PaymentsAPIMethod):

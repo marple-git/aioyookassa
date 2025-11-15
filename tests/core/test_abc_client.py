@@ -22,6 +22,20 @@ class TestAPIMethod(APIMethod):
 class TestBaseAPIClient:
     """Test BaseAPIClient class."""
 
+    @staticmethod
+    def _create_mock_response(status=200, json_data=None, text_data=None):
+        """Helper to create mock response with async context manager support."""
+        mock_response = AsyncMock()
+        mock_response.status = status
+        if json_data is not None:
+            mock_response.json = AsyncMock(return_value=json_data)
+        if text_data is not None:
+            mock_response.text = AsyncMock(return_value=text_data)
+        # Make it work as async context manager
+        mock_response.__aenter__ = AsyncMock(return_value=mock_response)
+        mock_response.__aexit__ = AsyncMock(return_value=None)
+        return mock_response
+
     def test_base_api_client_initialization(self):
         """Test BaseAPIClient initialization."""
         client = BaseAPIClient(api_key="test_api_key", shop_id=123456)
@@ -47,15 +61,27 @@ class TestBaseAPIClient:
         """Test _get_session creates new session when none exists."""
         client = BaseAPIClient(api_key="test_api_key", shop_id=123456)
 
-        with patch("aioyookassa.core.abc.client.ClientSession") as mock_session_class:
+        with patch(
+            "aioyookassa.core.abc.client.ClientSession"
+        ) as mock_session_class, patch(
+            "aioyookassa.core.abc.client.TCPConnector"
+        ) as mock_connector_class:
             mock_session = AsyncMock()
+            mock_connector = AsyncMock()
             mock_session_class.return_value = mock_session
+            mock_connector_class.return_value = mock_connector
 
             session = client._get_session()
 
             assert session == mock_session
             assert client._session == mock_session
+            # Check that ClientSession was called with connector, timeout, and headers
             mock_session_class.assert_called_once()
+            call_kwargs = mock_session_class.call_args[1]
+            assert "connector" in call_kwargs
+            assert "timeout" in call_kwargs
+            assert "headers" in call_kwargs
+            assert "User-Agent" in call_kwargs["headers"]
 
     def test_get_session_reuses_existing_session(self):
         """Test _get_session reuses existing session."""
@@ -79,14 +105,25 @@ class TestBaseAPIClient:
         mock_old_session.closed = True
         client._session = mock_old_session
 
-        with patch("aioyookassa.core.abc.client.ClientSession") as mock_session_class:
+        with patch(
+            "aioyookassa.core.abc.client.ClientSession"
+        ) as mock_session_class, patch(
+            "aioyookassa.core.abc.client.TCPConnector"
+        ) as mock_connector_class:
             mock_new_session = AsyncMock()
+            mock_connector = AsyncMock()
             mock_session_class.return_value = mock_new_session
+            mock_connector_class.return_value = mock_connector
 
             session = client._get_session()
 
             assert session == mock_new_session
             assert client._session == mock_new_session
+            # Check that ClientSession was called with proper parameters
+            call_kwargs = mock_session_class.call_args[1]
+            assert "connector" in call_kwargs
+            assert "timeout" in call_kwargs
+            assert "headers" in call_kwargs
 
     @pytest.mark.asyncio
     async def test_close_with_session(self):
@@ -137,18 +174,21 @@ class TestBaseAPIClient:
 
         assert url == "https://api.yookassa.ru/v3/test"
 
-    def test_delete_none_with_none_values(self):
-        """Test _delete_none method with None values."""
+    def test_remove_none_values_with_none_values(self):
+        """Test _remove_none_values method with None values."""
         client = BaseAPIClient(api_key="test_api_key", shop_id=123456)
 
         data = {"key1": "value1", "key2": None, "key3": "value3", "key4": None}
 
-        result = client._delete_none(data)
+        result = client._remove_none_values(data)
 
         assert result == {"key1": "value1", "key3": "value3"}
+        # Verify original is not mutated
+        assert "key2" in data
+        assert data["key2"] is None
 
-    def test_delete_none_with_nested_dicts(self):
-        """Test _delete_none method with nested dictionaries."""
+    def test_remove_none_values_with_nested_dicts(self):
+        """Test _remove_none_values method with nested dictionaries."""
         client = BaseAPIClient(api_key="test_api_key", shop_id=123456)
 
         data = {
@@ -161,16 +201,19 @@ class TestBaseAPIClient:
             "key3": None,
         }
 
-        result = client._delete_none(data)
+        result = client._remove_none_values(data)
 
         expected = {
             "key1": "value1",
             "key2": {"nested_key1": "nested_value1", "nested_key3": "nested_value3"},
         }
         assert result == expected
+        # Verify original is not mutated
+        assert "key3" in data
+        assert data["key3"] is None
 
-    def test_delete_none_with_lists(self):
-        """Test _delete_none method with lists containing dictionaries."""
+    def test_remove_none_values_with_lists(self):
+        """Test _remove_none_values method with lists containing dictionaries."""
         client = BaseAPIClient(api_key="test_api_key", shop_id=123456)
 
         data = {
@@ -182,62 +225,72 @@ class TestBaseAPIClient:
             "key3": None,
         }
 
-        result = client._delete_none(data)
+        result = client._remove_none_values(data)
 
         expected = {
             "key1": "value1",
             "key2": [{"item1": "value1"}, {"item3": "value3"}],
         }
         assert result == expected
+        # Verify original is not mutated
+        assert "key3" in data
+        assert data["key3"] is None
 
-    def test_delete_none_with_empty_dict(self):
-        """Test _delete_none method with empty dictionary."""
+    def test_remove_none_values_with_empty_dict(self):
+        """Test _remove_none_values method with empty dictionary."""
         client = BaseAPIClient(api_key="test_api_key", shop_id=123456)
 
         data = {}
-        result = client._delete_none(data)
+        result = client._remove_none_values(data)
 
         assert result == {}
 
-    def test_delete_none_with_no_none_values(self):
-        """Test _delete_none method with no None values."""
+    def test_remove_none_values_with_no_none_values(self):
+        """Test _remove_none_values method with no None values."""
         client = BaseAPIClient(api_key="test_api_key", shop_id=123456)
 
         data = {"key1": "value1", "key2": "value2", "key3": "value3"}
 
-        result = client._delete_none(data)
+        result = client._remove_none_values(data)
 
         assert result == data
+        # Verify it's a copy, not the same object
+        assert result is not data
 
     @pytest.mark.asyncio
     async def test_send_request_success(self):
         """Test _send_request method with successful response."""
         client = BaseAPIClient(api_key="test_api_key", shop_id=123456)
 
-        # Mock session and response
+        # Mock session and response with async context manager support
         mock_session = AsyncMock()
-        mock_response = AsyncMock()
-        mock_response.status = 200
-        mock_response.json = AsyncMock(return_value={"success": True})
-        mock_session.request.return_value = mock_response
+        mock_response = self._create_mock_response(
+            status=200, json_data={"success": True}
+        )
+        # session.request() should return a coroutine that yields the response
+        mock_session.request = AsyncMock(return_value=mock_response)
 
         with patch.object(client, "_get_session", return_value=mock_session):
             result = await client._send_request(TestAPIMethod)
 
             assert result == {"success": True}
             mock_session.request.assert_called_once()
+            # Check that timeout and proxy are passed
+            call_kwargs = mock_session.request.call_args[1]
+            assert "timeout" in call_kwargs
+            assert "proxy" in call_kwargs
 
     @pytest.mark.asyncio
     async def test_send_request_with_json_data(self):
         """Test _send_request method with JSON data."""
         client = BaseAPIClient(api_key="test_api_key", shop_id=123456)
 
-        # Mock session and response
+        # Mock session and response with async context manager support
         mock_session = AsyncMock()
-        mock_response = AsyncMock()
-        mock_response.status = 200
-        mock_response.json = AsyncMock(return_value={"success": True})
-        mock_session.request.return_value = mock_response
+        mock_response = self._create_mock_response(
+            status=200, json_data={"success": True}
+        )
+        mock_session.request = AsyncMock(return_value=mock_response)
 
         with patch.object(client, "_get_session", return_value=mock_session):
             json_data = {"key": "value"}
@@ -259,12 +312,12 @@ class TestBaseAPIClient:
         """Test _send_request method with query parameters."""
         client = BaseAPIClient(api_key="test_api_key", shop_id=123456)
 
-        # Mock session and response
+        # Mock session and response with async context manager support
         mock_session = AsyncMock()
-        mock_response = AsyncMock()
-        mock_response.status = 200
-        mock_response.json = AsyncMock(return_value={"success": True})
-        mock_session.request.return_value = mock_response
+        mock_response = self._create_mock_response(
+            status=200, json_data={"success": True}
+        )
+        mock_session.request = AsyncMock(return_value=mock_response)
 
         with patch.object(client, "_get_session", return_value=mock_session):
             params = {"param1": "value1", "param2": "value2"}
@@ -282,14 +335,13 @@ class TestBaseAPIClient:
         """Test _send_request method with HTTP error and JSON response."""
         client = BaseAPIClient(api_key="test_api_key", shop_id=123456)
 
-        # Mock session and response
+        # Mock session and response with async context manager support
         mock_session = AsyncMock()
-        mock_response = AsyncMock()
-        mock_response.status = 400
-        mock_response.json = AsyncMock(
-            return_value={"code": "invalid_request", "description": "Invalid request"}
+        mock_response = self._create_mock_response(
+            status=400,
+            json_data={"code": "invalid_request", "description": "Invalid request"},
         )
-        mock_session.request.return_value = mock_response
+        mock_session.request = AsyncMock(return_value=mock_response)
 
         with patch.object(client, "_get_session", return_value=mock_session):
             with pytest.raises(APIError) as exc_info:
@@ -302,19 +354,20 @@ class TestBaseAPIClient:
         """Test _send_request method with HTTP error and text response."""
         client = BaseAPIClient(api_key="test_api_key", shop_id=123456)
 
-        # Mock session and response
+        # Mock session and response with async context manager support
         mock_session = AsyncMock()
-        mock_response = AsyncMock()
-        mock_response.status = 400
-        mock_response.json.side_effect = Exception("Not JSON")
-        mock_response.text = AsyncMock(return_value="Bad Request")
-        mock_session.request.return_value = mock_response
+        mock_response = self._create_mock_response(status=400, text_data="Bad Request")
+        # ValueError is raised for JSON decode errors
+        mock_response.json.side_effect = ValueError("Not JSON")
+        mock_session.request = AsyncMock(return_value=mock_response)
 
         with patch.object(client, "_get_session", return_value=mock_session):
             with pytest.raises(APIError) as exc_info:
                 await client._send_request(TestAPIMethod)
 
-            assert "HTTP 400: Bad Request" in str(exc_info.value)
+            # Updated error handling now includes "Bad Request" in the message
+            assert "HTTP 400" in str(exc_info.value)
+            assert "Bad Request" in str(exc_info.value)
 
     @pytest.mark.asyncio
     async def test_send_request_network_error(self):
@@ -336,22 +389,20 @@ class TestBaseAPIClient:
         """Test _send_request method with JSON parse error."""
         client = BaseAPIClient(api_key="test_api_key", shop_id=123456)
 
-        # Mock session and response
+        # Mock session and response with async context manager support
         mock_session = AsyncMock()
-        mock_response = AsyncMock()
-        mock_response.status = 200
-        mock_response.json.side_effect = Exception("JSON parse error")
-        # Configure text() to return non-empty string to avoid empty response handling
-        mock_response.text = AsyncMock(return_value="some text")
-        mock_session.request.return_value = mock_response
+        mock_response = self._create_mock_response(status=200, text_data="some text")
+        # ValueError is raised for JSON decode errors
+        mock_response.json.side_effect = ValueError("JSON parse error")
+        mock_session.request = AsyncMock(return_value=mock_response)
 
         with patch.object(client, "_get_session", return_value=mock_session):
             with pytest.raises(APIError) as exc_info:
                 await client._send_request(TestAPIMethod)
 
-            assert "Failed to parse JSON response: JSON parse error" in str(
-                exc_info.value
-            )
+            # Updated error handling includes response text in the message
+            assert "Failed to parse JSON response" in str(exc_info.value)
+            assert "some text" in str(exc_info.value)
 
     @pytest.mark.asyncio
     async def test_context_manager(self):

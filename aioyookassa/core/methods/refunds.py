@@ -1,6 +1,6 @@
 from typing import Any, Dict, List, Optional
 
-from aioyookassa.core.utils import format_datetime_params
+from aioyookassa.core.utils import format_datetime_params, remove_none_values
 from aioyookassa.types.payment import PaymentAmount, Receipt
 from aioyookassa.types.refund import RefundDeal, RefundMethod, RefundSource
 
@@ -64,7 +64,7 @@ class CreateRefund(RefundsAPIMethod):
                 refund_method_data, exclude_none=True, mode="python"
             ),
         }
-        return {k: v for k, v in params.items() if v is not None}
+        return remove_none_values(params)
 
 
 class GetRefunds(RefundsAPIMethod):
@@ -114,7 +114,7 @@ class GetRefunds(RefundsAPIMethod):
             "cursor": params.get("cursor"),
         }
         result.update({k: v for k, v in kwargs.items() if k not in result})
-        return {k: v for k, v in result.items() if v is not None}
+        return remove_none_values(result)
 
 
 class GetRefund(RefundsAPIMethod):

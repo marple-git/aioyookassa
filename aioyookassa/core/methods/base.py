@@ -55,9 +55,21 @@ class BaseAPIMethod(APIMethod):
 
         :param kwargs: Resource ID parameters (e.g., payment_id, refund_id, etc.).
         :return: Method instance with formatted path.
+        :raises ValueError: If path formatting fails due to missing or invalid parameters.
         """
         if not kwargs:
             return cls()
-        # Format path with the first provided ID parameter
-        path = cls.path.format(**kwargs)
+        try:
+            # Format path with the provided ID parameters
+            path = cls.path.format(**kwargs)
+        except KeyError as e:
+            missing_key = str(e).strip("'\"")
+            raise ValueError(
+                f"Missing required parameter '{missing_key}' for path '{cls.path}'. "
+                f"Provided parameters: {list(kwargs.keys())}"
+            ) from e
+        except Exception as e:
+            raise ValueError(
+                f"Failed to format path '{cls.path}' with parameters {kwargs}: {str(e)}"
+            ) from e
         return cls(path=path)
