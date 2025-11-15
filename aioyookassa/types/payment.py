@@ -41,19 +41,26 @@ class Confirmation(BaseModel):
         return data
 
 
-class PaymentAmount(BaseModel):
+class Money(BaseModel):
     """
-    Payment amount
+    Monetary amount with currency.
+
+    Represents a monetary value with currency. Used across all API domains
+    (payments, payouts, refunds, deals, etc.) to represent monetary values.
 
     Supports multiple numeric types for convenience:
-    - int: PaymentAmount(value=100, currency="RUB")
-    - float: PaymentAmount(value=100.50, currency="RUB")
-    - str: PaymentAmount(value="100.00", currency="RUB")
-    - Decimal: PaymentAmount(value=Decimal("100.00"), currency="RUB")
+    - int: Money(value=100, currency="RUB")
+    - float: Money(value=100.50, currency="RUB")
+    - str: Money(value="100.00", currency="RUB")
+    - Decimal: Money(value=Decimal("100.00"), currency="RUB")
     """
 
     value: Union[int, float, str, Decimal]
     currency: Union[Currency, str] = Currency.RUB
+
+
+# Alias for backward compatibility
+PaymentAmount = Money
 
 
 class Recipient(BaseModel):
@@ -210,7 +217,7 @@ class Settlement(BaseModel):
 
 class Deal(BaseModel):
     id: str
-    settlements: List[PaymentAmount]
+    settlements: Optional[List[PaymentAmount]] = None
 
 
 class InvoiceDetails(BaseModel):
@@ -355,7 +362,7 @@ class Receipt(BaseModel):
     internet: Optional[bool] = None
     timezone: Optional[int] = None
     receipt_industry_details: Optional[List[IndustryDetails]] = None
-    receipt_operation_details: Optional[OperationDetails] = None
+    receipt_operational_details: Optional[OperationDetails] = None
 
 
 class Passenger(BaseModel):

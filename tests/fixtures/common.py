@@ -38,9 +38,20 @@ from aioyookassa.types.enum import (
     PaymentMode,
     PaymentStatus,
     PaymentSubject,
+    PayoutStatus,
     ReceiptRegistration,
+    SelfEmployedStatus,
 )
 from aioyookassa.types.payment import CardInfo, PaymentMethod, Recipient, Settlement
+from aioyookassa.types.payout import (
+    BankCardPayoutDestination,
+    Payout,
+    PayoutCardInfo,
+    SelfEmployed,
+    SelfEmployedConfirmation,
+)
+from aioyookassa.types.personal_data import PersonalDataCancellationDetails
+from aioyookassa.types.sbp_banks import SbpBanksList, SbpParticipantBank
 
 
 @pytest.fixture
@@ -274,3 +285,162 @@ def sample_api_response():
         "paid": True,
         "refundable": True,
     }
+
+
+@pytest.fixture
+def sample_payout_card_info():
+    """Sample payout card info fixture."""
+    return PayoutCardInfo(
+        first6="123456",
+        last4="7890",
+        card_type="Visa",
+        issuer_country="RU",
+        issuer_name="Test Bank",
+    )
+
+
+@pytest.fixture
+def sample_payout_destination(sample_payout_card_info):
+    """Sample payout destination fixture."""
+    return BankCardPayoutDestination(card=sample_payout_card_info)
+
+
+@pytest.fixture
+def sample_payout(sample_payout_destination):
+    """Sample payout fixture."""
+    return Payout(
+        id="payout_123456789",
+        status=PayoutStatus.PENDING,
+        amount=PaymentAmount(value=100.50, currency=Currency.RUB),
+        payout_destination=sample_payout_destination,
+        created_at=datetime.datetime.now(),
+        test=True,
+    )
+
+
+@pytest.fixture
+def sample_payout_deal():
+    """Sample payout deal fixture."""
+    from aioyookassa.types.payment import Deal
+
+    return Deal(id="deal_123456789")
+
+
+@pytest.fixture
+def sample_self_employed():
+    """Sample self-employed fixture (minimal, for use in Payout)."""
+    return SelfEmployed(id="se_123456789")
+
+
+@pytest.fixture
+def sample_self_employed_confirmation():
+    """Sample self-employed confirmation fixture."""
+    return SelfEmployedConfirmation(confirmation_url="https://example.com/confirm")
+
+
+@pytest.fixture
+def sample_self_employed_full(sample_self_employed_confirmation):
+    """Sample full self-employed fixture."""
+    return SelfEmployed(
+        id="se_123456789",
+        status=SelfEmployedStatus.CONFIRMED,
+        created_at=datetime.datetime.now(),
+        itn="123456789012",
+        phone="79000000000",
+        confirmation=sample_self_employed_confirmation,
+        test=True,
+    )
+
+
+@pytest.fixture
+def sample_sbp_participant_bank():
+    """Sample SBP participant bank fixture."""
+    return SbpParticipantBank(bank_id="100000000001", name="Test Bank", bic="044525225")
+
+
+@pytest.fixture
+def sample_sbp_banks_list(sample_sbp_participant_bank):
+    """Sample SBP banks list fixture."""
+    bank2 = SbpParticipantBank(
+        bank_id="100000000002", name="Another Bank", bic="044525226"
+    )
+    return SbpBanksList(items=[sample_sbp_participant_bank, bank2])
+
+
+@pytest.fixture
+def sample_personal_data_cancellation_details():
+    """Sample personal data cancellation details fixture."""
+    from aioyookassa.types.enum import (
+        PersonalDataCancellationParty,
+        PersonalDataCancellationReason,
+    )
+
+    return PersonalDataCancellationDetails(
+        party=PersonalDataCancellationParty.YOO_MONEY,
+        reason=PersonalDataCancellationReason.EXPIRED_BY_TIMEOUT,
+    )
+
+
+@pytest.fixture
+def sample_personal_data(sample_personal_data_cancellation_details):
+    """Sample personal data fixture."""
+    from aioyookassa.types.enum import PersonalDataStatus, PersonalDataType
+    from aioyookassa.types.personal_data import PersonalData
+
+    return PersonalData(
+        id="pd_123456789",
+        type=PersonalDataType.SBP_PAYOUT_RECIPIENT,
+        status=PersonalDataStatus.WAITING_FOR_OPERATION,
+        created_at=datetime.datetime.now(),
+        cancellation_details=sample_personal_data_cancellation_details,
+        metadata={"key": "value"},
+    )
+
+
+@pytest.fixture
+def sample_personal_data_active():
+    """Sample active personal data fixture."""
+    from aioyookassa.types.enum import PersonalDataStatus, PersonalDataType
+    from aioyookassa.types.personal_data import PersonalData
+
+    return PersonalData(
+        id="pd_987654321",
+        type=PersonalDataType.PAYOUT_STATEMENT_RECIPIENT,
+        status=PersonalDataStatus.ACTIVE,
+        created_at=datetime.datetime.now(),
+        expires_at=datetime.datetime.now() + datetime.timedelta(days=30),
+        metadata={"order_id": "12345"},
+    )
+
+
+# Webhooks fixtures
+@pytest.fixture
+def sample_webhook_minimal():
+    """Sample minimal webhook for testing."""
+    from aioyookassa.types.webhooks import Webhook
+
+    return Webhook(
+        id="wh_123456789",
+        event="payment.succeeded",
+        url="https://example.com/webhook",
+    )
+
+
+@pytest.fixture
+def sample_webhook_full():
+    """Sample full webhook for testing."""
+    from aioyookassa.types.webhooks import Webhook
+
+    return Webhook(
+        id="wh_987654321",
+        event="deal.closed",
+        url="https://api.example.com/v1/webhooks",
+    )
+
+
+@pytest.fixture
+def sample_webhooks_list(sample_webhook_minimal, sample_webhook_full):
+    """Sample webhooks list for testing."""
+    from aioyookassa.types.webhooks import WebhooksList
+
+    return WebhooksList(items=[sample_webhook_minimal, sample_webhook_full])

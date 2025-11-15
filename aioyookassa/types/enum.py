@@ -232,3 +232,123 @@ class PaymentMethodStatus(StrEnum):
     PENDING = "pending"  # Waiting for user actions
     ACTIVE = "active"  # Payment method saved, can be used for autopayments or payouts
     INACTIVE = "inactive"  # Payment method not saved: error occurred or no save attempt
+
+
+class PayoutStatus(StrEnum):
+    """
+    Payout status
+
+    More detailed documentation:
+    https://yookassa.ru/developers/api#payout_object
+    """
+
+    PENDING = "pending"  # Payout created, but money not yet transferred
+    SUCCEEDED = "succeeded"  # Payout successfully completed
+    CANCELED = "canceled"  # Payout canceled
+
+
+class SelfEmployedStatus(StrEnum):
+    """
+    Self-employed status
+
+    More detailed documentation:
+    https://yookassa.ru/developers/api#self_employed_object
+    """
+
+    PENDING = "pending"  # YooMoney requested rights, but self-employed hasn't responded
+    CONFIRMED = "confirmed"  # Self-employed granted rights; you can make payouts
+    CANCELED = "canceled"  # Self-employed rejected or revoked rights
+    UNREGISTERED = "unregistered"  # Self-employed not registered or lost status
+
+
+class PersonalDataType(StrEnum):
+    """
+    Personal data type
+
+    More detailed documentation:
+    https://yookassa.ru/developers/api#personal_data_object
+    """
+
+    SBP_PAYOUT_RECIPIENT = (
+        "sbp_payout_recipient"  # Recipient verification for SBP payouts
+    )
+    PAYOUT_STATEMENT_RECIPIENT = (
+        "payout_statement_recipient"  # Recipient data for statement
+    )
+
+
+class PersonalDataStatus(StrEnum):
+    """
+    Personal data status
+
+    More detailed documentation:
+    https://yookassa.ru/developers/api#personal_data_object
+    """
+
+    WAITING_FOR_OPERATION = "waiting_for_operation"  # Data saved but not used in payout
+    ACTIVE = "active"  # Data saved and used in payout; can be reused until expires_at
+    CANCELED = "canceled"  # Data storage canceled, data deleted
+
+
+class PersonalDataCancellationParty(StrEnum):
+    """
+    Personal data cancellation party
+
+    More detailed documentation:
+    https://yookassa.ru/developers/api#personal_data_object
+    """
+
+    YOO_MONEY = "yoo_money"  # YooKassa
+
+
+class PersonalDataCancellationReason(StrEnum):
+    """
+    Personal data cancellation reason
+
+    More detailed documentation:
+    https://yookassa.ru/developers/api#personal_data_object
+    """
+
+    EXPIRED_BY_TIMEOUT = "expired_by_timeout"  # Storage or usage period expired
+
+
+class DealStatus(StrEnum):
+    """
+    Deal status
+
+    More detailed documentation:
+    https://yookassa.ru/developers/api#deal_object
+    """
+
+    OPENED = "opened"  # Deal is open; can perform payments, refunds, and payouts
+    CLOSED = "closed"  # Deal is closed; cannot perform operations
+
+
+class FeeMoment(StrEnum):
+    """
+    Fee moment - when platform fee is transferred
+
+    More detailed documentation:
+    https://yookassa.ru/developers/api#deal_object
+    """
+
+    PAYMENT_SUCCEEDED = "payment_succeeded"  # After successful payment
+    DEAL_CLOSED = "deal_closed"  # When deal is closed after successful payout
+
+
+class WebhookEvent(StrEnum):
+    """
+    Webhook event types
+
+    More detailed documentation:
+    https://yookassa.ru/developers/api#webhook_object
+    """
+
+    PAYMENT_WAITING_FOR_CAPTURE = "payment.waiting_for_capture"
+    PAYMENT_SUCCEEDED = "payment.succeeded"
+    PAYMENT_CANCELED = "payment.canceled"
+    PAYMENT_METHOD_ACTIVE = "payment_method.active"
+    REFUND_SUCCEEDED = "refund.succeeded"
+    PAYOUT_SUCCEEDED = "payout.succeeded"
+    PAYOUT_CANCELED = "payout.canceled"
+    DEAL_CLOSED = "deal.closed"

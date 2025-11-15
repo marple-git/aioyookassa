@@ -1,15 +1,26 @@
+from .deals import Deal as SafeDeal
+from .deals import DealsList
 from .enum import (
     CancellationParty,
     CancellationReason,
     ConfirmationType,
     Currency,
+    DealStatus,
+    FeeMoment,
     PaymentMethodType,
     PaymentMode,
     PaymentStatus,
     PaymentSubject,
+    PayoutStatus,
+    PersonalDataCancellationParty,
+    PersonalDataCancellationReason,
+    PersonalDataStatus,
+    PersonalDataType,
     ReceiptRegistration,
     ReceiptStatus,
     ReceiptType,
+    SelfEmployedStatus,
+    WebhookEvent,
 )
 from .invoice import (
     Invoice,
@@ -21,17 +32,27 @@ from .invoice import (
 )
 from .params import (
     CapturePaymentParams,
+    CreateDealParams,
     CreateInvoiceParams,
     CreatePaymentMethodParams,
     CreatePaymentParams,
+    CreatePayoutParams,
+    CreatePersonalDataParams,
     CreateReceiptParams,
     CreateRefundParams,
+    CreateSelfEmployedParams,
+    CreateWebhookParams,
+    GetDealsParams,
     GetPaymentsParams,
     GetReceiptsParams,
     GetRefundsParams,
     PaymentMethodCardData,
     PaymentMethodConfirmation,
     PaymentMethodHolder,
+    PayoutDestinationData,
+    PayoutStatementRecipientData,
+    SbpPayoutRecipientData,
+    SelfEmployedConfirmationData,
 )
 from .payment import (
     Airline,
@@ -50,6 +71,7 @@ from .payment import (
     InvoiceDetails,
     MarkCodeInfo,
     MarkQuantity,
+    Money,
     OperationDetails,
     Passenger,
     PayerBankDetails,
@@ -65,6 +87,18 @@ from .payment import (
     Transfer,
     VatData,
 )
+from .payout import (
+    BankCardPayoutDestination,
+    Payout,
+    PayoutCardInfo,
+    PayoutDestination,
+    PayoutReceipt,
+    SbpPayoutDestination,
+    SelfEmployed,
+    SelfEmployedConfirmation,
+    YooMoneyPayoutDestination,
+)
+from .personal_data import PersonalData, PersonalDataCancellationDetails
 from .receipt_registration import (
     AdditionalUserProps,
     FiscalReceipt,
@@ -73,7 +107,9 @@ from .receipt_registration import (
     Supplier,
 )
 from .refund import Refund, RefundDeal, RefundMethod, RefundsList, RefundSource
+from .sbp_banks import SbpBanksList, SbpParticipantBank
 from .settings import Settings
+from .webhooks import Webhook, WebhooksList
 
 __all__ = [
     # Payment types - Core
@@ -81,7 +117,8 @@ __all__ = [
     "Payment",
     "PaymentsList",
     "PaymentItem",
-    "PaymentAmount",
+    "Money",
+    "PaymentAmount",  # Alias for Money (backward compatibility)
     "Receipt",
     "Customer",
     "Recipient",
@@ -124,6 +161,15 @@ __all__ = [
     "CancellationReason",
     "PaymentMethodType",
     "Currency",
+    "PayoutStatus",
+    "SelfEmployedStatus",
+    "DealStatus",
+    "FeeMoment",
+    "WebhookEvent",
+    "PersonalDataType",
+    "PersonalDataStatus",
+    "PersonalDataCancellationParty",
+    "PersonalDataCancellationReason",
     # Invoice types
     "Invoice",
     "InvoiceCartItem",
@@ -137,6 +183,28 @@ __all__ = [
     "RefundSource",
     "RefundDeal",
     "RefundMethod",
+    # Payout types
+    "Payout",
+    "PayoutCardInfo",
+    "BankCardPayoutDestination",
+    "SbpPayoutDestination",
+    "YooMoneyPayoutDestination",
+    "PayoutDestination",
+    "PayoutReceipt",
+    "SelfEmployed",
+    "SelfEmployedConfirmation",
+    # SBP Banks types
+    "SbpParticipantBank",
+    "SbpBanksList",
+    # Personal Data types
+    "PersonalData",
+    "PersonalDataCancellationDetails",
+    # Deal types
+    "SafeDeal",
+    "DealsList",
+    # Webhook types
+    "Webhook",
+    "WebhooksList",
     # Fiscal receipt types
     "FiscalReceipt",
     "FiscalReceiptsList",
@@ -151,6 +219,16 @@ __all__ = [
     "GetPaymentsParams",
     "CreateRefundParams",
     "GetRefundsParams",
+    "CreatePayoutParams",
+    "PayoutDestinationData",
+    "CreateSelfEmployedParams",
+    "SelfEmployedConfirmationData",
+    "CreatePersonalDataParams",
+    "SbpPayoutRecipientData",
+    "PayoutStatementRecipientData",
+    "CreateDealParams",
+    "GetDealsParams",
+    "CreateWebhookParams",
     "CreateInvoiceParams",
     "CreateReceiptParams",
     "GetReceiptsParams",

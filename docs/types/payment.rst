@@ -8,6 +8,20 @@ Payment
     :special-members: __init__
     :undoc-members: True
 
+.. autoclass:: aioyookassa.types.payment.Money
+   :members:
+   :show-inheritance:
+   :member-order: bysource
+   :special-members: __init__
+   :undoc-members: True
+
+PaymentAmount (Alias)
+---------------------
+
+.. note::
+   ``PaymentAmount`` является алиасом для ``Money`` и доступен для обратной совместимости.
+   Рекомендуется использовать ``Money`` в новом коде.
+
 .. autoclass:: aioyookassa.types.payment.PaymentAmount
     :members:
     :show-inheritance:

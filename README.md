@@ -8,7 +8,7 @@
 
 **Асинхронная Python библиотека для работы с API YooKassa**
 
-`aioyookassa` — это современная асинхронная библиотека для интеграции с платежным сервисом YooKassa. Библиотека предоставляет удобный интерфейс для работы с платежами, возвратами, чеками и другими функциями YooKassa API.
+`aioyookassa` — это современная асинхронная библиотека для интеграции с платежным сервисом YooKassa. Библиотека предоставляет полную поддержку всех API доменов YooKassa, включая платежи, возвраты, чеки, счета, выплаты, безопасные сделки, webhooks и многое другое.
 
 ## ✨ Особенности
 
@@ -16,8 +16,9 @@
 - 🛡️ **Типизация** — полная поддержка типов с использованием Pydantic моделей
 - 🔧 **Простота** — интуитивно понятный API для быстрой интеграции
 - 📚 **Документация** — подробная документация с примерами использования
-- 🧪 **Тестирование** — 92% покрытие кода тестами
+- 🧪 **Тестирование** — 95% покрытие кода тестами
 - ⚡ **Производительность** — оптимизированная работа с HTTP запросами
+- 🎯 **Полная поддержка API** — реализованы все домены YooKassa API
 
 ## 🔗 Links
 
@@ -40,10 +41,16 @@ aioyookassa/
 │   ├── client.py           # Main YooKassa client
 │   ├── api/                # API client implementations
 │   │   ├── payments.py     # Payment operations
+│   │   ├── refunds.py      # Refund operations
 │   │   ├── receipts.py     # Fiscal receipt operations
 │   │   ├── invoices.py     # Invoice operations
-│   │   ├── refunds.py      # Refund operations
-│   │   └── payment_methods.py # Payment method management
+│   │   ├── payment_methods.py # Payment method management
+│   │   ├── payouts.py      # Payout operations
+│   │   ├── self_employed.py # Self-employed operations
+│   │   ├── sbp_banks.py    # SBP banks list
+│   │   ├── personal_data.py # Personal data operations
+│   │   ├── deals.py        # Safe deals operations
+│   │   └── webhooks.py     # Webhooks management
 │   ├── methods/            # API method definitions
 │   └── abc/                # Abstract base classes
 ├── types/                  # Pydantic models and enums
@@ -82,11 +89,14 @@ pip install aioyookassa>=2.0.0
 
 ### Базовое использование
 
+> **Примечание**: В версии 2.1.0 `PaymentAmount` переименован в `Money` для лучшей семантики.
+> `PaymentAmount` все еще доступен как alias для обратной совместимости.
+
 ```python
 import asyncio
 from datetime import datetime
 from aioyookassa import YooKassa
-from aioyookassa.types.payment import PaymentAmount, Confirmation
+from aioyookassa.types.payment import Money, Confirmation
 from aioyookassa.types.enum import PaymentStatus, ConfirmationType, Currency
 from aioyookassa.types.params import CreatePaymentParams, GetPaymentsParams
 
@@ -96,7 +106,7 @@ async def main():
 
     # Создание платежа (используем Pydantic модель)
     params = CreatePaymentParams(
-        amount=PaymentAmount(value=100.00, currency=Currency.RUB),
+        amount=Money(value=100.00, currency=Currency.RUB),
         confirmation=Confirmation(type=ConfirmationType.REDIRECT, return_url="https://example.com/return"),
         description="Тестовый платеж"
     )
@@ -125,6 +135,22 @@ async def main():
 asyncio.run(main())
 ```
 
+## 🎯 Поддерживаемые API домены
+
+Библиотека поддерживает **все API домены YooKassa**:
+
+- 💳 **Платежи (Payments)** — создание, подтверждение, отмена платежей
+- 💰 **Возвраты (Refunds)** — полные и частичные возвраты
+- 🧾 **Чеки (Receipts)** — регистрация фискальных чеков
+- 📄 **Счета (Invoices)** — создание и управление счетами
+- 💳 **Способы оплаты (Payment Methods)** — управление сохраненными способами оплаты
+- 💸 **Выплаты (Payouts)** — выплаты на карты, через СБП, на кошельки ЮMoney
+- 👤 **Самозанятые (Self-Employed)** — работа с самозанятыми получателями
+- 🏦 **Участники СБП (SBP Banks)** — получение списка банков СБП
+- 🔐 **Персональные данные (Personal Data)** — управление персональными данными получателей
+- 🤝 **Безопасные сделки (Deals)** — создание и управление безопасными сделками
+- 🔔 **Webhooks** — подписка на события и управление уведомлениями
+
 ## 📋 Основные методы
 
 ### 💳 Платежи (Payments)
@@ -136,7 +162,7 @@ from aioyookassa.types.params import CreatePaymentParams, GetPaymentsParams
 
 # Создание платежа (используем Pydantic модель)
 params = CreatePaymentParams(
-    amount=PaymentAmount(value=1000.00, currency=Currency.RUB),
+    amount=Money(value=1000.00, currency=Currency.RUB),
     confirmation=Confirmation(type=ConfirmationType.REDIRECT, return_url="https://example.com/return"),
     description="Оплата заказа #12345"
 )
@@ -156,7 +182,7 @@ payment = await client.payments.get_payment("payment_id")
 # Подтверждение платежа (используем Pydantic модель)
 from aioyookassa.types.params import CapturePaymentParams
 
-params = CapturePaymentParams(amount=PaymentAmount(value=1000.00, currency=Currency.RUB))
+params = CapturePaymentParams(amount=Money(value=1000.00, currency=Currency.RUB))
 payment = await client.payments.capture_payment("payment_id", params)
 
 # Отмена платежа
@@ -171,7 +197,7 @@ from aioyookassa.types.params import CreateRefundParams
 # Создание возврата (используем Pydantic модель)
 params = CreateRefundParams(
     payment_id="payment_id",
-    amount=PaymentAmount(value=500.00, currency=Currency.RUB),
+    amount=Money(value=500.00, currency=Currency.RUB),
     description="Частичный возврат"
 )
 refund = await client.refunds.create_refund(params)
@@ -197,14 +223,14 @@ params = CreateReceiptParams(
         ReceiptRegistrationItem(
             description="Товар",
             quantity=1,
-            amount=PaymentAmount(value=1000.00, currency=Currency.RUB),
+            amount=Money(value=1000.00, currency=Currency.RUB),
             vat_code=1,
             payment_subject="commodity",
             payment_mode="full_payment"
         )
     ],
     settlements=[
-        Settlement(type="prepayment", amount=PaymentAmount(value=1000.00, currency=Currency.RUB))
+        Settlement(type="prepayment", amount=Money(value=1000.00, currency=Currency.RUB))
     ],
     tax_system_code=1
 )
@@ -221,13 +247,93 @@ from aioyookassa.types.params import CreateInvoiceParams
 
 # Создание счета (используем Pydantic модель)
 params = CreateInvoiceParams(
-    amount=PaymentAmount(value=2000.00, currency=Currency.RUB),
+    amount=Money(value=2000.00, currency=Currency.RUB),
     description="Счет на оплату"
 )
 invoice = await client.invoices.create_invoice(params)
 
 # Получение информации о счете
 invoice_info = await client.invoices.get_invoice("invoice_id")
+```
+
+### 💸 Выплаты (Payouts)
+
+```python
+from aioyookassa.types.params import (
+    CreatePayoutParams,
+    BankCardPayoutDestinationData,
+    BankCardPayoutCardData
+)
+
+# Выплата на банковскую карту
+params = CreatePayoutParams(
+    amount=Money(value=1000.00, currency=Currency.RUB),
+    payout_destination_data=BankCardPayoutDestinationData(
+        type="bank_card",
+        card=BankCardPayoutCardData(number="5555555555554477")
+    ),
+    description="Выплата по договору"
+)
+payout = await client.payouts.create_payout(params)
+
+# Получение информации о выплате
+payout_info = await client.payouts.get_payout("payout_id")
+```
+
+### 👤 Самозанятые (Self-Employed)
+
+```python
+from aioyookassa.types.params import (
+    CreateSelfEmployedParams,
+    SelfEmployedConfirmationData
+)
+
+# Создание самозанятого
+params = CreateSelfEmployedParams(
+    itn="123456789012",
+    confirmation=SelfEmployedConfirmationData(
+        type="redirect",
+        confirmation_url="https://example.com/confirm"
+    )
+)
+self_employed = await client.self_employed.create_self_employed(params)
+```
+
+### 🤝 Безопасные сделки (Deals)
+
+```python
+from aioyookassa.types.params import CreateDealParams
+from aioyookassa.types.enum import FeeMoment
+
+# Создание безопасной сделки
+params = CreateDealParams(
+    fee_moment=FeeMoment.PAYMENT_SUCCEEDED,
+    description="Безопасная сделка"
+)
+deal = await client.deals.create_deal(params)
+
+# Получение списка сделок
+deals = await client.deals.get_deals()
+```
+
+### 🔔 Webhooks
+
+```python
+from aioyookassa.types.params import CreateWebhookParams
+from aioyookassa.types.enum import WebhookEvent
+
+# Создание webhook (требует OAuth токен)
+params = CreateWebhookParams(
+    event=WebhookEvent.PAYMENT_SUCCEEDED,
+    url="https://example.com/webhook"
+)
+webhook = await client.webhooks.create_webhook(
+    params=params,
+    oauth_token="your_oauth_token"
+)
+
+# Получение списка webhooks
+webhooks = await client.webhooks.get_webhooks(oauth_token="your_oauth_token")
 ```
 
 ## 🔧 Контекстный менеджер
@@ -240,7 +346,7 @@ from aioyookassa.types.params import CreatePaymentParams, GetPaymentsParams
 async with YooKassa(api_key="your_key", shop_id=12345) as client:
     # Создание платежа (используем Pydantic модель)
     params = CreatePaymentParams(
-        amount=PaymentAmount(value=100.00, currency=Currency.RUB),
+        amount=Money(value=100.00, currency=Currency.RUB),
         confirmation=Confirmation(type=ConfirmationType.REDIRECT, return_url="https://example.com/return")
     )
     payment = await client.payments.create_payment(params)
@@ -359,7 +465,7 @@ make dev                 # Запуск пайплайна разработки 
 ### Требования к Pull Request
 
 - ✅ **Все тесты проходят** (`make test`)
-- ✅ **Покрытие кода не менее 92%** (`make test-cov`)
+- ✅ **Покрытие кода не менее 95%** (`make test-cov`)
 - ✅ **Код отформатирован** (`make format`)
 - ✅ **Форматирование проходит** (`make lint`)
 - ✅ **Проверка типов проходит** (`make type-check`)

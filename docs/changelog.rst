@@ -3,7 +3,77 @@ Changelog
 
 История изменений aioyookassa.
 
-Версия 2.0.0 (Текущая) ⚠️ BREAKING CHANGES
+Версия 2.1.0
+------------
+
+**Новые возможности:**
+
+- **Добавлена поддержка API выплат (Payouts API):**
+  - Создание выплат на банковские карты, через СБП и на кошельки ЮMoney
+  - Получение информации о выплатах
+  - Поддержка выплат самозанятым с чеками
+
+- **Добавлена поддержка API самозанятых (Self-Employed API):**
+  - Создание объектов самозанятых
+  - Получение информации о статусе самозанятых
+  - Поддержка подтверждения через redirect
+
+- **Добавлена поддержка API участников СБП (SBP Banks API):**
+  - Получение списка участников Системы быстрых платежей
+  - Информация о банках и платежных сервисах
+
+- **Добавлена поддержка API персональных данных (Personal Data API):**
+  - Создание персональных данных для выплат с проверкой получателя (СБП)
+  - Создание персональных данных для выписок из реестра
+  - Получение информации о статусе персональных данных
+
+- **Добавлена поддержка API безопасных сделок (Deals API):**
+  - Создание безопасных сделок
+  - Получение списка сделок с фильтрацией
+  - Получение информации о конкретной сделке
+
+- **Добавлена поддержка API webhooks (Webhooks API):**
+  - Создание webhooks для подписки на события
+  - Получение списка webhooks
+  - Удаление webhooks
+  - **Важно**: Webhooks API требует OAuth-токен для аутентификации
+
+**Улучшения:**
+
+- Унифицированы типы данных:
+  - `PaymentAmount` переименован в `Money` (с alias для обратной совместимости)
+  - Удалены дублирующиеся типы `PayoutCancellationDetails` и `PayoutDeal`
+  - Использование общих типов `CancellationDetails` и `Deal` для всех API доменов
+- Исправлена опечатка: `receipt_operation_details` → `receipt_operational_details`
+- Все импорты в модуле `types/` теперь используют относительные пути
+- Улучшена обработка пустых ответов от DELETE методов (204 No Content)
+- Добавлена поддержка OAuth-токенов для Webhooks API
+
+**Новые типы данных:**
+
+- `Payout`, `PayoutDestination`, `PayoutReceipt`
+- `SelfEmployed`, `SelfEmployedConfirmation`
+- `SbpParticipantBank`, `SbpBanksList`
+- `PersonalData`, `PersonalDataCancellationDetails`
+- `Deal`, `DealsList` (для безопасных сделок)
+- `Webhook`, `WebhooksList`
+- `WebhookEvent` enum
+
+**Новые параметры:**
+
+- `CreatePayoutParams`, `PayoutDestinationData`
+- `CreateSelfEmployedParams`
+- `CreatePersonalDataParams`, `SbpPayoutRecipientData`, `PayoutStatementRecipientData`
+- `CreateDealParams`, `GetDealsParams`
+- `CreateWebhookParams`
+
+**Технические детали:**
+
+- Все новые API полностью покрыты тестами
+- Покрытие кода: 95%
+- Полная обратная совместимость с версией 2.0.x
+
+Версия 2.0.0 ⚠️ BREAKING CHANGES
 -------------------------------------------
 
 **⚠️ ВАЖНО: Эта версия содержит критические изменения, несовместимые с версией 1.x**
@@ -43,7 +113,7 @@ Changelog
   
       # Старый код (1.x)
       payment = await client.payments.create_payment(
-          amount=PaymentAmount(value=100.00, currency=Currency.RUB),
+          amount=Money(value=100.00, currency=Currency.RUB),
           description="Test payment",
           confirmation=Confirmation(...),
           capture=False,
@@ -54,7 +124,7 @@ Changelog
       from aioyookassa.types.params import CreatePaymentParams
       
       params = CreatePaymentParams(
-          amount=PaymentAmount(value=100.00, currency=Currency.RUB),
+          amount=Money(value=100.00, currency=Currency.RUB),
           description="Test payment",
           confirmation=Confirmation(...),
           capture=False,
@@ -307,7 +377,7 @@ Changelog
        
        settlement = RefundSettlement(
            type="payout",
-           amount=PaymentAmount(value=100, currency="RUB")
+           amount=Money(value=100, currency="RUB")
        )
        
        # Новый код (2.0+)
@@ -320,7 +390,7 @@ Changelog
        
        settlement = Settlement(
            type="payout",
-           amount=PaymentAmount(value=100, currency="RUB")
+           amount=Money(value=100, currency="RUB")
        )
 
 4. **Обновите использование ReceiptSettlement**
@@ -332,7 +402,7 @@ Changelog
        
        receipt_settlement = ReceiptSettlement(
            type="prepayment",
-           amount=PaymentAmount(value=100, currency="RUB")
+           amount=Money(value=100, currency="RUB")
        )
        
        # Новый код (2.0+)
@@ -340,7 +410,7 @@ Changelog
        
        receipt_settlement = Settlement(
            type="prepayment",
-           amount=PaymentAmount(value=100, currency="RUB")
+           amount=Money(value=100, currency="RUB")
        )
 
 5. **Обновите вызовы API методов - теперь используются Pydantic модели**
@@ -349,7 +419,7 @@ Changelog
    
        # Старый код (1.x)
        payment = await client.payments.create_payment(
-           amount=PaymentAmount(value=100.00, currency=Currency.RUB),
+           amount=Money(value=100.00, currency=Currency.RUB),
            description="Test payment",
            confirmation=Confirmation(...),
            capture=False
@@ -366,7 +436,7 @@ Changelog
        
        # Создание платежа
        params = CreatePaymentParams(
-           amount=PaymentAmount(value=100.00, currency=Currency.RUB),
+           amount=Money(value=100.00, currency=Currency.RUB),
            description="Test payment",
            confirmation=Confirmation(...),
            capture=False
@@ -399,12 +469,12 @@ Changelog
         ReceiptSettlement
     )
     from aioyookassa.types.enum import CancellationParty, CancellationReason
-    from aioyookassa.types.payment import PaymentAmount, Confirmation
+    from aioyookassa.types.payment import Money, Confirmation
     from aioyookassa.types.enum import ConfirmationType, Currency
     
     # Создание платежа (множество параметров)
     payment = await client.payments.create_payment(
-        amount=PaymentAmount(value=100.00, currency=Currency.RUB),
+        amount=Money(value=100.00, currency=Currency.RUB),
         description="Test payment",
         confirmation=Confirmation(type=ConfirmationType.REDIRECT, return_url="https://example.com"),
         capture=False
@@ -418,13 +488,13 @@ Changelog
     
     refund_settlement = RefundSettlement(
         type="payout",
-        amount=PaymentAmount(value=100, currency="RUB")
+        amount=Money(value=100, currency="RUB")
     )
     
     # Для чеков
     receipt_settlement = ReceiptSettlement(
         type="prepayment",
-        amount=PaymentAmount(value=100, currency="RUB")
+        amount=Money(value=100, currency="RUB")
     )
 
 **Новый код (2.0+):**
@@ -432,12 +502,12 @@ Changelog
 
     from aioyookassa.types import CancellationDetails, Settlement
     from aioyookassa.types.enum import CancellationParty, CancellationReason, ConfirmationType, Currency
-    from aioyookassa.types.payment import PaymentAmount, Confirmation
+    from aioyookassa.types.payment import Money, Confirmation
     from aioyookassa.types.params import CreatePaymentParams
     
     # Создание платежа (Pydantic модель)
     params = CreatePaymentParams(
-        amount=PaymentAmount(value=100.00, currency=Currency.RUB),
+        amount=Money(value=100.00, currency=Currency.RUB),
         description="Test payment",
         confirmation=Confirmation(type=ConfirmationType.REDIRECT, return_url="https://example.com"),
         capture=False
@@ -452,13 +522,13 @@ Changelog
     
     refund_settlement = Settlement(
         type="payout",
-        amount=PaymentAmount(value=100, currency="RUB")
+        amount=Money(value=100, currency="RUB")
     )
     
     # Для чеков
     receipt_settlement = Settlement(
         type="prepayment",
-        amount=PaymentAmount(value=100, currency="RUB")
+        amount=Money(value=100, currency="RUB")
     )
 
 Проверка миграции
@@ -593,7 +663,7 @@ Changelog
     import asyncio
     from aioyookassa.core.client import YooKassa
     from aioyookassa.types import Confirmation
-    from aioyookassa.types.payment import PaymentAmount
+    from aioyookassa.types.payment import Money
     from aioyookassa.types.enum import ConfirmationType, Currency
 
     async def process_payment():
@@ -618,7 +688,7 @@ Changelog
     import asyncio
     from datetime import datetime
     from aioyookassa import YooKassa
-    from aioyookassa.types.payment import PaymentAmount, Confirmation
+    from aioyookassa.types.payment import Money, Confirmation
 
     async def process_payment():
         async with YooKassa(api_key='token', shop_id=12345) as client:

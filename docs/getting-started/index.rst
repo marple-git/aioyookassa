@@ -20,7 +20,7 @@ aioyookassa предоставляет асинхронный интерфейс
 
     import asyncio
     from aioyookassa import YooKassa
-    from aioyookassa.types.payment import PaymentAmount, Confirmation
+    from aioyookassa.types.payment import Money, Confirmation
     from aioyookassa.types.enum import ConfirmationType, Currency
     from aioyookassa.types.params import CreatePaymentParams
 
@@ -30,7 +30,7 @@ aioyookassa предоставляет асинхронный интерфейс
         
         # Создание платежа (используем Pydantic модель)
         params = CreatePaymentParams(
-            amount=PaymentAmount(value=100.00, currency=Currency.RUB),
+            amount=Money(value=100.00, currency=Currency.RUB),
             confirmation=Confirmation(type=ConfirmationType.REDIRECT, return_url="https://example.com/return"),
             description="Тестовый платеж"
         )
@@ -52,13 +52,13 @@ aioyookassa предоставляет асинхронный интерфейс
 
 .. code-block:: python
 
-    from aioyookassa.types.payment import PaymentAmount, Confirmation
+    from aioyookassa.types.payment import Money, Confirmation
     from aioyookassa.types.enum import ConfirmationType, Currency
     from aioyookassa.types.params import CreatePaymentParams
     
     async with YooKassa(api_key="your_key", shop_id=12345) as client:
         params = CreatePaymentParams(
-            amount=PaymentAmount(value=100.00, currency=Currency.RUB),
+            amount=Money(value=100.00, currency=Currency.RUB),
             confirmation=Confirmation(type=ConfirmationType.REDIRECT, return_url="https://example.com/return")
         )
         payment = await client.payments.create_payment(params)

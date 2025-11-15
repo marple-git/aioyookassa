@@ -9,13 +9,22 @@ from aioyookassa.types.enum import (
     CancellationReason,
     ConfirmationType,
     Currency,
+    DealStatus,
+    FeeMoment,
     PaymentMethodType,
     PaymentMode,
     PaymentStatus,
     PaymentSubject,
+    PayoutStatus,
+    PersonalDataCancellationParty,
+    PersonalDataCancellationReason,
+    PersonalDataStatus,
+    PersonalDataType,
     ReceiptRegistration,
     ReceiptStatus,
     ReceiptType,
+    SelfEmployedStatus,
+    WebhookEvent,
 )
 
 
@@ -264,3 +273,211 @@ class TestReceiptStatus:
         """Test ReceiptStatus string representation."""
         assert str(ReceiptStatus.PENDING) == "pending"
         assert str(ReceiptStatus.SUCCEEDED) == "succeeded"
+
+
+class TestPayoutStatus:
+    """Test PayoutStatus enum."""
+
+    def test_payout_status_values(self):
+        """Test PayoutStatus enum values."""
+        assert PayoutStatus.PENDING == "pending"
+        assert PayoutStatus.SUCCEEDED == "succeeded"
+        assert PayoutStatus.CANCELED == "canceled"
+
+    def test_payout_status_string_representation(self):
+        """Test PayoutStatus string representation."""
+        assert str(PayoutStatus.PENDING) == "pending"
+        assert str(PayoutStatus.SUCCEEDED) == "succeeded"
+        assert str(PayoutStatus.CANCELED) == "canceled"
+
+    def test_payout_status_equality(self):
+        """Test PayoutStatus equality."""
+        assert PayoutStatus.SUCCEEDED == "succeeded"
+        assert PayoutStatus.PENDING == "pending"
+        assert PayoutStatus.CANCELED == "canceled"
+
+
+class TestSelfEmployedStatus:
+    """Test SelfEmployedStatus enum."""
+
+    def test_self_employed_status_values(self):
+        """Test SelfEmployedStatus enum values."""
+        assert SelfEmployedStatus.PENDING == "pending"
+        assert SelfEmployedStatus.CONFIRMED == "confirmed"
+        assert SelfEmployedStatus.CANCELED == "canceled"
+        assert SelfEmployedStatus.UNREGISTERED == "unregistered"
+
+    def test_self_employed_status_string_representation(self):
+        """Test SelfEmployedStatus string representation."""
+        assert str(SelfEmployedStatus.PENDING) == "pending"
+        assert str(SelfEmployedStatus.CONFIRMED) == "confirmed"
+        assert str(SelfEmployedStatus.CANCELED) == "canceled"
+        assert str(SelfEmployedStatus.UNREGISTERED) == "unregistered"
+
+    def test_self_employed_status_equality(self):
+        """Test SelfEmployedStatus equality."""
+        assert SelfEmployedStatus.CONFIRMED == "confirmed"
+        assert SelfEmployedStatus.PENDING == "pending"
+        assert SelfEmployedStatus.CANCELED == "canceled"
+        assert SelfEmployedStatus.UNREGISTERED == "unregistered"
+
+
+class TestPersonalDataType:
+    """Test PersonalDataType enum."""
+
+    def test_personal_data_type_values(self):
+        """Test PersonalDataType enum values."""
+        assert PersonalDataType.SBP_PAYOUT_RECIPIENT == "sbp_payout_recipient"
+        assert (
+            PersonalDataType.PAYOUT_STATEMENT_RECIPIENT == "payout_statement_recipient"
+        )
+
+    def test_personal_data_type_string_representation(self):
+        """Test PersonalDataType string representation."""
+        assert str(PersonalDataType.SBP_PAYOUT_RECIPIENT) == "sbp_payout_recipient"
+        assert (
+            str(PersonalDataType.PAYOUT_STATEMENT_RECIPIENT)
+            == "payout_statement_recipient"
+        )
+
+    def test_personal_data_type_equality(self):
+        """Test PersonalDataType equality."""
+        assert PersonalDataType.SBP_PAYOUT_RECIPIENT == "sbp_payout_recipient"
+        assert (
+            PersonalDataType.PAYOUT_STATEMENT_RECIPIENT == "payout_statement_recipient"
+        )
+
+
+class TestPersonalDataStatus:
+    """Test PersonalDataStatus enum."""
+
+    def test_personal_data_status_values(self):
+        """Test PersonalDataStatus enum values."""
+        assert PersonalDataStatus.WAITING_FOR_OPERATION == "waiting_for_operation"
+        assert PersonalDataStatus.ACTIVE == "active"
+        assert PersonalDataStatus.CANCELED == "canceled"
+
+    def test_personal_data_status_string_representation(self):
+        """Test PersonalDataStatus string representation."""
+        assert str(PersonalDataStatus.WAITING_FOR_OPERATION) == "waiting_for_operation"
+        assert str(PersonalDataStatus.ACTIVE) == "active"
+        assert str(PersonalDataStatus.CANCELED) == "canceled"
+
+    def test_personal_data_status_equality(self):
+        """Test PersonalDataStatus equality."""
+        assert PersonalDataStatus.WAITING_FOR_OPERATION == "waiting_for_operation"
+        assert PersonalDataStatus.ACTIVE == "active"
+        assert PersonalDataStatus.CANCELED == "canceled"
+
+
+class TestPersonalDataCancellationParty:
+    """Test PersonalDataCancellationParty enum."""
+
+    def test_personal_data_cancellation_party_values(self):
+        """Test PersonalDataCancellationParty enum values."""
+        assert PersonalDataCancellationParty.YOO_MONEY == "yoo_money"
+
+    def test_personal_data_cancellation_party_string_representation(self):
+        """Test PersonalDataCancellationParty string representation."""
+        assert str(PersonalDataCancellationParty.YOO_MONEY) == "yoo_money"
+
+    def test_personal_data_cancellation_party_equality(self):
+        """Test PersonalDataCancellationParty equality."""
+        assert PersonalDataCancellationParty.YOO_MONEY == "yoo_money"
+
+
+class TestPersonalDataCancellationReason:
+    """Test PersonalDataCancellationReason enum."""
+
+    def test_personal_data_cancellation_reason_values(self):
+        """Test PersonalDataCancellationReason enum values."""
+        assert PersonalDataCancellationReason.EXPIRED_BY_TIMEOUT == "expired_by_timeout"
+
+    def test_personal_data_cancellation_reason_string_representation(self):
+        """Test PersonalDataCancellationReason string representation."""
+        assert (
+            str(PersonalDataCancellationReason.EXPIRED_BY_TIMEOUT)
+            == "expired_by_timeout"
+        )
+
+    def test_personal_data_cancellation_reason_equality(self):
+        """Test PersonalDataCancellationReason equality."""
+        assert PersonalDataCancellationReason.EXPIRED_BY_TIMEOUT == "expired_by_timeout"
+
+
+class TestDealStatus:
+    """Test DealStatus enum."""
+
+    def test_deal_status_values(self):
+        """Test DealStatus enum values."""
+        assert DealStatus.OPENED == "opened"
+        assert DealStatus.CLOSED == "closed"
+
+    def test_deal_status_string_representation(self):
+        """Test DealStatus string representation."""
+        assert str(DealStatus.OPENED) == "opened"
+        assert str(DealStatus.CLOSED) == "closed"
+
+    def test_deal_status_equality(self):
+        """Test DealStatus equality."""
+        assert DealStatus.OPENED == "opened"
+        assert DealStatus.CLOSED == "closed"
+
+
+class TestFeeMoment:
+    """Test FeeMoment enum."""
+
+    def test_fee_moment_values(self):
+        """Test FeeMoment enum values."""
+        assert FeeMoment.PAYMENT_SUCCEEDED == "payment_succeeded"
+        assert FeeMoment.DEAL_CLOSED == "deal_closed"
+
+    def test_fee_moment_string_representation(self):
+        """Test FeeMoment string representation."""
+        assert str(FeeMoment.PAYMENT_SUCCEEDED) == "payment_succeeded"
+        assert str(FeeMoment.DEAL_CLOSED) == "deal_closed"
+
+    def test_fee_moment_equality(self):
+        """Test FeeMoment equality."""
+        assert FeeMoment.PAYMENT_SUCCEEDED == "payment_succeeded"
+        assert FeeMoment.DEAL_CLOSED == "deal_closed"
+
+
+class TestWebhookEvent:
+    """Test WebhookEvent enum."""
+
+    def test_webhook_event_values(self):
+        """Test WebhookEvent enum values."""
+        assert WebhookEvent.PAYMENT_WAITING_FOR_CAPTURE == "payment.waiting_for_capture"
+        assert WebhookEvent.PAYMENT_SUCCEEDED == "payment.succeeded"
+        assert WebhookEvent.PAYMENT_CANCELED == "payment.canceled"
+        assert WebhookEvent.PAYMENT_METHOD_ACTIVE == "payment_method.active"
+        assert WebhookEvent.REFUND_SUCCEEDED == "refund.succeeded"
+        assert WebhookEvent.PAYOUT_SUCCEEDED == "payout.succeeded"
+        assert WebhookEvent.PAYOUT_CANCELED == "payout.canceled"
+        assert WebhookEvent.DEAL_CLOSED == "deal.closed"
+
+    def test_webhook_event_string_representation(self):
+        """Test WebhookEvent string representation."""
+        assert (
+            str(WebhookEvent.PAYMENT_WAITING_FOR_CAPTURE)
+            == "payment.waiting_for_capture"
+        )
+        assert str(WebhookEvent.PAYMENT_SUCCEEDED) == "payment.succeeded"
+        assert str(WebhookEvent.PAYMENT_CANCELED) == "payment.canceled"
+        assert str(WebhookEvent.PAYMENT_METHOD_ACTIVE) == "payment_method.active"
+        assert str(WebhookEvent.REFUND_SUCCEEDED) == "refund.succeeded"
+        assert str(WebhookEvent.PAYOUT_SUCCEEDED) == "payout.succeeded"
+        assert str(WebhookEvent.PAYOUT_CANCELED) == "payout.canceled"
+        assert str(WebhookEvent.DEAL_CLOSED) == "deal.closed"
+
+    def test_webhook_event_equality(self):
+        """Test WebhookEvent equality."""
+        assert WebhookEvent.PAYMENT_WAITING_FOR_CAPTURE == "payment.waiting_for_capture"
+        assert WebhookEvent.PAYMENT_SUCCEEDED == "payment.succeeded"
+        assert WebhookEvent.PAYMENT_CANCELED == "payment.canceled"
+        assert WebhookEvent.PAYMENT_METHOD_ACTIVE == "payment_method.active"
+        assert WebhookEvent.REFUND_SUCCEEDED == "refund.succeeded"
+        assert WebhookEvent.PAYOUT_SUCCEEDED == "payout.succeeded"
+        assert WebhookEvent.PAYOUT_CANCELED == "payout.canceled"
+        assert WebhookEvent.DEAL_CLOSED == "deal.closed"

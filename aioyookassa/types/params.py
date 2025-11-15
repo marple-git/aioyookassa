@@ -2,23 +2,25 @@
 Pydantic models for API method parameters.
 """
 
-from datetime import datetime
+from datetime import date, datetime
 from typing import Any, List, Optional, Union
 
 from pydantic import BaseModel
 
-from aioyookassa.types.enum import (
+from .enum import (
+    DealStatus,
+    FeeMoment,
     PaymentMethodType,
     PaymentStatus,
     ReceiptStatus,
     ReceiptType,
 )
-from aioyookassa.types.invoice import (
+from .invoice import (
     InvoiceCartItem,
     InvoiceDeliveryMethodData,
     InvoicePaymentData,
 )
-from aioyookassa.types.payment import (
+from .payment import (
     Airline,
     Confirmation,
     Customer,
@@ -32,11 +34,12 @@ from aioyookassa.types.payment import (
     Settlement,
     Transfer,
 )
-from aioyookassa.types.receipt_registration import (
+from .payout import SelfEmployed, SelfEmployedConfirmation
+from .receipt_registration import (
     AdditionalUserProps,
     ReceiptRegistrationItem,
 )
-from aioyookassa.types.refund import RefundDeal, RefundMethod, RefundSource
+from .refund import RefundDeal, RefundMethod, RefundSource
 
 
 # Payments API Parameters
@@ -189,3 +192,137 @@ class CreatePaymentMethodParams(BaseModel):
     holder: Optional[PaymentMethodHolder] = None
     client_ip: Optional[str] = None
     confirmation: Optional[PaymentMethodConfirmation] = None
+
+
+# Payouts API Parameters
+class BankCardPayoutCardData(BaseModel):
+    """Bank card number for payout creation."""
+
+    number: str
+
+
+class BankCardPayoutDestinationData(BaseModel):
+    """Bank card data for payout creation."""
+
+    type: str = "bank_card"
+    card: BankCardPayoutCardData
+
+
+class SbpPayoutDestinationData(BaseModel):
+    """SBP payout destination data for payout creation."""
+
+    type: str = "sbp"
+    bank_id: str
+    phone: str
+
+
+class YooMoneyPayoutDestinationData(BaseModel):
+    """YooMoney payout destination data for payout creation."""
+
+    type: str = "yoo_money"
+    account_number: str
+
+
+PayoutDestinationData = Union[
+    BankCardPayoutDestinationData,
+    SbpPayoutDestinationData,
+    YooMoneyPayoutDestinationData,
+]
+
+
+class PayoutReceiptData(BaseModel):
+    """Receipt data for self-employed payout creation."""
+
+    service_name: str
+    amount: Optional[PaymentAmount] = None
+
+
+class CreatePayoutParams(BaseModel):
+    """Parameters for creating a payout."""
+
+    amount: PaymentAmount
+    payout_destination_data: Optional[PayoutDestinationData] = None
+    payout_token: Optional[str] = None
+    payment_method_id: Optional[str] = None
+    description: Optional[str] = None
+    deal: Optional[Deal] = None
+    self_employed: Optional[SelfEmployed] = None
+    receipt_data: Optional[PayoutReceiptData] = None
+    personal_data: Optional[List[str]] = None
+    metadata: Optional[dict] = None
+
+
+# Self-Employed API Parameters
+class SelfEmployedConfirmationData(BaseModel):
+    """Confirmation data for self-employed creation."""
+
+    type: str = "redirect"
+    confirmation_url: str
+
+
+class CreateSelfEmployedParams(BaseModel):
+    """Parameters for creating a self-employed."""
+
+    itn: Optional[str] = None
+    phone: Optional[str] = None
+    confirmation: Optional[SelfEmployedConfirmationData] = None
+
+
+# Personal Data API Parameters
+class SbpPayoutRecipientData(BaseModel):
+    """Data for sbp_payout_recipient type personal data."""
+
+    type: str = "sbp_payout_recipient"
+    last_name: str
+    first_name: str
+    middle_name: Optional[str] = None
+    metadata: Optional[dict] = None
+
+
+class PayoutStatementRecipientData(BaseModel):
+    """Data for payout_statement_recipient type personal data."""
+
+    type: str = "payout_statement_recipient"
+    last_name: str
+    first_name: str
+    middle_name: Optional[str] = None
+    birthdate: Union[str, date, datetime]  # ISO 8601 format
+    metadata: Optional[dict] = None
+
+
+CreatePersonalDataParams = Union[SbpPayoutRecipientData, PayoutStatementRecipientData]
+
+
+# Deals API Parameters
+class CreateDealParams(BaseModel):
+    """Parameters for creating a deal."""
+
+    type: str = "safe_deal"
+    fee_moment: FeeMoment
+    metadata: Optional[dict] = None
+    description: Optional[str] = None
+
+
+class GetDealsParams(BaseModel):
+    """Parameters for getting deals list."""
+
+    created_at_gte: Optional[datetime] = None
+    created_at_gt: Optional[datetime] = None
+    created_at_lte: Optional[datetime] = None
+    created_at_lt: Optional[datetime] = None
+    expires_at_gte: Optional[datetime] = None
+    expires_at_gt: Optional[datetime] = None
+    expires_at_lte: Optional[datetime] = None
+    expires_at_lt: Optional[datetime] = None
+    status: Optional[Union[DealStatus, str]] = None
+    full_text_search: Optional[str] = None
+    limit: Optional[int] = None
+    cursor: Optional[str] = None
+
+
+# Webhooks API Parameters
+class CreateWebhookParams(BaseModel):
+    """Parameters for creating a webhook."""
+
+    event: str
+    url: str

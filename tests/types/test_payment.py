@@ -674,7 +674,7 @@ class TestReceipt:
             internet=True,
             timezone=3,
             receipt_industry_details=[industry],
-            receipt_operation_details=operation,
+            receipt_operational_details=operation,
         )
         assert receipt.customer == customer
         assert receipt.phone == "+1234567890"
@@ -683,7 +683,7 @@ class TestReceipt:
         assert receipt.internet is True
         assert receipt.timezone == 3
         assert len(receipt.receipt_industry_details) == 1
-        assert receipt.receipt_operation_details == operation
+        assert receipt.receipt_operational_details == operation
 
 
 class TestPayment:

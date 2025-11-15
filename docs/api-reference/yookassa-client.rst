@@ -47,6 +47,12 @@ YooKassa Client
     receipts = client.receipts      # Чеки
     invoices = client.invoices      # Счета
     payment_methods = client.payment_methods  # Способы оплаты
+    payouts = client.payouts        # Выплаты
+    self_employed = client.self_employed  # Самозанятые
+    sbp_banks = client.sbp_banks    # Участники СБП
+    personal_data = client.personal_data  # Персональные данные
+    deals = client.deals            # Безопасные сделки
+    webhooks = client.webhooks      # Webhooks (требует OAuth токен)
 
 Получение информации о настройках магазина или шлюза
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

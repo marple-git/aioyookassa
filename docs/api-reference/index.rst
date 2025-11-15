@@ -15,6 +15,12 @@ API Reference
    receipts-api
    invoices-api
    payment-methods-api
+   payouts-api
+   self-employed-api
+   sbp-banks-api
+   personal-data-api
+   deals-api
+   webhooks-api
 
 Типы данных
 -----------

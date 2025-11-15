@@ -2,11 +2,17 @@ from typing import Optional, Union
 
 from aioyookassa.core.abc.client import BaseAPIClient
 from aioyookassa.core.api import (
+    DealsAPI,
     InvoicesAPI,
     PaymentMethodsAPI,
     PaymentsAPI,
+    PayoutsAPI,
+    PersonalDataAPI,
     ReceiptsAPI,
     RefundsAPI,
+    SbpBanksAPI,
+    SelfEmployedAPI,
+    WebhooksAPI,
 )
 from aioyookassa.core.methods.me import GetMe
 from aioyookassa.types.settings import Settings
@@ -23,6 +29,12 @@ class YooKassa(BaseAPIClient):
     - invoices: Invoice operations
     - refunds: Refund operations
     - receipts: Fiscal receipt operations
+    - payouts: Payout operations
+    - self_employed: Self-employed operations
+    - sbp_banks: SBP participant banks operations
+    - personal_data: Personal data operations
+    - deals: Safe Deal operations
+    - webhooks: Webhook operations (requires OAuth token)
     """
 
     def __init__(self, api_key: str, shop_id: Union[int, str]):
@@ -38,6 +50,12 @@ class YooKassa(BaseAPIClient):
         self.invoices = InvoicesAPI(self)
         self.refunds = RefundsAPI(self)
         self.receipts = ReceiptsAPI(self)
+        self.payouts = PayoutsAPI(self)
+        self.self_employed = SelfEmployedAPI(self)
+        self.sbp_banks = SbpBanksAPI(self)
+        self.personal_data = PersonalDataAPI(self)
+        self.deals = DealsAPI(self)
+        self.webhooks = WebhooksAPI(self)
 
     async def get_me(self, on_behalf_of: Optional[str] = None) -> Settings:
         """

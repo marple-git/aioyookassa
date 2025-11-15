@@ -62,6 +62,11 @@ class BaseAPIClient(abc.ABC):
 
         request_headers.update(headers or {})
 
+        # Use OAuth token if Authorization header is provided, otherwise use BasicAuth
+        auth = None
+        if "Authorization" not in request_headers:
+            auth = BasicAuth(self.shop_id, self.api_key)
+
         try:
             response = await session.request(
                 method.http_method,
@@ -69,7 +74,7 @@ class BaseAPIClient(abc.ABC):
                 json=json,
                 params=params,
                 headers=request_headers,
-                auth=BasicAuth(self.shop_id, self.api_key),
+                auth=auth,
             )
 
             # Handle HTTP errors
@@ -89,9 +94,25 @@ class BaseAPIClient(abc.ABC):
                 )
 
             # Parse successful response
+            # DELETE methods may return empty body (204 No Content)
+            if response.status == 204 or method.http_method == "DELETE":
+                # Consume response body if present
+                try:
+                    await response.read()
+                except Exception:
+                    pass
+                return {}  # Return empty dict for DELETE/204 responses
+
             try:
                 response_json = await response.json()
             except Exception as e:
+                # If response is empty but not 204/DELETE, try to read it
+                try:
+                    text = await response.text()
+                    if not text or text.strip() == "":
+                        return {}
+                except Exception:
+                    pass
                 raise APIError(f"Failed to parse JSON response: {str(e)}")
 
             return response_json  # type: ignore[no-any-return]

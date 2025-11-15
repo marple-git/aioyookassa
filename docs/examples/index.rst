@@ -10,9 +10,9 @@
    :maxdepth: 2
    
    basic-payment
-   payment-with-webhook
-   refund-processing
-   receipt-registration
+   payouts-example
+   deals-example
+   webhooks-example
 
 Продвинутые примеры
 -------------------

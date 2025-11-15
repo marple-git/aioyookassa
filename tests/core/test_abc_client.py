@@ -341,6 +341,8 @@ class TestBaseAPIClient:
         mock_response = AsyncMock()
         mock_response.status = 200
         mock_response.json.side_effect = Exception("JSON parse error")
+        # Configure text() to return non-empty string to avoid empty response handling
+        mock_response.text = AsyncMock(return_value="some text")
         mock_session.request.return_value = mock_response
 
         with patch.object(client, "_get_session", return_value=mock_session):
