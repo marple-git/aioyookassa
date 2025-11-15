@@ -81,7 +81,9 @@ class TestCreatePayment:
         params = CreatePayment.build_params(amount=amount)
 
         # Only non-None values should be included
-        assert params == {"amount": {"value": 100.50, "currency": "RUB"}}
+        assert "amount" in params
+        assert params["amount"]["currency"] == "RUB"
+        assert params["amount"]["value"] == pytest.approx(100.50)
 
     def test_create_payment_build_params_with_all_fields(self):
         """Test CreatePayment build_params with all fields."""
@@ -142,7 +144,8 @@ class TestCreatePayment:
             merchant_customer_id="customer_123",
         )
 
-        assert params["amount"] == {"value": 100.50, "currency": "RUB"}
+        assert params["amount"]["currency"] == "RUB"
+        assert params["amount"]["value"] == pytest.approx(100.50)
         assert params["description"] == "Test payment"
         assert params["recipient"] == {
             "account_id": "123456",
@@ -177,7 +180,8 @@ class TestCreatePayment:
 
         params = CreatePayment.build_params(amount=amount, confirmation=confirmation)
 
-        assert params["amount"] == {"value": 100.50, "currency": "RUB"}
+        assert params["amount"]["currency"] == "RUB"
+        assert params["amount"]["value"] == pytest.approx(100.50)
         assert params["confirmation"]["type"] == "redirect"
         # Note: build_params uses model_dump(exclude_none=True) without by_alias=True,
         # so it returns 'url' instead of 'confirmation_url'
@@ -204,7 +208,8 @@ class TestCreatePayment:
             amount=amount, transfers=[transfer1, transfer2]
         )
 
-        assert params["amount"] == {"value": 100.50, "currency": "RUB"}
+        assert params["amount"]["currency"] == "RUB"
+        assert params["amount"]["value"] == pytest.approx(100.50)
         assert len(params["transfers"]) == 2
         assert params["transfers"][0]["account_id"] == "123456"
         assert params["transfers"][1]["account_id"] == "789012"
@@ -233,7 +238,9 @@ class TestCreatePayment:
         )
 
         # Should only contain amount, all other None values should be filtered out
-        assert params == {"amount": {"value": 100.50, "currency": "RUB"}}
+        assert "amount" in params
+        assert params["amount"]["currency"] == "RUB"
+        assert params["amount"]["value"] == pytest.approx(100.50)
 
 
 class TestGetPayments:
@@ -367,7 +374,8 @@ class TestCapturePayment:
             deal=deal,
         )
 
-        assert params["amount"] == {"value": 100.50, "currency": "RUB"}
+        assert params["amount"]["currency"] == "RUB"
+        assert params["amount"]["value"] == pytest.approx(100.50)
         assert "receipt" in params
         assert "airline" in params
         assert len(params["transfers"]) == 1

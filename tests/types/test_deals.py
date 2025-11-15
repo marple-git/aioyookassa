@@ -29,8 +29,8 @@ class TestDeal:
         assert deal.type == "safe_deal"
         assert deal.id == "deal_123456789"
         assert deal.fee_moment == FeeMoment.PAYMENT_SUCCEEDED
-        assert deal.balance.value == 1000.00
-        assert deal.payout_balance.value == 950.00
+        assert deal.balance.value == pytest.approx(1000.00)
+        assert deal.payout_balance.value == pytest.approx(950.00)
         assert deal.status == DealStatus.OPENED
         assert deal.test is True
         assert deal.description is None
@@ -54,8 +54,8 @@ class TestDeal:
         assert deal.id == "deal_123456789"
         assert deal.fee_moment == FeeMoment.DEAL_CLOSED
         assert deal.description == "Test deal description"
-        assert deal.balance.value == 2000.00
-        assert deal.payout_balance.value == 1900.00
+        assert deal.balance.value == pytest.approx(2000.00)
+        assert deal.payout_balance.value == pytest.approx(1900.00)
         assert deal.status == DealStatus.CLOSED
         assert deal.metadata == {"order_id": "12345", "customer_id": "67890"}
         assert deal.test is False

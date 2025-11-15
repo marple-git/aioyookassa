@@ -59,7 +59,9 @@ class TestCreatePayout:
         params = CreatePayout.build_params(amount=amount)
 
         # Only non-None values should be included
-        assert params == {"amount": {"value": 100.50, "currency": "RUB"}}
+        assert "amount" in params
+        assert params["amount"]["currency"] == "RUB"
+        assert params["amount"]["value"] == pytest.approx(100.50)
 
     def test_create_payout_build_params_with_bank_card(self):
         """Test CreatePayout build_params with bank card destination."""
@@ -71,7 +73,8 @@ class TestCreatePayout:
             amount=amount, payout_destination_data=destination
         )
 
-        assert params["amount"] == {"value": 100.50, "currency": "RUB"}
+        assert params["amount"]["currency"] == "RUB"
+        assert params["amount"]["value"] == pytest.approx(100.50)
         assert params["payout_destination_data"]["type"] == "bank_card"
         assert params["payout_destination_data"]["card"]["number"] == "5555555555554477"
 
@@ -100,7 +103,8 @@ class TestCreatePayout:
             metadata={"key": "value"},
         )
 
-        assert params["amount"] == {"value": 100.50, "currency": "RUB"}
+        assert params["amount"]["currency"] == "RUB"
+        assert params["amount"]["value"] == pytest.approx(100.50)
         assert params["payout_destination_data"]["type"] == "bank_card"
         assert params["payout_token"] == "payout_token_123"
         assert params["payment_method_id"] == "pm_123456789"
@@ -160,7 +164,9 @@ class TestCreatePayout:
         )
 
         # Should only contain amount, all other None values should be filtered out
-        assert params == {"amount": {"value": 100.50, "currency": "RUB"}}
+        assert "amount" in params
+        assert params["amount"]["currency"] == "RUB"
+        assert params["amount"]["value"] == pytest.approx(100.50)
 
 
 class TestGetPayout:

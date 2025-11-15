@@ -224,8 +224,8 @@ class TestDealsAPI:
         assert result.type == "safe_deal"
         assert result.fee_moment == FeeMoment.PAYMENT_SUCCEEDED
         assert result.status == DealStatus.OPENED
-        assert result.balance.value == 1000.00
-        assert result.payout_balance.value == 950.00
+        assert result.balance.value == pytest.approx(1000.00)
+        assert result.payout_balance.value == pytest.approx(950.00)
 
         # Verify the request was made correctly
         mock_client._send_request.assert_called_once()
