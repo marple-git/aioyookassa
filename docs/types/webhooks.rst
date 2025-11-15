@@ -26,3 +26,12 @@ Enum для типов событий webhook.
    :members:
    :show-inheritance:
 
+WebhookNotification
+-------------------
+
+Модель для входящих webhook-уведомлений от YooKassa.
+
+.. autoclass:: aioyookassa.types.webhook_notification.WebhookNotification
+   :members:
+   :show-inheritance:
+

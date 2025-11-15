@@ -15,11 +15,7 @@ from .enum import (
     ReceiptStatus,
     ReceiptType,
 )
-from .invoice import (
-    InvoiceCartItem,
-    InvoiceDeliveryMethodData,
-    InvoicePaymentData,
-)
+from .invoice import InvoiceCartItem, InvoiceDeliveryMethodData, InvoicePaymentData
 from .payment import (
     Airline,
     Confirmation,
@@ -35,10 +31,7 @@ from .payment import (
     Transfer,
 )
 from .payout import SelfEmployed, SelfEmployedConfirmation
-from .receipt_registration import (
-    AdditionalUserProps,
-    ReceiptRegistrationItem,
-)
+from .receipt_registration import AdditionalUserProps, ReceiptRegistrationItem
 from .refund import RefundDeal, RefundMethod, RefundSource
 
 

@@ -21,6 +21,7 @@ API Reference
    personal-data-api
    deals-api
    webhooks-api
+   webhook-handler-api
 
 Типы данных
 -----------

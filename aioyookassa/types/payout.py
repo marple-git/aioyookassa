@@ -4,11 +4,7 @@ from typing import List, Optional, Union
 
 from pydantic import BaseModel, Field
 
-from .enum import (
-    Currency,
-    PayoutStatus,
-    SelfEmployedStatus,
-)
+from .enum import Currency, PayoutStatus, SelfEmployedStatus
 from .payment import CancellationDetails, Deal, PaymentAmount
 
 

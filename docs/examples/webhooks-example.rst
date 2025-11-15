@@ -98,48 +98,107 @@
 Обработка webhook уведомлений
 ------------------------------
 
-Когда YooKassa отправляет уведомление на ваш URL, вы получите POST запрос с данными события:
+Библиотека предоставляет удобные инструменты для обработки входящих webhook-уведомлений.
+
+Вариант 1: Готовый сервер (быстрый старт)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Самый простой способ — использовать готовый WebhookServer:
+
+.. code-block:: python
+
+    from aioyookassa.contrib.webhook_server import WebhookServer
+    from aioyookassa.core.webhook_handler import WebhookHandler
+    from aioyookassa.types.enum import WebhookEvent
+    from aioyookassa.types.payment import Payment
+    
+    handler = WebhookHandler()
+    
+    @handler.register_callback(WebhookEvent.PAYMENT_SUCCEEDED)
+    async def on_payment_succeeded(payment: Payment):
+        """Обработка успешного платежа."""
+        print(f"✅ Платеж {payment.id} успешно выполнен")
+        print(f"💰 Сумма: {payment.amount.value} {payment.amount.currency}")
+        # Ваша бизнес-логика здесь
+    
+    @handler.register_callback(WebhookEvent.PAYMENT_CANCELED)
+    async def on_payment_canceled(payment: Payment):
+        """Обработка отмененного платежа."""
+        print(f"❌ Платеж {payment.id} отменен")
+        # Ваша бизнес-логика здесь
+    
+    # Запуск сервера
+    server = WebhookServer(handler=handler)
+    server.run(host='0.0.0.0', port=8080)
+
+Вариант 2: Интеграция с существующим приложением
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Если у вас уже есть веб-приложение, используйте WebhookHandler:
 
 .. code-block:: python
 
     from aiohttp import web
+    from aioyookassa.core.webhook_handler import WebhookHandler
+    from aioyookassa.types.enum import WebhookEvent
     from aioyookassa.types.payment import Payment
     
-    async def webhook_handler(request):
+    handler = WebhookHandler()
+    
+    @handler.register_callback(WebhookEvent.PAYMENT_SUCCEEDED)
+    async def on_payment_succeeded(payment: Payment):
+        """Обработка успешного платежа."""
+        print(f"✅ Платеж {payment.id} успешно выполнен")
+        # Ваша бизнес-логика
+    
+    async def webhook_endpoint(request):
         """Обработчик webhook уведомлений."""
+        # Валидация IP (рекомендуется)
+        if not handler.validator.is_allowed(request.remote):
+            raise web.HTTPForbidden(text="IP not in whitelist")
+        
+        # Парсинг и обработка уведомления
         data = await request.json()
-        
-        # Определяем тип события
-        event = data.get('event')
-        
-        if event == 'payment.succeeded':
-            # Обрабатываем успешный платеж
-            payment_data = data.get('object')
-            payment = Payment(**payment_data)
-            
-            print(f"✅ Платеж {payment.id} успешно выполнен")
-            print(f"💰 Сумма: {payment.amount.value} {payment.amount.currency}")
-            
-            # Ваша бизнес-логика здесь
-            # Например, обновление статуса заказа в БД
-            
-        elif event == 'payment.canceled':
-            # Обрабатываем отмененный платеж
-            payment_data = data.get('object')
-            payment = Payment(**payment_data)
-            
-            print(f"❌ Платеж {payment.id} отменен")
-            
-            # Ваша бизнес-логика здесь
+        notification = handler.parse_notification(data)
+        await handler.handle_notification(notification)
         
         return web.Response(text='OK', status=200)
     
     # Настройка сервера
     app = web.Application()
-    app.router.add_post('/webhooks/payment-succeeded', webhook_handler)
-    app.router.add_post('/webhooks/payment-canceled', webhook_handler)
-    
+    app.router.add_post('/webhook', webhook_endpoint)
     web.run_app(app, host='0.0.0.0', port=8080)
+
+Регистрация callbacks
+~~~~~~~~~~~~~~~~~~~~~
+
+Можно регистрировать callbacks для одного события, нескольких событий или использовать паттерны:
+
+.. code-block:: python
+
+    # Одно событие
+    @handler.register_callback(WebhookEvent.PAYMENT_SUCCEEDED)
+    async def on_payment_succeeded(payment: Payment):
+        pass
+    
+    # Несколько событий
+    @handler.register_callback([
+        WebhookEvent.PAYMENT_SUCCEEDED,
+        WebhookEvent.PAYMENT_CANCELED
+    ])
+    async def on_payment_status_change(payment: Payment):
+        pass
+    
+    # Паттерн (все события payment.*)
+    @handler.register_callback("payment.*")
+    async def handle_all_payments(payment: Payment):
+        pass
+    
+    # Обычный метод (без декоратора)
+    async def my_handler(payment: Payment):
+        pass
+    
+    handler.add_callback(WebhookEvent.PAYMENT_SUCCEEDED, my_handler)
 
 Пошаговое объяснение
 --------------------

@@ -109,6 +109,7 @@ from .receipt_registration import (
 from .refund import Refund, RefundDeal, RefundMethod, RefundsList, RefundSource
 from .sbp_banks import SbpBanksList, SbpParticipantBank
 from .settings import Settings
+from .webhook_notification import WebhookNotification
 from .webhooks import Webhook, WebhooksList
 
 __all__ = [
@@ -205,6 +206,7 @@ __all__ = [
     # Webhook types
     "Webhook",
     "WebhooksList",
+    "WebhookNotification",
     # Fiscal receipt types
     "FiscalReceipt",
     "FiscalReceiptsList",

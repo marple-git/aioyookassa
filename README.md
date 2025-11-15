@@ -149,7 +149,7 @@ asyncio.run(main())
 - 🏦 **Участники СБП (SBP Banks)** — получение списка банков СБП
 - 🔐 **Персональные данные (Personal Data)** — управление персональными данными получателей
 - 🤝 **Безопасные сделки (Deals)** — создание и управление безопасными сделками
-- 🔔 **Webhooks** — подписка на события и управление уведомлениями
+- 🔔 **Webhooks** — подписка на события, управление уведомлениями и обработка входящих webhook-уведомлений
 
 ## 📋 Основные методы
 
@@ -318,6 +318,8 @@ deals = await client.deals.get_deals()
 
 ### 🔔 Webhooks
 
+#### Создание и управление webhooks
+
 ```python
 from aioyookassa.types.params import CreateWebhookParams
 from aioyookassa.types.enum import WebhookEvent
@@ -334,6 +336,75 @@ webhook = await client.webhooks.create_webhook(
 
 # Получение списка webhooks
 webhooks = await client.webhooks.get_webhooks(oauth_token="your_oauth_token")
+```
+
+#### Обработка webhook-уведомлений
+
+**Вариант 1: Готовый сервер (быстрый старт)**
+
+```python
+from aioyookassa.contrib.webhook_server import WebhookServer
+from aioyookassa.core.webhook_handler import WebhookHandler
+from aioyookassa.types.enum import WebhookEvent
+from aioyookassa.types.payment import Payment
+
+handler = WebhookHandler()
+
+@handler.register_callback(WebhookEvent.PAYMENT_SUCCEEDED)
+async def on_payment_succeeded(payment: Payment):
+    print(f"✅ Платеж {payment.id} успешно выполнен")
+    # Ваша бизнес-логика
+
+server = WebhookServer(handler=handler)
+server.run(host="0.0.0.0", port=8080)
+```
+
+**Вариант 2: Интеграция с существующим приложением**
+
+```python
+from aiohttp import web
+from aioyookassa.core.webhook_handler import WebhookHandler
+from aioyookassa.types.enum import WebhookEvent
+from aioyookassa.types.payment import Payment
+
+handler = WebhookHandler()
+
+@handler.register_callback(WebhookEvent.PAYMENT_SUCCEEDED)
+async def on_payment_succeeded(payment: Payment):
+    await process_payment(payment)
+
+async def webhook_endpoint(request):
+    # Валидация IP (рекомендуется)
+    if not handler.validator.is_allowed(request.remote):
+        raise web.HTTPForbidden()
+
+    # Обработка уведомления
+    data = await request.json()
+    notification = handler.parse_notification(data)
+    await handler.handle_notification(notification)
+
+    return web.Response(status=200)
+
+app = web.Application()
+app.router.add_post("/webhook", webhook_endpoint)
+web.run_app(app)
+```
+
+**Регистрация callbacks для нескольких событий:**
+
+```python
+# Несколько событий
+@handler.register_callback([
+    WebhookEvent.PAYMENT_SUCCEEDED,
+    WebhookEvent.PAYMENT_CANCELED
+])
+async def on_payment_status_change(payment: Payment):
+    print(f"Payment {payment.id} status changed")
+
+# Паттерн (все события payment.*)
+@handler.register_callback("payment.*")
+async def handle_all_payments(payment: Payment):
+    print(f"Payment event: {payment.id}")
 ```
 
 ## 🔧 Контекстный менеджер
