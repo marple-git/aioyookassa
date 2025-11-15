@@ -53,7 +53,7 @@ class WebhookHandler:
         self,
         events: Union[WebhookEvent, str, List[Union[WebhookEvent, str]]],
         callback: Optional[Callable] = None,
-    ):
+    ) -> Callable:
         """
         Decorator for registering event callbacks.
 
@@ -194,6 +194,7 @@ class WebhookHandler:
         obj_data = notification.object
 
         try:
+            parsed: Union[Payment, Refund, Payout, Deal, PaymentMethod, dict]
             if event.startswith("payment."):
                 parsed = Payment(**obj_data)
                 self.logger.debug(f"Parsed Payment object: id={parsed.id}")

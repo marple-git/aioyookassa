@@ -5,7 +5,10 @@ Tests for webhook-related exceptions.
 import pytest
 
 from aioyookassa.exceptions.base import APIError
-from aioyookassa.exceptions.webhooks import InvalidWebhookDataError, InvalidWebhookIPError
+from aioyookassa.exceptions.webhooks import (
+    InvalidWebhookDataError,
+    InvalidWebhookIPError,
+)
 
 
 class TestInvalidWebhookIPError:
@@ -52,4 +55,3 @@ class TestInvalidWebhookDataError:
         error = InvalidWebhookDataError()
         assert isinstance(error, Exception)
         assert isinstance(error, APIError)
-

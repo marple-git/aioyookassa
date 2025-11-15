@@ -66,7 +66,7 @@ class WebhookServer:
 
         # Validate IP if enabled
         if self.validate_ip:
-            if not self.handler.validator.is_allowed(client_ip):
+            if client_ip is None or not self.handler.validator.is_allowed(client_ip):
                 self.logger.warning(
                     f"Rejected webhook request from unauthorized IP: {client_ip}"
                 )
@@ -117,7 +117,8 @@ class WebhookServer:
         app = self.create_app()
         if path != "/webhook":
             # Update route if custom path provided
-            app.router.clear()
+            # Create new app with custom path
+            app = web.Application()
             app.router.add_post(path, self._handle_webhook)
         self.logger.info(f"Starting webhook server on {host}:{port}{path}")
         web.run_app(app, host=host, port=port)

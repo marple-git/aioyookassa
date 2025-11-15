@@ -233,6 +233,7 @@ class TestWebhookHandler:
     @pytest.mark.asyncio
     async def test_callback_error_handling(self, handler, sample_payment_notification):
         """Test error handling in callback."""
+
         @handler.register_callback(WebhookEvent.PAYMENT_SUCCEEDED)
         async def failing_callback(payment: Payment):
             raise ValueError("Callback error")

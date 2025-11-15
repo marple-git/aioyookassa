@@ -4,7 +4,7 @@ IP address validator for YooKassa webhook notifications.
 
 import ipaddress
 import logging
-from typing import List, Optional, Set
+from typing import List, Optional, Set, Union
 
 logger = logging.getLogger(__name__)
 
@@ -41,10 +41,12 @@ class WebhookIPValidator:
         :param logger: Logger instance. If None, uses default logger.
         """
         self.logger = logger if logger is not None else logging.getLogger(__name__)
-        self._allowed_networks: Set[ipaddress.IPv4Network | ipaddress.IPv6Network] = (
+        self._allowed_networks: Set[
+            Union[ipaddress.IPv4Network, ipaddress.IPv6Network]
+        ] = set()
+        self._allowed_ips: Set[Union[ipaddress.IPv4Address, ipaddress.IPv6Address]] = (
             set()
         )
-        self._allowed_ips: Set[ipaddress.IPv4Address | ipaddress.IPv6Address] = set()
 
         ips_to_use = (
             allowed_ips if allowed_ips is not None else self.DEFAULT_ALLOWED_IPS
