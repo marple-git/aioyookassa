@@ -1,8 +1,11 @@
-from typing import Any, Generic, Optional, TypeVar
+from typing import Any, Generic, Literal, Optional, TypeVar
 
 from pydantic import BaseModel
 
 T = TypeVar("T")
+
+# HTTP method types for better type checking
+HTTPMethod = Literal["GET", "POST", "PUT", "DELETE", "PATCH"]
 
 
 class APIMethod(Generic[T]):
@@ -10,7 +13,7 @@ class APIMethod(Generic[T]):
     Base API method.
     """
 
-    http_method: str = "GET"
+    http_method: HTTPMethod = "GET"
     path: str
 
     @staticmethod

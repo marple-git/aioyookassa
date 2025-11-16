@@ -10,7 +10,7 @@ from aioyookassa.types.params import (
 from aioyookassa.types.personal_data import PersonalData
 
 
-class PersonalDataAPI(BaseAPI):
+class PersonalDataAPI(BaseAPI[CreatePersonalDataParams, PersonalData]):
     """
     YooKassa personal data API client.
 
@@ -19,13 +19,13 @@ class PersonalDataAPI(BaseAPI):
 
     async def create_personal_data(
         self,
-        params: Union[CreatePersonalDataParams, dict],
+        params: CreatePersonalDataParams,
     ) -> PersonalData:
         """
         Create personal data in YooKassa.
 
-        :param params: Personal data creation parameters (SbpPayoutRecipientData, PayoutStatementRecipientData, or dict).
-        :type params: Union[CreatePersonalDataParams, dict]
+        :param params: Personal data creation parameters (CreatePersonalDataParams).
+        :type params: CreatePersonalDataParams
         :returns: PersonalData object.
         :rtype: PersonalData
         :seealso: https://yookassa.ru/developers/api#create_personal_data

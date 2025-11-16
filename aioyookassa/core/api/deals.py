@@ -6,7 +6,7 @@ from aioyookassa.types.deals import Deal, DealsList
 from aioyookassa.types.params import CreateDealParams, GetDealsParams
 
 
-class DealsAPI(BaseAPI):
+class DealsAPI(BaseAPI[CreateDealParams, Deal]):
     """
     YooKassa deals API client.
 
@@ -15,13 +15,13 @@ class DealsAPI(BaseAPI):
 
     async def create_deal(
         self,
-        params: Union[CreateDealParams, dict],
+        params: CreateDealParams,
     ) -> Deal:
         """
         Create a new deal in YooKassa.
 
-        :param params: Deal creation parameters (CreateDealParams or dict).
-        :type params: Union[CreateDealParams, dict]
+        :param params: Deal creation parameters (CreateDealParams).
+        :type params: CreateDealParams
         :returns: Deal object.
         :rtype: Deal
         :seealso: https://yookassa.ru/developers/api#create_deal
@@ -35,14 +35,14 @@ class DealsAPI(BaseAPI):
 
     async def get_deals(
         self,
-        params: Optional[Union[GetDealsParams, dict]] = None,
+        params: Optional[GetDealsParams] = None,
         **kwargs: Any,
     ) -> DealsList:
         """
         Retrieve a list of deals with optional filtering.
 
-        :param params: Filter parameters (GetDealsParams or dict).
-        :type params: Optional[Union[GetDealsParams, dict]]
+        :param params: Filter parameters (GetDealsParams).
+        :type params: Optional[GetDealsParams]
         :param kwargs: Additional parameters (merged with params).
         :returns: Deals list object.
         :rtype: DealsList

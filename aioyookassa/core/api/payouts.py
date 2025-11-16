@@ -6,7 +6,7 @@ from aioyookassa.types.params import CreatePayoutParams
 from aioyookassa.types.payout import Payout
 
 
-class PayoutsAPI(BaseAPI):
+class PayoutsAPI(BaseAPI[CreatePayoutParams, Payout]):
     """
     YooKassa payouts API client.
 
@@ -15,13 +15,13 @@ class PayoutsAPI(BaseAPI):
 
     async def create_payout(
         self,
-        params: Union[CreatePayoutParams, dict],
+        params: CreatePayoutParams,
     ) -> Payout:
         """
         Create a new payout in YooKassa.
 
-        :param params: Payout creation parameters (CreatePayoutParams or dict).
-        :type params: Union[CreatePayoutParams, dict]
+        :param params: Payout creation parameters (CreatePayoutParams).
+        :type params: CreatePayoutParams
         :returns: Payout object.
         :rtype: Payout
         :seealso: https://yookassa.ru/developers/api#create_payout

@@ -1,9 +1,9 @@
-from aioyookassa.core.api.base import BaseAPI
+from aioyookassa.core.api.base import BaseAPI, _EmptyParams
 from aioyookassa.core.methods.sbp_banks import GetSbpBanks
 from aioyookassa.types.sbp_banks import SbpBanksList
 
 
-class SbpBanksAPI(BaseAPI):
+class SbpBanksAPI(BaseAPI[_EmptyParams, SbpBanksList]):
     """
     YooKassa SBP banks API client.
 

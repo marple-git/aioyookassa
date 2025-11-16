@@ -13,6 +13,13 @@ from aioyookassa.core.utils import create_idempotence_headers, normalize_params
 T = TypeVar("T")
 TParams = TypeVar("TParams", bound=BaseModel)
 TResult = TypeVar("TResult", bound=BaseModel)
+TListResult = TypeVar("TListResult", bound=BaseModel)  # For list results
+
+
+class _EmptyParams(BaseModel):
+    """Empty params model for APIs without create operations."""
+
+    pass
 
 
 class BaseAPI(Generic[TParams, TResult]):
@@ -20,6 +27,9 @@ class BaseAPI(Generic[TParams, TResult]):
     Base API client class with common operations.
 
     Provides reusable methods for creating, retrieving, and listing resources.
+
+    :param TParams: Type variable for parameters (Pydantic model)
+    :param TResult: Type variable for result (Pydantic model)
     """
 
     def __init__(self, client: BaseAPIClient):

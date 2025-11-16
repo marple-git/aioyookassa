@@ -30,7 +30,6 @@
             params = CreatePayoutParams(
                 amount=Money(value=1000.00, currency=Currency.RUB),
                 payout_destination_data=BankCardPayoutDestinationData(
-                    type="bank_card",
                     card=BankCardPayoutCardData(number="5555555555554477")
                 ),
                 description="Выплата по договору #12345"
@@ -49,7 +48,6 @@
                 params = CreatePayoutParams(
                     amount=Money(value=2000.00, currency=Currency.RUB),
                     payout_destination_data=SbpPayoutDestinationData(
-                        type="sbp",
                         bank_id=bank_id,
                         phone="79000000000"
                     ),
@@ -63,7 +61,6 @@
             params = CreatePayoutParams(
                 amount=Money(value=1500.00, currency=Currency.RUB),
                 payout_destination_data=YooMoneyPayoutDestinationData(
-                    type="yoo_money",
                     account_number="41001614575714"
                 ),
                 description="Выплата на кошелек"

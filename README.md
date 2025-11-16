@@ -247,7 +247,7 @@ refund_info = await client.refunds.get_refund("refund_id")
 
 ```python
 from aioyookassa.types.payment import Customer, Settlement
-from aioyookassa.types.enum import ReceiptType
+from aioyookassa.types.enum import ReceiptType, PaymentSubject, PaymentMode, Currency
 from aioyookassa.types.params import CreateReceiptParams
 from aioyookassa.types.receipt_registration import ReceiptRegistrationItem
 
@@ -262,8 +262,8 @@ params = CreateReceiptParams(
             quantity=1,
             amount=Money(value=1000.00, currency=Currency.RUB),
             vat_code=1,
-            payment_subject="commodity",
-            payment_mode="full_payment"
+            payment_subject=PaymentSubject.COMMODITY,
+            payment_mode=PaymentMode.FULL_PAYMENT
         )
     ],
     settlements=[
@@ -306,7 +306,6 @@ from aioyookassa.types.params import (
 params = CreatePayoutParams(
     amount=Money(value=1000.00, currency=Currency.RUB),
     payout_destination_data=BankCardPayoutDestinationData(
-        type="bank_card",
         card=BankCardPayoutCardData(number="5555555555554477")
     ),
     description="Выплата по договору"

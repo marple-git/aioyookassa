@@ -6,7 +6,7 @@ from aioyookassa.types.params import CreateReceiptParams, GetReceiptsParams
 from aioyookassa.types.receipt_registration import FiscalReceipt, FiscalReceiptsList
 
 
-class ReceiptsAPI(BaseAPI):
+class ReceiptsAPI(BaseAPI[CreateReceiptParams, FiscalReceipt]):
     """
     YooKassa receipts API client.
 
@@ -15,13 +15,13 @@ class ReceiptsAPI(BaseAPI):
 
     async def create_receipt(
         self,
-        params: Union[CreateReceiptParams, dict],
+        params: CreateReceiptParams,
     ) -> FiscalReceipt:
         """
         Create a new receipt registration.
 
-        :param params: Receipt creation parameters (CreateReceiptParams or dict).
-        :type params: Union[CreateReceiptParams, dict]
+        :param params: Receipt creation parameters (CreateReceiptParams).
+        :type params: CreateReceiptParams
         :returns: FiscalReceipt object.
         :rtype: FiscalReceipt
         :seealso: https://yookassa.ru/developers/api#create_receipt
@@ -46,14 +46,14 @@ class ReceiptsAPI(BaseAPI):
 
     async def get_receipts(
         self,
-        params: Optional[Union[GetReceiptsParams, dict]] = None,
+        params: Optional[GetReceiptsParams] = None,
         **kwargs: Any,
     ) -> FiscalReceiptsList:
         """
         Retrieve a list of receipt registrations with optional filtering.
 
-        :param params: Filter parameters (GetReceiptsParams or dict).
-        :type params: Optional[Union[GetReceiptsParams, dict]]
+        :param params: Filter parameters (GetReceiptsParams).
+        :type params: Optional[GetReceiptsParams]
         :param kwargs: Additional parameters (merged with params).
         :returns: FiscalReceiptsList object.
         :rtype: FiscalReceiptsList

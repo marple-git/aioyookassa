@@ -6,7 +6,7 @@ from aioyookassa.types.params import CreateRefundParams, GetRefundsParams
 from aioyookassa.types.refund import Refund, RefundsList
 
 
-class RefundsAPI(BaseAPI):
+class RefundsAPI(BaseAPI[CreateRefundParams, Refund]):
     """
     YooKassa refunds API client.
 
@@ -15,13 +15,13 @@ class RefundsAPI(BaseAPI):
 
     async def create_refund(
         self,
-        params: Union[CreateRefundParams, dict],
+        params: CreateRefundParams,
     ) -> Refund:
         """
         Create a new refund for a successful payment.
 
-        :param params: Refund creation parameters (CreateRefundParams or dict).
-        :type params: Union[CreateRefundParams, dict]
+        :param params: Refund creation parameters (CreateRefundParams).
+        :type params: CreateRefundParams
         :returns: Refund object.
         :rtype: Refund
         :seealso: https://yookassa.ru/developers/api#create_refund
@@ -44,14 +44,14 @@ class RefundsAPI(BaseAPI):
 
     async def get_refunds(
         self,
-        params: Optional[Union[GetRefundsParams, dict]] = None,
+        params: Optional[GetRefundsParams] = None,
         **kwargs: Any,
     ) -> RefundsList:
         """
         Retrieve a list of refunds with optional filtering.
 
-        :param params: Filter parameters (GetRefundsParams or dict).
-        :type params: Optional[Union[GetRefundsParams, dict]]
+        :param params: Filter parameters (GetRefundsParams).
+        :type params: Optional[GetRefundsParams]
         :param kwargs: Additional parameters (merged with params).
         :returns: Refunds list object.
         :rtype: RefundsList

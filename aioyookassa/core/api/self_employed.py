@@ -6,7 +6,7 @@ from aioyookassa.types.params import CreateSelfEmployedParams
 from aioyookassa.types.payout import SelfEmployed
 
 
-class SelfEmployedAPI(BaseAPI):
+class SelfEmployedAPI(BaseAPI[CreateSelfEmployedParams, SelfEmployed]):
     """
     YooKassa self-employed API client.
 
@@ -15,13 +15,13 @@ class SelfEmployedAPI(BaseAPI):
 
     async def create_self_employed(
         self,
-        params: Union[CreateSelfEmployedParams, dict],
+        params: CreateSelfEmployedParams,
     ) -> SelfEmployed:
         """
         Create a new self-employed in YooKassa.
 
-        :param params: Self-employed creation parameters (CreateSelfEmployedParams or dict).
-        :type params: Union[CreateSelfEmployedParams, dict]
+        :param params: Self-employed creation parameters (CreateSelfEmployedParams).
+        :type params: CreateSelfEmployedParams
         :returns: SelfEmployed object.
         :rtype: SelfEmployed
         :seealso: https://yookassa.ru/developers/api#create_self_employed

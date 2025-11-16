@@ -268,7 +268,7 @@ API модули
     from aioyookassa.types.receipt_registration import (
         ReceiptRegistrationItem, Supplier
     )
-    from aioyookassa.types.enum import Currency
+    from aioyookassa.types.enum import Currency, PaymentSubject, PaymentMode
 
     async def create_detailed_receipt():
         # Настройка поставщика
@@ -285,8 +285,8 @@ API модули
                 quantity=2,
                 amount=PaymentAmount(value=100.00, currency=Currency.RUB),
                 vat_code=1,
-                payment_subject="commodity",
-                payment_mode="full_payment",
+                payment_subject=PaymentSubject.COMMODITY,
+                payment_mode=PaymentMode.FULL_PAYMENT,
                 supplier=supplier
             ),
             ReceiptRegistrationItem(
@@ -294,8 +294,8 @@ API модули
                 quantity=1,
                 amount=PaymentAmount(value=200.00, currency=Currency.RUB),
                 vat_code=1,
-                payment_subject="commodity",
-                payment_mode="full_payment",
+                payment_subject=PaymentSubject.COMMODITY,
+                payment_mode=PaymentMode.FULL_PAYMENT,
                 supplier=supplier
             )
         ]

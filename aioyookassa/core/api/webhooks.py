@@ -6,7 +6,7 @@ from aioyookassa.types.params import CreateWebhookParams
 from aioyookassa.types.webhooks import Webhook, WebhooksList
 
 
-class WebhooksAPI(BaseAPI):
+class WebhooksAPI(BaseAPI[CreateWebhookParams, Webhook]):
     """
     YooKassa webhooks API client.
 
@@ -16,14 +16,14 @@ class WebhooksAPI(BaseAPI):
 
     async def create_webhook(
         self,
-        params: Union[CreateWebhookParams, dict],
+        params: CreateWebhookParams,
         oauth_token: str,
     ) -> Webhook:
         """
         Create a new webhook in YooKassa.
 
-        :param params: Webhook creation parameters (CreateWebhookParams or dict).
-        :type params: Union[CreateWebhookParams, dict]
+        :param params: Webhook creation parameters (CreateWebhookParams).
+        :type params: CreateWebhookParams
         :param oauth_token: OAuth token for authentication.
         :type oauth_token: str
         :returns: Webhook object.

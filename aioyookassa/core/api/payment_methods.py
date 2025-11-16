@@ -6,7 +6,7 @@ from aioyookassa.types.params import CreatePaymentMethodParams
 from aioyookassa.types.payment import PaymentMethod
 
 
-class PaymentMethodsAPI(BaseAPI):
+class PaymentMethodsAPI(BaseAPI[CreatePaymentMethodParams, PaymentMethod]):
     """
     YooKassa payment methods API client.
 
@@ -16,6 +16,7 @@ class PaymentMethodsAPI(BaseAPI):
     async def create_payment_method(
         self, params: Union[CreatePaymentMethodParams, dict, None] = None, **kwargs: Any
     ) -> PaymentMethod:
+        # Note: Union with dict kept for backward compatibility with kwargs support
         """
         Create a new payment method in YooKassa.
 

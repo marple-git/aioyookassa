@@ -13,6 +13,7 @@
    payouts-example
    deals-example
    webhooks-example
+   refunds_example
 
 Продвинутые примеры
 -------------------
@@ -20,9 +21,7 @@
 .. toctree::
    :maxdepth: 2
    
-   error-handling
-   batch-operations
-   custom-integration
+   advanced_payment_example
 
 Примеры для разных фреймворков
 ------------------------------

@@ -6,7 +6,7 @@ from aioyookassa.types.invoice import Invoice
 from aioyookassa.types.params import CreateInvoiceParams
 
 
-class InvoicesAPI(BaseAPI):
+class InvoicesAPI(BaseAPI[CreateInvoiceParams, Invoice]):
     """
     YooKassa invoices API client.
 
@@ -16,13 +16,13 @@ class InvoicesAPI(BaseAPI):
 
     async def create_invoice(
         self,
-        params: Union[CreateInvoiceParams, dict],
+        params: CreateInvoiceParams,
     ) -> Invoice:
         """
         Create a new invoice in YooKassa.
 
-        :param params: Invoice creation parameters (CreateInvoiceParams or dict).
-        :type params: Union[CreateInvoiceParams, dict]
+        :param params: Invoice creation parameters (CreateInvoiceParams).
+        :type params: CreateInvoiceParams
         :returns: Invoice object.
         :rtype: Invoice
         :seealso: https://yookassa.ru/developers/api#create_invoice

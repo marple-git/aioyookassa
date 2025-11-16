@@ -16,7 +16,7 @@ from aioyookassa.types.params import (
 )
 
 
-class PaymentsAPI(BaseAPI):
+class PaymentsAPI(BaseAPI[CreatePaymentParams, Payment]):
     """
     YooKassa payments API client.
 
@@ -25,13 +25,13 @@ class PaymentsAPI(BaseAPI):
 
     async def create_payment(
         self,
-        params: Union[CreatePaymentParams, dict],
+        params: CreatePaymentParams,
     ) -> Payment:
         """
         Create a new payment in YooKassa.
 
-        :param params: Payment creation parameters (CreatePaymentParams or dict).
-        :type params: Union[CreatePaymentParams, dict]
+        :param params: Payment creation parameters (CreatePaymentParams).
+        :type params: CreatePaymentParams
         :returns: Payment object.
         :rtype: Payment
         :seealso: https://yookassa.ru/developers/api#create_payment
@@ -55,14 +55,14 @@ class PaymentsAPI(BaseAPI):
 
     async def get_payments(
         self,
-        params: Optional[Union[GetPaymentsParams, dict]] = None,
+        params: Optional[GetPaymentsParams] = None,
         **kwargs: Any,
     ) -> PaymentsList:
         """
         Retrieve a list of payments with optional filtering.
 
-        :param params: Filter parameters (GetPaymentsParams or dict).
-        :type params: Optional[Union[GetPaymentsParams, dict]]
+        :param params: Filter parameters (GetPaymentsParams).
+        :type params: Optional[GetPaymentsParams]
         :param kwargs: Additional parameters (merged with params).
         :returns: Payments list object.
         :rtype: PaymentsList
@@ -102,15 +102,15 @@ class PaymentsAPI(BaseAPI):
     async def capture_payment(
         self,
         payment_id: str,
-        params: Optional[Union[CapturePaymentParams, dict]] = None,
+        params: Optional[CapturePaymentParams] = None,
     ) -> Payment:
         """
         Capture (confirm) a payment.
 
         :param payment_id: Payment identifier.
         :type payment_id: str
-        :param params: Capture parameters (CapturePaymentParams or dict).
-        :type params: Optional[Union[CapturePaymentParams, dict]]
+        :param params: Capture parameters (CapturePaymentParams).
+        :type params: Optional[CapturePaymentParams]
         :returns: Payment object.
         :rtype: Payment
         :seealso: https://yookassa.ru/developers/api#capture_payment
