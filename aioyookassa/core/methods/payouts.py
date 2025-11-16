@@ -32,7 +32,7 @@ class CreatePayout(PayoutsAPIMethod):
     Create payout.
     """
 
-    http_method = "POST"
+    http_method = "POST"  # type: ignore[assignment]
 
     @staticmethod
     def build_params(**kwargs: Any) -> Dict[str, Any]:

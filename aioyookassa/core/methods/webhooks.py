@@ -34,7 +34,7 @@ class CreateWebhook(WebhooksAPIMethod):
     Create webhook.
     """
 
-    http_method = "POST"
+    http_method = "POST"  # type: ignore[assignment]
 
     @staticmethod
     def build_params(**kwargs: Any) -> Dict[str, Any]:
@@ -63,5 +63,5 @@ class DeleteWebhook(WebhooksAPIMethod):
     Delete webhook.
     """
 
-    http_method = "DELETE"
+    http_method = "DELETE"  # type: ignore[assignment]
     path = "/webhooks/{webhook_id}"

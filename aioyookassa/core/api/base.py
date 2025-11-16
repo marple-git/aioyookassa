@@ -66,12 +66,12 @@ class BaseAPI(Generic[TParams, TResult]):
 
     async def _get_list(
         self,
-        params: Optional[Union[TParams, dict]],
-        params_class: Optional[Type[TParams]],
+        params: Optional[Union[Any, dict]],
+        params_class: Optional[Type[Any]],
         method_class: Type[APIMethod[Any]],
-        result_class: Type[TResult],
+        result_class: Type[Any],
         **kwargs: Any,
-    ) -> TResult:
+    ) -> Any:
         """
         Get a list of resources with optional filtering.
 
@@ -119,8 +119,8 @@ class BaseAPI(Generic[TParams, TResult]):
     async def _update_resource(
         self,
         resource_id: str,
-        params: Optional[Union[TParams, dict]],
-        params_class: Optional[Type[TParams]],
+        params: Optional[Union[Any, dict]],
+        params_class: Optional[Type[Any]],
         method_class: Type[APIMethod[Any]],
         result_class: Type[TResult],
         id_param_name: str = "id",

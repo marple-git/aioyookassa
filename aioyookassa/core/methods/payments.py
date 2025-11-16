@@ -31,7 +31,7 @@ class CreatePayment(PaymentsAPIMethod):
     Create payment.
     """
 
-    http_method = "POST"
+    http_method = "POST"  # type: ignore[assignment]
 
     @staticmethod
     def build_params(**kwargs: Any) -> Dict[str, Any]:
@@ -116,7 +116,7 @@ class CapturePayment(PaymentsAPIMethod):
     Capture payment.
     """
 
-    http_method = "POST"
+    http_method = "POST"  # type: ignore[assignment]
     path = "/payments/{payment_id}/capture"
 
     @staticmethod
@@ -154,5 +154,5 @@ class CancelPayment(PaymentsAPIMethod):
     Cancel payment.
     """
 
-    http_method = "POST"
+    http_method = "POST"  # type: ignore[assignment]
     path = "/payments/{payment_id}/cancel"

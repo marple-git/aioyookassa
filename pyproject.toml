@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "aioyookassa"
-version = "2.2.3"
+version = "2.2.4"
 description = "Asynchronous YooKassa API client library for Python using aiohttp and pydantic."
 authors = ["Masa"]
 repository = "https://github.com/masasibata/aioyookassa"

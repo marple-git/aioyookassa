@@ -30,7 +30,7 @@ class CreatePaymentMethod(PaymentMethodBase):
     API reference: https://yookassa.ru/developers/api#create_payment_method
     """
 
-    http_method = "POST"
+    http_method = "POST"  # type: ignore[assignment]
 
     @staticmethod
     def build_params(**kwargs: Any) -> Dict[str, Any]:
